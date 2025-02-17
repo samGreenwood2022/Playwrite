@@ -25,4 +25,10 @@ jobs:
         run: npm install
 
       - name: Run Playwright tests
-        run: npx playwright test
+        run: npx playwright test --reporter=dot,junit
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v2
+        with:
+          name: playwright-test-results
+          path: test-results/

@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { HomePage } from './pages/home-page';
 
-test('Assert the SSource home page has the correct Title', async ({ page }) => {
+test('Assert the Source home page has the correct Title', async ({ page }) => {
   await page.goto('https://source.thenbs.com/');
 
   // Click the second instance of 'Accept All Cookies' if it appears

@@ -4,7 +4,8 @@
   "description": "Playwrite project",
   "main": "index.js",
   "scripts": {
-    "test": "playwright test --ui"
+    "test": "playwright test --ui",
+    "test2": "playwright test"
   },
   "author": "S Greenwood",
   "license": "ISC",
