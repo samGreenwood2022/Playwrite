@@ -13,7 +13,7 @@ export class HomePage {
 
   async searchFor(term: string) {
     await this.searchField.fill(term);
-    await this.searchButton.click();
+    await this.searchButton.click({ force: true });
     await this.page.waitForTimeout(3000); // Wait for 3 seconds
   }
 }
