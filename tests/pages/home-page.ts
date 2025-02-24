@@ -4,7 +4,7 @@ export class HomePage {
   readonly page: Page;
   readonly searchField: Locator;
   readonly searchButton: Locator;
-
+// we need a better mechanism for clicking the cookie button
   constructor(page: Page) {
     this.page = page;
     this.searchField = page.locator('[data-cy="searchFieldSearch"]').last();
