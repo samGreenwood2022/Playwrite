@@ -6,11 +6,11 @@ test('Assert the Source home page has the correct Title', async ({ page }) => {
   await page.goto('https://source.thenbs.com/');
 
   // Click the second instance of 'Accept All Cookies' if it appears
-  const acceptCookiesButton = page.locator('button:has-text("Accept All Cookies")');
+  const acceptCookiesButton = page.locator('div[aria-label="Cookie banner"] button:has-text("Accept All Cookies")');
   try {
     if (await acceptCookiesButton.isVisible()) {
-      await acceptCookiesButton.nth(1).click(); // Click the second instance
-      await expect(acceptCookiesButton.nth(1)).toBeHidden(); // Ensure the button disappears
+      await acceptCookiesButton.click(); // Click the second instance
+      await expect(acceptCookiesButton).toBeHidden(); // Ensure the button disappears
     }
   } catch (e) {
     console.warn("Cookies button not found or already accepted.");
