@@ -5,7 +5,7 @@ test('Assert the Source home page has the correct Title', async ({ page }) => {
   // Navigate to the Source home page
   await page.goto('https://source.thenbs.com/');
 
-  // Click the second instance of 'Accept All Cookies' if it appears
+  // Click the 'Accept All Cookies' button if it appears
   const acceptCookiesButton = page.locator('div[aria-label="Cookie banner"] button:has-text("Accept All Cookies")');
   try {
     if (await acceptCookiesButton.isVisible()) {
