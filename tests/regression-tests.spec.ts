@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { HomePage } from './pages/home-page';
 
-test('Assert the Source home page has the correct Title', async ({ page }) => {
+test('Assert the Source home page has the correct URL', async ({ page }) => {
   // Navigate to the Source home page
   await page.goto('https://source.thenbs.com/');
 
