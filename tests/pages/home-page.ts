@@ -6,6 +6,7 @@ export class HomePage {
   readonly searchField: Locator;
   readonly searchButton: Locator;
   readonly acceptCookiesButton: Locator;
+  readonly selectSearchResult: Locator;
 
   // Constructor to initialize the page and locators
   constructor(page: Page) {
@@ -14,8 +15,10 @@ export class HomePage {
     this.searchField = page.locator('[data-cy="searchFieldSearch"]').last();
     // Locator for the search button using the data-cy attribute
     this.searchButton = page.locator('[data-cy="searchButton"]').last();
+    // Locator for selecting an option from the search results drop down menu
+    this.selectSearchResult = page.getByRole('option', { name: /Dyson/i });
     // Locator for the Accept All Cookies button
-    this.acceptCookiesButton = page.locator('div[aria-label="Cookie banner"] button:has-text("Accept All Cookies")');
+    this.acceptCookiesButton = page.getByRole('button', { name: 'Accept All Cookies' });
   }
 
   // Method to perform a search operation
@@ -23,7 +26,7 @@ export class HomePage {
     // Fill the search field with the provided term
     await this.searchField.fill(term);
     // Click the search button to initiate the search
-    await this.searchButton.click({ force: true });
+    await this.selectSearchResult.first().click({ force: true });
     // Wait for 3 seconds to allow the search results to load
     await this.page.waitForTimeout(3000);
   }
@@ -33,21 +36,25 @@ export class HomePage {
     // Navigate to the Source home page
     await this.page.goto('https://source.thenbs.com/');
 
-    // Click the 'Accept All Cookies' button if it appears
-
+    // Wait for the 'Accept All Cookies' button to appear, then click if visible
     try {
-      if (await this.acceptCookiesButton.isVisible()) {
-        await this.acceptCookiesButton.click(); // Click the second instance
-        await this.acceptCookiesButton.waitFor({ state: 'hidden' }); // Ensure the button disappears
-      }
+      await this.acceptCookiesButton.waitFor({ state: 'visible', timeout: 10000 });
+      await this.acceptCookiesButton.click();
+      await this.acceptCookiesButton.waitFor({ state: 'hidden', timeout: 10000 });
     } catch (e) {
-      console.warn("Cookies button not found or already accepted.");
+      // If the button does not appear or is already accepted, log and continue
+      console.warn("Cookies button not found, not visible, or already accepted.");
     }
   }
 
   // Method to verify a webpage URL
-  async verifyWebpageURLFor(URL: string) {
+  async verifyWebpageURL(URL: string) {
     await playwrightExpect(this.page).toHaveURL(URL);
+  }
+
+  // Method to verify a webpage URL
+  async selectSearchResultFromDropdown(result) {
+    await this.selectSearchResult.click();
   }
 
 }
