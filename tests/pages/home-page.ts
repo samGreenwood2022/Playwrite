@@ -7,7 +7,9 @@ export class HomePage {
   readonly searchButton: Locator;
   readonly acceptCookiesButton: Locator;
   readonly selectSearchResult: Locator;
+  readonly telephoneLink: Locator;
 
+  //Locators
   // Constructor to initialize the page and locators
   constructor(page: Page) {
     this.page = page;
@@ -19,7 +21,10 @@ export class HomePage {
     this.selectSearchResult = page.getByRole('option', { name: /Dyson/i });
     // Locator for the Accept All Cookies button
     this.acceptCookiesButton = page.getByRole('button', { name: 'Accept All Cookies' });
+    this.telephoneLink = page.locator('a[action="telephone"]');
   }
+
+  //Actions
 
   // Method to perform a search operation
   async searchFor(term: string) {
@@ -53,8 +58,20 @@ export class HomePage {
   }
 
   // Method to verify a webpage URL
-  async selectSearchResultFromDropdown(result) {
+  async selectSearchResultFromDropdown() {
     await this.selectSearchResult.click();
+  }
+
+  // Method to verify a webpage URL
+  async verifyTelNo() {
+    // Assert the link is visible
+    await playwrightExpect(this.telephoneLink).toBeVisible();
+
+    // Assert the link text is correct
+    await playwrightExpect(this.telephoneLink).toHaveText('08003457788');
+
+    // Assert the href attribute is correct
+    await playwrightExpect(this.telephoneLink).toHaveAttribute('href', 'tel:08003457788');
   }
 
 }
