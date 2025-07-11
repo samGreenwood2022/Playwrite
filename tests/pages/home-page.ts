@@ -10,6 +10,7 @@ export class HomePage {
   readonly telephoneLink: Locator;
   readonly h1: Locator;
   readonly nbsLogoLink: Locator;
+  readonly externalManufacturerLink: Locator;
 
   //Locators
   // Constructor to initialize the page and locators
@@ -26,6 +27,7 @@ export class HomePage {
     this.telephoneLink = page.locator('a[action="telephone"]');
     this.h1 = page.locator('h1');
     this.nbsLogoLink = page.locator('app-product-logo-with-name:has(app-name:text("NBS Source")) a');
+    this.externalManufacturerLink = page.getByRole('button', { name: 'Contact manufacturer' });
   }
 
   //Actions
@@ -87,11 +89,18 @@ export class HomePage {
     await playwrightExpect(this.h1).toHaveText(title);
 
   }
-
   // Method to verify H1 (Title of the webpage)
-  async logoHref() {
+  async logoHref(href: string) {
     // Assert the href attribute of the logo is correct
-    await playwrightExpect(this.nbsLogoLink).toHaveAttribute('href', '/');
+    await playwrightExpect(this.nbsLogoLink).toHaveAttribute('href', href);
   }
 
+  // Method to verify the contact manufacturer link
+  async verifyExternalManufacturerLink() {
+    // Assert the external manufacturer link is visible
+    await playwrightExpect(this.externalManufacturerLink).toBeVisible();
+
+    // Assert the button text is correct and visible
+    await playwrightExpect(this.externalManufacturerLink).toHaveText('Contact manufacturer');
+  }
 }

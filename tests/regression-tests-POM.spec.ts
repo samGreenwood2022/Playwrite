@@ -14,7 +14,7 @@ test.beforeEach(async ({ page }) => {
   await homePage.searchFor('Dyson');
 });
 
-test('Verify the manufacturers homepage URL contains expected text', async ({ page }) => {
+test('Verify the manufacturers homepage URL contains expected text', async () => {
     // Expect the page title to contain the substring 'NBS Source'
   await homePage.verifyWebpageURL('https://source.thenbs.com/manufacturer/dyson/nakAxHWxDZprdqkBaCdn4U/overview');
 });
@@ -25,14 +25,19 @@ test('I verify the telephone link has the correct number, protocol and href', as
 
 });
 
-test('I verify the h1 title text on page is as expected', async ({ page }) => {
+test('I verify the h1 title text on page is as expected', async () => {
   // Expect the page title to contain the substring 'NBS Source'
   await homePage.verifyH1('Dyson');
 
 });
 
-test('I verify the href attribute of the Source logo is as expected', async ({ page }) => {
+test('I verify the href attribute of the Source logo is as expected', async () => {
   // Expect the page title to contain the substring 'NBS Source'
-  await homePage.logoHref();
+  await homePage.logoHref('/');
 
+});
+
+test('I verify the contact manufacturer button link attribute contains the correct url', async () => {
+  // Expect the external manufacturer link to have the correct URL
+  await homePage.verifyExternalManufacturerLink();
 });
