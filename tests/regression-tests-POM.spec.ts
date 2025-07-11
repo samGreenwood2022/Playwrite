@@ -20,7 +20,7 @@ test('I verify the telephone link has the correct number, protocol and href', as
 
   // Create an instance of HomePage and perform a search for 'Dyson'
   const homePage = new HomePage(page);
-  
+
   // Navigate to the Source home page and click to accept cookies
   await homePage.navigateToNBSHomepageAndClickToAcceptCookies();
 
@@ -32,5 +32,21 @@ test('I verify the telephone link has the correct number, protocol and href', as
 
   // Expect the page title to contain the substring 'NBS Source'
   await homePage.verifyTelNo();
+
+});
+
+test('I verify the h1 title text on page is as expected', async ({ page }) => {
+
+  // Create an instance of HomePage and perform a search for 'Dyson'
+  const homePage = new HomePage(page);
+  
+  // Navigate to the Source home page and click to accept cookies
+  await homePage.navigateToNBSHomepageAndClickToAcceptCookies();
+
+  // Search for and select Dyson result
+  await homePage.searchFor('Dyson');
+
+  // Expect the page title to contain the substring 'NBS Source'
+  await homePage.verifyH1();
 
 });

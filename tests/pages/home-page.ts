@@ -74,5 +74,15 @@ export class HomePage {
     await playwrightExpect(this.telephoneLink).toHaveAttribute('href', 'tel:08003457788');
   }
 
-}
+  // Method to verify H1 (Title of the webpage)
+  async verifyH1() {
+    // Assert the h1 element is visible
+    const h1Element = this.page.locator('h1');
+    await playwrightExpect(h1Element).toBeVisible();
 
+    // Assert the h1 element text is correct
+    await playwrightExpect(h1Element).toHaveText('Dyson');
+
+  }
+
+}
