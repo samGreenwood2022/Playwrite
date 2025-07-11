@@ -1,5 +1,8 @@
 import { test, expect } from '@playwright/test';
 import { HomePage } from './pages/home-page';
+import { AxeBuilder } from '@axe-core/playwright';
+import fs from 'fs';
+import { createHtmlReport } from 'axe-html-reporter';
 
 let homePage: HomePage;
 
@@ -7,7 +10,7 @@ test.beforeEach(async ({ page }) => {
   homePage = new HomePage(page);
   await homePage.navigateToNBSHomepageAndClickToAcceptCookies();
 
-    // Expect the page title to contain the substring 'NBS Source'
+  // Expect the page title to contain the substring 'NBS Source'
   await homePage.verifyWebpageURL('https://source.thenbs.com/');
 
   // Search for and select Dyson result
@@ -15,7 +18,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 test('Verify the manufacturers homepage URL contains expected text', async () => {
-    // Expect the page title to contain the substring 'NBS Source'
+  // Expect the page title to contain the substring 'NBS Source'
   await homePage.verifyWebpageURL('https://source.thenbs.com/manufacturer/dyson/nakAxHWxDZprdqkBaCdn4U/overview');
 });
 
@@ -40,4 +43,12 @@ test('I verify the href attribute of the Source logo is as expected', async () =
 test('I verify the contact manufacturer button link attribute contains the correct url', async () => {
   // Expect the external manufacturer link to have the correct URL
   await homePage.verifyExternalManufacturerLink();
+});
+
+test('Run Accessibility tests and report on any violations', async () => {
+  // Run accessibility tests and report on any violations
+  const accessibilityScanResults = await new AxeBuilder({ page: homePage.page }).analyze();
+  const html = createHtmlReport({ results: accessibilityScanResults });
+  fs.writeFileSync('axe-report.html', html);
+  console.log(accessibilityScanResults.violations);
 });
