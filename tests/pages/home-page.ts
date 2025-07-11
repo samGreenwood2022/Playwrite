@@ -8,6 +8,8 @@ export class HomePage {
   readonly acceptCookiesButton: Locator;
   readonly selectSearchResult: Locator;
   readonly telephoneLink: Locator;
+  readonly h1: Locator;
+  readonly nbsLogoLink: Locator;
 
   //Locators
   // Constructor to initialize the page and locators
@@ -22,6 +24,8 @@ export class HomePage {
     // Locator for the Accept All Cookies button
     this.acceptCookiesButton = page.getByRole('button', { name: 'Accept All Cookies' });
     this.telephoneLink = page.locator('a[action="telephone"]');
+    this.h1 = page.locator('h1');
+    this.nbsLogoLink = page.locator('app-product-logo-with-name:has(app-name:text("NBS Source")) a');
   }
 
   //Actions
@@ -75,14 +79,19 @@ export class HomePage {
   }
 
   // Method to verify H1 (Title of the webpage)
-  async verifyH1() {
+  async verifyH1(title: string) {
     // Assert the h1 element is visible
-    const h1Element = this.page.locator('h1');
-    await playwrightExpect(h1Element).toBeVisible();
+    await playwrightExpect(this.h1).toBeVisible();
 
     // Assert the h1 element text is correct
-    await playwrightExpect(h1Element).toHaveText('Dyson');
+    await playwrightExpect(this.h1).toHaveText(title);
 
+  }
+
+  // Method to verify H1 (Title of the webpage)
+  async logoHref() {
+    // Assert the href attribute of the logo is correct
+    await playwrightExpect(this.nbsLogoLink).toHaveAttribute('href', '/');
   }
 
 }
