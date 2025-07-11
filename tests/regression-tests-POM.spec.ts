@@ -1,8 +1,5 @@
 import { test, expect } from '@playwright/test';
 import { HomePage } from './pages/home-page';
-import { AxeBuilder } from '@axe-core/playwright';
-import fs from 'fs';
-import { createHtmlReport } from 'axe-html-reporter';
 
 let homePage: HomePage;
 
@@ -47,8 +44,6 @@ test('I verify the contact manufacturer button link attribute contains the corre
 
 test('Run Accessibility tests and report on any violations', async () => {
   // Run accessibility tests and report on any violations
-  const accessibilityScanResults = await new AxeBuilder({ page: homePage.page }).analyze();
-  const html = createHtmlReport({ results: accessibilityScanResults });
-  fs.writeFileSync('axe-report.html', html);
-  console.log(accessibilityScanResults.violations);
+  await homePage.generateAccessibilityReport();
+
 });

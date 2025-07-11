@@ -1,5 +1,8 @@
 import { Page, Locator } from '@playwright/test';
 import { expect as playwrightExpect } from '@playwright/test';
+import { AxeBuilder } from '@axe-core/playwright';
+import fs from 'fs';
+import { createHtmlReport } from 'axe-html-reporter';
 
 export class HomePage {
   readonly page: Page;
@@ -103,4 +106,17 @@ export class HomePage {
     // Assert the button text is correct and visible
     await playwrightExpect(this.externalManufacturerLink).toHaveText('Contact manufacturer');
   }
+
+  // Method to generate a report showing accessibility violations
+  async generateAccessibilityReport() {
+    // Logic to generate the report
+    console.log("Generating accessibility report...");
+    const accessibilityScanResults = await new AxeBuilder({ page: this.page }).analyze();
+    const html = createHtmlReport({ results: accessibilityScanResults });
+    fs.writeFileSync('axe-report.html', html);
+    console.log(accessibilityScanResults.violations);
+  }
+
+
+
 }
