@@ -1,13 +1,16 @@
 import { Page, Locator } from '@playwright/test';
 import { expect as playwrightExpect } from '@playwright/test';
 
-
 export class DysonHomepage {
     // Locators
     readonly page: Page;
+    readonly telephoneLink: Locator;
+    readonly externalManufacturerLink: Locator;
 
     constructor(page: Page) {
         this.page = page;
+        this.telephoneLink = page.locator('a[action="telephone"]');
+        this.externalManufacturerLink = page.getByRole('button', { name: 'Contact manufacturer' });
     }
 
     // Actions
@@ -34,5 +37,28 @@ export class DysonHomepage {
         await playwrightExpect(localeLabel).toHaveText(/UK/);
         await playwrightExpect(localeLabel).toBeVisible();
     }
+
+    // Method to verify a webpage URL
+    async verifyTelNo() {
+        // Assert the link is visible
+        await playwrightExpect(this.telephoneLink).toBeVisible();
+
+        // Assert the link text is correct
+        await playwrightExpect(this.telephoneLink).toHaveText('08003457788');
+
+        // Assert the href attribute is correct
+        await playwrightExpect(this.telephoneLink).toHaveAttribute('href', 'tel:08003457788');
+    }
+
+    // Method to verify the contact manufacturer link
+    async verifyExternalManufacturerLink() {
+        // Assert the external manufacturer link is visible
+        await playwrightExpect(this.externalManufacturerLink).toBeVisible();
+
+        // Assert the button text is correct and visible
+        await playwrightExpect(this.externalManufacturerLink).toHaveText('Contact manufacturer');
+    }
+
+
 
 }

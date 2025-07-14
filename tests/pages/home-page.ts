@@ -10,10 +10,7 @@ export class HomePage {
   readonly searchButton: Locator;
   readonly acceptCookiesButton: Locator;
   readonly selectSearchResult: Locator;
-  readonly telephoneLink: Locator;
-  readonly h1: Locator;
   readonly nbsLogoLink: Locator;
-  readonly externalManufacturerLink: Locator;
 
   //Locators
   // Constructor to initialize the page and locators
@@ -27,10 +24,6 @@ export class HomePage {
     this.selectSearchResult = page.getByRole('option', { name: /Dyson/i });
     // Locator for the Accept All Cookies button
     this.acceptCookiesButton = page.getByRole('button', { name: 'Accept All Cookies' });
-    this.telephoneLink = page.locator('a[action="telephone"]');
-    this.h1 = page.locator('h1');
-    this.nbsLogoLink = page.locator('app-product-logo-with-name:has(app-name:text("NBS Source")) a');
-    this.externalManufacturerLink = page.getByRole('button', { name: 'Contact manufacturer' });
   }
 
   //Actions
@@ -62,49 +55,14 @@ export class HomePage {
   }
 
   // Method to verify a webpage URL
-  async verifyWebpageURL(URL: string) {
-    await playwrightExpect(this.page).toHaveURL(URL);
-  }
-
-  // Method to verify a webpage URL
   async selectSearchResultFromDropdown() {
     await this.selectSearchResult.click();
   }
 
-  // Method to verify a webpage URL
-  async verifyTelNo() {
-    // Assert the link is visible
-    await playwrightExpect(this.telephoneLink).toBeVisible();
-
-    // Assert the link text is correct
-    await playwrightExpect(this.telephoneLink).toHaveText('08003457788');
-
-    // Assert the href attribute is correct
-    await playwrightExpect(this.telephoneLink).toHaveAttribute('href', 'tel:08003457788');
-  }
-
-  // Method to verify H1 (Title of the webpage)
-  async verifyH1(title: string) {
-    // Assert the h1 element is visible
-    await playwrightExpect(this.h1).toBeVisible();
-
-    // Assert the h1 element text is correct
-    await playwrightExpect(this.h1).toHaveText(title);
-
-  }
   // Method to verify H1 (Title of the webpage)
   async logoHref(href: string) {
     // Assert the href attribute of the logo is correct
     await playwrightExpect(this.nbsLogoLink).toHaveAttribute('href', href);
-  }
-
-  // Method to verify the contact manufacturer link
-  async verifyExternalManufacturerLink() {
-    // Assert the external manufacturer link is visible
-    await playwrightExpect(this.externalManufacturerLink).toBeVisible();
-
-    // Assert the button text is correct and visible
-    await playwrightExpect(this.externalManufacturerLink).toHaveText('Contact manufacturer');
   }
 
   // Method to generate a report showing accessibility violations
@@ -117,7 +75,7 @@ export class HomePage {
     console.log(accessibilityScanResults.violations);
   }
 
-  
+
 
 
 
