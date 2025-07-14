@@ -1,10 +1,14 @@
 import { test, expect } from '@playwright/test';
 import { HomePage } from './pages/home-page';
+import { DysonHomepage } from './pages/dyson-homepage'
 
 let homePage: HomePage;
+let dysonPage: DysonHomepage;
 
 test.beforeEach(async ({ page }) => {
   homePage = new HomePage(page);
+  dysonPage = new DysonHomepage(page);
+
   await homePage.navigateToNBSHomepageAndClickToAcceptCookies();
 
   // Expect the page title to contain the substring 'NBS Source'
@@ -45,5 +49,11 @@ test('I verify the contact manufacturer button link attribute contains the corre
 test('Run Accessibility tests and report on any violations', async () => {
   // Run accessibility tests and report on any violations
   await homePage.generateAccessibilityReport();
+
+});
+
+test('I perform an api test and verify the response and content is as expected', async () => {
+  // Perform api test and verify response and content
+  await dysonPage.verifyUIandAPIContent();
 
 });

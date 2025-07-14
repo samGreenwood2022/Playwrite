@@ -1,0 +1,38 @@
+import { Page, Locator } from '@playwright/test';
+import { expect as playwrightExpect } from '@playwright/test';
+
+
+export class DysonHomepage {
+    // Locators
+    readonly page: Page;
+
+    constructor(page: Page) {
+        this.page = page;
+    }
+
+    // Actions
+
+    async verifyUIandAPIContent() {
+        // Make the API request using Playwright's fetch, ignoring HTTPS errors
+        const response = await this.page.request.get('https://geolocation.onetrust.com/cookieconsentpub/v1/geo/location', {
+            ignoreHTTPSErrors: true
+        });
+        const text = await response.text();
+
+        // The response is like: jsonFeed({...});
+        const match = text.match(/jsonFeed\((.*)\);?/);
+        if (!match) {
+            throw new Error('Unexpected response format');
+        }
+        const body = JSON.parse(match[1]);
+
+        // Check that the API response contains the correct country (GB)
+        playwrightExpect(body).toHaveProperty('country', 'GB');
+
+        // Now check that "UK" is present in the DOM and is visible
+        const localeLabel = this.page.locator('button[aria-label="Choose locale"] .mdc-button__label').first();
+        await playwrightExpect(localeLabel).toHaveText(/UK/);
+        await playwrightExpect(localeLabel).toBeVisible();
+    }
+
+}

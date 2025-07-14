@@ -117,6 +117,8 @@ export class HomePage {
     console.log(accessibilityScanResults.violations);
   }
 
+  
+
 
 
 }
