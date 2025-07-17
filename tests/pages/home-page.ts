@@ -21,42 +21,54 @@ export class HomePage {
     // Locator for the search button using the data-cy attribute
     this.searchButton = page.locator('[data-cy="searchButton"]').last();
     // Locator for selecting an option from the search results drop down menu
-    this.selectSearchResult = page.getByRole('option', { name: /Dyson/i });
+    this.selectSearchResult = page.locator('a').filter({ hasText: /^Dyson$/ });
     // Locator for the Accept All Cookies button
     this.acceptCookiesButton = page.getByRole('button', { name: 'Accept All Cookies' });
   }
 
   //Actions
 
-  // Method to perform a search operation
+  // Method to perform a search operation with retry until result appears
   async searchFor(term: string) {
-    // Fill the search field with the provided term
-    await this.searchField.fill(term);
-    // Click the search button to initiate the search
-    await this.selectSearchResult.first().click({ force: true });
-    // Wait for 3 seconds to allow the search results to load
-    await this.page.waitForTimeout(3000);
+    await this.page.waitForLoadState('domcontentloaded');
+    let maxRetries = 5;
+    let retries = 0;
+    while (retries < maxRetries) {
+      await this.searchField.fill(term);
+      await this.page.screenshot({ path: `searchTerm_attempt${retries + 1}.png` });
+      try {
+        await this.selectSearchResult.waitFor({ state: 'visible', timeout: 5000 });
+        await this.selectSearchResult.click({ force: true });
+        return;
+      } catch {
+        await this.searchField.fill('');
+        retries++;
+      }
+    }
+    throw new Error(`Search result for "${term}" did not appear after ${maxRetries} attempts.`);
   }
 
   // Method to perform a search and click the result
   async navigateToNBSHomepageAndClickToAcceptCookies() {
-    // Navigate to the Source home page
     await this.page.goto('https://source.thenbs.com/');
 
-    // Wait for the 'Accept All Cookies' button to appear, then click if visible
     try {
+      // Wait for the Accept Cookies button to be visible (max 10s)
       await this.acceptCookiesButton.waitFor({ state: 'visible', timeout: 10000 });
-      await this.acceptCookiesButton.click();
+      await this.page.screenshot({ path: 'cookies-banner.png' });
+      await this.acceptCookiesButton.click({ timeout: 10000 });
       await this.acceptCookiesButton.waitFor({ state: 'hidden', timeout: 10000 });
-    } catch (e) {
-      // If the button does not appear or is already accepted, log and continue
-      console.warn("Cookies button not found, not visible, or already accepted.");
+    } catch (error) {
+      console.warn("Cookies button not found, not visible, or could not be clicked.", error);
     }
   }
 
-  // Method to verify a webpage URL
+  // Method to select the Dyson result from the dropdown
   async selectSearchResultFromDropdown() {
-    await this.selectSearchResult.click();
+    // Wait for the result to appear (up to 10 seconds)
+    await this.selectSearchResult.waitFor({ state: 'visible', timeout: 10000 });
+    // Click the result if it is visible
+    await this.selectSearchResult.click({ force: true });
   }
 
   // Method to verify H1 (Title of the webpage)

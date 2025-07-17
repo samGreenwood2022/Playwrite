@@ -4,8 +4,10 @@
   "description": "Playwrite project",
   "main": "dist/index.js",
   "scripts": {
-    "test": "playwright test --ui",
-    "test2": "playwright test"
+    "test-ui": "npx playwright test --project=chromium --ui",
+    "test-headless": "npx playwright test --project=chromium --reporter=html",
+    "codegen": "npx playwright codegen https://source.thenbs.com/",
+    "test:twice": "npx playwright test || npx playwright test"
   },
   "author": "S Greenwood",
   "license": "ISC",

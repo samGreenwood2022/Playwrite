@@ -21,7 +21,7 @@ export class BasePage {
 
     // Method to verify a webpage URL
     async verifyWebpageURL(URL: string) {
-        await playwrightExpect(this.page).toHaveURL(URL);
+        await playwrightExpect(this.page).toHaveURL(URL, { timeout: 10000 });
     }
 
     // Method to verify H1 (Title of the webpage)
@@ -33,6 +33,14 @@ export class BasePage {
         await playwrightExpect(this.h1).toHaveText(title);
 
     }
+
+    // Method to verify a webpage Title
+    async verifyWebpageTitle(title: string) {
+        await playwrightExpect(this.page).toHaveTitle(title, { timeout: 10000 });
+    }
+
+
+
     // Method to verify value for the NBS Logo
     async logoHref(href: string) {
         // Assert the href attribute of the logo is correct

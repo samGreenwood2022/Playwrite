@@ -16,7 +16,8 @@ test.beforeEach(async ({ page }) => {
 
   // Expect the page title to contain the substring 'NBS Source'
   await basePage.verifyWebpageURL('https://source.thenbs.com/');
-
+  // Debug step
+  await page.pause();
   // Search for and select Dyson result
   await homePage.searchFor('Dyson');
 });
@@ -32,9 +33,9 @@ test('I verify the telephone link has the correct number, protocol and href', as
 
 });
 
-test('I verify the h1 title text on page is as expected', async () => {
-  // Expect the page title to contain the substring 'NBS Source'
-  await basePage.verifyH1('Dyson');
+test('I verify the webpage html Title on page is as expected', async () => {
+  // Expect the page title to contain the substring 'Dyson | Overview | NBS BIM Library'
+  await basePage.verifyWebpageTitle('Dyson | Overview | NBS BIM Library');
 
 });
 
