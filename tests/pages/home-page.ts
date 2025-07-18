@@ -28,36 +28,50 @@ export class HomePage {
 
   //Actions
 
-  // Method to perform a search operation with retry until result appears
+  // Method to perform a search operation with retry and page refresh logic
   async searchFor(term: string) {
     await this.page.waitForLoadState('domcontentloaded');
-    let maxRetries = 5;
-    let retries = 0;
-    while (retries < maxRetries) {
-      await this.searchField.fill(term);
-      await this.page.screenshot({ path: `searchTerm_attempt${retries + 1}.png` });
-      try {
-        await this.selectSearchResult.waitFor({ state: 'visible', timeout: 5000 });
-        await this.selectSearchResult.click({ force: true });
-        return;
-      } catch {
-        await this.searchField.fill('');
-        retries++;
+    const maxRetries = 5;
+
+    // Helper function to attempt search up to maxRetries
+    const trySearch = async () => {
+      let retries = 0;
+      while (retries < maxRetries) {
+        await this.searchField.fill(term);
+        await this.page.screenshot({ path: `searchTerm_attempt${retries + 1}.png` });
+        try {
+          await this.selectSearchResult.waitFor({ state: 'visible', timeout: 10000 });
+          await this.selectSearchResult.click({ force: true });
+          return true;
+        } catch {
+          await this.searchField.fill('');
+          retries++;
+        }
       }
-    }
-    throw new Error(`Search result for "${term}" did not appear after ${maxRetries} attempts.`);
+      return false;
+    };
+
+    // First round of attempts
+    if (await trySearch()) return;
+
+    // Refresh and try again
+    await this.page.reload({ waitUntil: 'domcontentloaded' });
+    if (await trySearch()) return;
+
+    // If still not found, fail the test
+    throw new Error(`Search result for "${term}" did not appear after ${maxRetries * 2} attempts (including page refresh).`);
   }
 
   // Method to perform a search and click the result
   async navigateToNBSHomepageAndClickToAcceptCookies() {
-    await this.page.goto('https://source.thenbs.com/');
-
+    await this.page.goto('https://source.thenbs.com/', { timeout: 60000, waitUntil: 'domcontentloaded' });
+    debugger
     try {
-      // Wait for the Accept Cookies button to be visible (max 10s)
-      await this.acceptCookiesButton.waitFor({ state: 'visible', timeout: 10000 });
+      // Wait for the Accept Cookies button to be visible (max 60s)
+      await this.acceptCookiesButton.waitFor({ state: 'visible', timeout: 60000 });
       await this.page.screenshot({ path: 'cookies-banner.png' });
-      await this.acceptCookiesButton.click({ timeout: 10000 });
-      await this.acceptCookiesButton.waitFor({ state: 'hidden', timeout: 10000 });
+      await this.acceptCookiesButton.click({ timeout: 60000 });
+      await this.acceptCookiesButton.waitFor({ state: 'hidden', timeout: 60000 });
     } catch (error) {
       console.warn("Cookies button not found, not visible, or could not be clicked.", error);
     }

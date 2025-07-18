@@ -29,7 +29,7 @@ export class DysonHomepage {
         }
         const body = JSON.parse(match[1]);
 
-        // Check that the API response contains the correct country (GB)
+        // Check that the API response contains the correct country (GB or US)
         playwrightExpect(['GB', 'US']).toContain(body.country);
 
         // Now check that "UK" is present in the DOM and is visible
