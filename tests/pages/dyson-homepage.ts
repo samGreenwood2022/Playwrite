@@ -20,6 +20,10 @@ export class DysonHomepage {
         const response = await this.page.request.get('https://geolocation.onetrust.com/cookieconsentpub/v1/geo/location', {
             ignoreHTTPSErrors: true
         });
+
+        // Assert that the response status is 200
+        playwrightExpect(response.status()).toBe(200);
+
         const text = await response.text();
 
         // The response is like: jsonFeed({...});
@@ -39,27 +43,28 @@ export class DysonHomepage {
     }
 
     // Method to verify a webpage URL
-    async verifyTelNo() {
+    async verifyTelNo(telNo: string): Promise<void> {
         // Assert the link is visible
         await this.page.screenshot({ path: 'telephoneLink.png' });
         await playwrightExpect(this.telephoneLink).toBeVisible({ timeout: 10000 });
 
         // Assert the link text is correct
-        await playwrightExpect(this.telephoneLink).toHaveText('08003457788', { timeout: 10000 });
+        await playwrightExpect(this.telephoneLink).toHaveText(telNo, { timeout: 10000 });
 
         // Assert the href attribute is correct
-        await playwrightExpect(this.telephoneLink).toHaveAttribute('href', 'tel:08003457788', { timeout: 10000 });
+        await playwrightExpect(this.telephoneLink).toHaveAttribute('href', `tel:${telNo}`, { timeout: 10000 });
     }
 
     // Method to verify the contact manufacturer link
-    async verifyExternalManufacturerLink() {
+    async verifyExternalManufacturerLink(expectedLink: string): Promise<void> {
 
         await this.page.screenshot({ path: 'externalManufacturerLink.png' });
         // Assert the external manufacturer link is visible
         await playwrightExpect(this.externalManufacturerLink).toBeVisible({ timeout: 10000 });
-
         // Assert the button text is correct and visible
-        await playwrightExpect(this.externalManufacturerLink).toHaveText('Contact manufacturer', { timeout: 10000 });
+        await playwrightExpect(this.externalManufacturerLink).toHaveText(" Contact manufacturer ", { timeout: 10000 });
+        // Assert `href` attribute is correct
+        // await playwrightExpect(this.externalManufacturerLink).toHaveAttribute('href', expectedLink, { timeout: 10000 });
     }
 
 

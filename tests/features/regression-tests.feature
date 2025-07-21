@@ -24,8 +24,8 @@ Feature: Dyson Homepage Regression Tests
   Scenario: I verify the telephone link has the correct number, protocol and href
     Then The number will be correct, the href will be as expected, and the telephone protocol will correct "tel:08003457788"
 
-  Scenario: I verify the h1 title text on page is as expected
-    Then The h1 title text will be as expected "Dyson"
+  Scenario: I verify the webpage title on page is as expected
+    Then The webpage title will be as expected "Dyson"
 
   Scenario: I verify the href attribute of the Source logo is as expected
     Then The href attribute of the Source logo will be as expected "/"
@@ -40,8 +40,7 @@ Feature: Dyson Homepage Regression Tests
     Then The results of the accessibility checks will be output to the console
 
   Scenario: I perform an api test and verify the response and content is as expected
-    Then I should get a 200 response and output request to the console
-    And The response should contain the expected email address "Eliseo@gardner.biz"
+    Then The api reponse and content is expected
 
   Scenario: I verify the Dyson navigation bar has the correct tabs and expected links
     Then The Dyson navigation bar should have the correct tabs and href links

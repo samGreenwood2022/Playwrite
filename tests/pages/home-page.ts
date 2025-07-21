@@ -24,48 +24,61 @@ export class HomePage {
     this.selectSearchResult = page.locator('a').filter({ hasText: /^Dyson$/ });
     // Locator for the Accept All Cookies button
     this.acceptCookiesButton = page.getByRole('button', { name: 'Accept All Cookies' });
+    // Locator for the NBS logo link (update selector as needed)
+    this.nbsLogoLink = page.locator('app-product-logo-with-name a:has(app-name:text("NBS Source"))');
   }
 
   //Actions
 
   // Method to perform a search operation with retry and page refresh logic
   async searchFor(term: string) {
-    await this.page.waitForLoadState('domcontentloaded');
-    const maxRetries = 5;
+    const maxAttempts = 3;
+    let attempt = 0;
 
-    // Helper function to attempt search up to maxRetries
-    const trySearch = async () => {
-      let retries = 0;
-      while (retries < maxRetries) {
-        await this.searchField.fill(term);
-        await this.page.screenshot({ path: `searchTerm_attempt${retries + 1}.png` });
-        try {
-          await this.selectSearchResult.waitFor({ state: 'visible', timeout: 10000 });
-          await this.selectSearchResult.click({ force: true });
-          return true;
-        } catch {
-          await this.searchField.fill('');
-          retries++;
+    while (attempt < maxAttempts) {
+      attempt++;
+      try {
+        // Ensure page is loaded
+        await this.page.waitForLoadState('domcontentloaded', { timeout: 15000 });
+
+        // Clear and type the search term
+        await this.searchField.fill('');
+        await this.searchField.fill(term, { timeout: 10000 });
+
+        // Wait for the dropdown result to appear
+        await this.selectSearchResult.waitFor({ state: 'visible', timeout: 10000 });
+
+        // Click the result if visible
+        if (await this.selectSearchResult.isVisible()) {
+          // Click 10px from the left, vertically centered
+          const box = await this.selectSearchResult.boundingBox();
+          if (box) {
+            await this.selectSearchResult.click({
+              position: { x: 10, y: box.height / 2 }
+            });
+          } else {
+            throw new Error('Could not find bounding box for Dyson search result');
+          }
+          return; // Success!
         }
+      } catch (error) {
+        // Optionally log the error for debugging
+        console.warn(`Attempt ${attempt} failed:`, error);
       }
-      return false;
-    };
 
-    // First round of attempts
-    if (await trySearch()) return;
+      // If not successful, refresh and try again
+      if (attempt < maxAttempts && !this.page.isClosed()) {
+        await this.page.reload({ waitUntil: 'domcontentloaded', timeout: 20000 });
+      }
+    }
 
-    // Refresh and try again
-    await this.page.reload({ waitUntil: 'domcontentloaded' });
-    if (await trySearch()) return;
-
-    // If still not found, fail the test
-    throw new Error(`Search result for "${term}" did not appear after ${maxRetries * 2} attempts (including page refresh).`);
+    // If all attempts fail, throw an error
+    throw new Error(`Failed to find and click the "${term}" search result after ${maxAttempts} attempts (with page reloads).`);
   }
 
   // Method to perform a search and click the result
   async navigateToNBSHomepageAndClickToAcceptCookies() {
     await this.page.goto('https://source.thenbs.com/', { timeout: 60000, waitUntil: 'domcontentloaded' });
-    debugger
     try {
       // Wait for the Accept Cookies button to be visible (max 60s)
       await this.acceptCookiesButton.waitFor({ state: 'visible', timeout: 60000 });

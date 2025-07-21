@@ -1,4 +1,4 @@
-import { Page, Locator } from '@playwright/test';
+import { Page, Locator, expect } from '@playwright/test';
 import { expect as playwrightExpect } from '@playwright/test';
 import { AxeBuilder } from '@axe-core/playwright';
 import fs from 'fs';
@@ -20,8 +20,11 @@ export class BasePage {
     //Actions
 
     // Method to verify a webpage URL
-    async verifyWebpageURL(URL: string) {
-        await playwrightExpect(this.page).toHaveURL(URL, { timeout: 10000 });
+    async verifyWebpageURL(expectedURL: string) {
+        // Wait for navigation to complete before checking the URL
+        await this.page.waitForURL(expectedURL, { timeout: 10000 });
+        const currentUrl = this.page.url();
+        expect(currentUrl).toContain(expectedURL);
     }
 
     // Method to verify H1 (Title of the webpage)
