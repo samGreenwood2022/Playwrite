@@ -6,11 +6,13 @@ export class DysonHomepage {
     readonly page: Page;
     readonly telephoneLink: Locator;
     readonly externalManufacturerLink: Locator;
+    readonly navigationTabs: Locator
 
     constructor(page: Page) {
         this.page = page;
         this.telephoneLink = page.locator('a[action="telephone"]');
         this.externalManufacturerLink = page.getByRole('button', { name: 'Contact manufacturer' });
+        this.navigationTabs = page.locator('.mat-mdc-tab-links');
     }
 
     // Actions
@@ -67,6 +69,25 @@ export class DysonHomepage {
         // await playwrightExpect(this.externalManufacturerLink).toHaveAttribute('href', expectedLink, { timeout: 10000 });
     }
 
+    // Verifies the Dyson Navigation Bar
+    async verifyDysonNavigationBar(): Promise<void> {
+        // Ensure the navigation bar is visible
+        await playwrightExpect(this.navigationTabs).toBeVisible();
 
+        // Ensure each tab is present and visible
+        const tabNames = [
+            'Overview',
+            'Products',
+            'Certifications',
+            'Literature',
+            'Case studies',
+            'About us'
+        ];
+
+        for (const tab of tabNames) {
+            const tabLocator = this.navigationTabs.locator('a', { hasText: tab });
+            await playwrightExpect(tabLocator).toBeVisible();
+        }
+    }
 
 }

@@ -62,5 +62,5 @@ Then('The api reponse and content is expected', async function () {
 });
 
 Then('The Dyson navigation bar should have the correct tabs and href links', async function () {
-    await dysonPage.verifyUIandAPIContent();
+    await dysonPage.verifyDysonNavigationBar();
 });
