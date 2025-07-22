@@ -7,12 +7,14 @@ export class DysonHomepage {
     readonly telephoneLink: Locator;
     readonly externalManufacturerLink: Locator;
     readonly navigationTabs: Locator
+    readonly localeLabel: Locator;
 
     constructor(page: Page) {
         this.page = page;
         this.telephoneLink = page.locator('a[action="telephone"]');
         this.externalManufacturerLink = page.getByRole('button', { name: 'Contact manufacturer' });
         this.navigationTabs = page.locator('.mat-mdc-tab-links');
+        this.localeLabel = page.getByRole('button', { name: 'Choose region' });
     }
 
     // Actions
@@ -39,9 +41,8 @@ export class DysonHomepage {
         playwrightExpect(['GB', 'US']).toContain(body.country);
 
         // Now check that "UK" is present in the DOM and is visible
-        const localeLabel = this.page.locator('button[aria-label="Choose locale"] .mdc-button__label').first();
-        await playwrightExpect(localeLabel).toHaveText(/UK/);
-        await playwrightExpect(localeLabel).toBeVisible();
+        await playwrightExpect(this.localeLabel).toContainText('UK');
+        await playwrightExpect(this.localeLabel).toBeVisible();
     }
 
     // Method to verify a webpage URL
