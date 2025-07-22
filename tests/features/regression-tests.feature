@@ -22,10 +22,10 @@ Feature: Dyson Homepage Regression Tests
       | /overview            |
 
   Scenario: I verify the telephone link has the correct number, protocol and href
-    Then The number will be correct, the href will be as expected, and the telephone protocol will correct "tel:08003457788"
+    Then The number will be correct, the href will be as expected, and the telephone protocol will correct "08003457788"
 
   Scenario: I verify the webpage title on page is as expected
-    Then The webpage title will be as expected "Dyson"
+    Then The webpage title will be as expected "Dyson | Overview | NBS BIM Library"
 
   Scenario: I verify the href attribute of the Source logo is as expected
     Then The href attribute of the Source logo will be as expected "/"

@@ -21,10 +21,21 @@ export class BasePage {
 
     // Method to verify a webpage URL
     async verifyWebpageURL(expectedURL: string) {
-        // Wait for navigation to complete before checking the URL
-        await this.page.waitForURL(expectedURL, { timeout: 10000 });
-        const currentUrl = this.page.url();
-        expect(currentUrl).toContain(expectedURL);
+        // Wait until the current URL contains the expected substring, retrying for up to 10 seconds
+        const timeout = 10000;
+        const pollInterval = 200;
+        const start = Date.now();
+        while (true) {
+            const currentUrl = this.page.url();
+            if (currentUrl.includes(expectedURL)) {
+                expect(currentUrl).toContain(expectedURL);
+                break;
+            }
+            if (Date.now() - start > timeout) {
+                throw new Error(`Timed out after ${timeout}ms waiting for URL to contain "${expectedURL}". Last URL: ${currentUrl}`);
+            }
+            await new Promise(res => setTimeout(res, pollInterval));
+        }
     }
 
     // Method to verify H1 (Title of the webpage)
