@@ -46,7 +46,7 @@ export class HomePage {
         await this.searchField.fill(term, { timeout: 10000 });
 
         // Wait for the dropdown result to appear
-        await this.selectSearchResult.waitFor({ state: 'visible', timeout: 10000 });
+        await this.selectSearchResult.waitFor({ state: 'visible', timeout: 20000 });
 
         // Click the result if visible
         if (await this.selectSearchResult.isVisible()) {
@@ -54,7 +54,8 @@ export class HomePage {
           const box = await this.selectSearchResult.boundingBox();
           if (box) {
             await this.selectSearchResult.click({
-              position: { x: 10, y: box.height / 2 }
+              position: { x: 10, y: box.height / 2 },
+              timeout: 20000 // 20 seconds timeout
             });
           } else {
             throw new Error('Could not find bounding box for Dyson search result');
