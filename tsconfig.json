@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
+    "strict": true,
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "esModuleInterop": true,
+    "outDir": "dist"
+  },
+  "include": [
+    "tests/**/*.ts"
+, "tests/regression-tests.spec.ts-bckUp"  ]
+}
