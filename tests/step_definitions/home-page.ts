@@ -1,9 +1,19 @@
+// home-page.ts — Cucumber step definitions for the Dyson manufacturer homepage tests.
+//
+// Each function here is mapped to a Gherkin step in regression-tests.feature.
+// `this` refers to the CustomWorld instance for the current scenario, which provides
+// the page objects (homePage, dysonPage, basePage) set up in world.ts.
+// The step text in each Given/Then call must match the feature file exactly.
+
 import { Given, When, Then, setDefaultTimeout } from "@cucumber/cucumber";
 import { expect } from "@playwright/test";
 import { CustomWorld } from "../features/support/world";
 
+// Extends the default Cucumber step timeout to 60 seconds to allow for slow page loads.
 setDefaultTimeout(60 * 1000);
 
+// Navigates to the NBS Source homepage, verifies the URL, then searches for Dyson.
+// This runs as the Background step before every scenario in the feature file.
 Given(
   "I sign into NBS and visit the manufacturer home page",
   async function (this: CustomWorld) {
@@ -13,6 +23,7 @@ Given(
   },
 );
 
+// Verifies the current page URL contains the expected substring passed from the feature file.
 Then(
   "The URL will contain the expected text {string}",
   async function (this: CustomWorld, expectedText: string) {
@@ -20,6 +31,7 @@ Then(
   },
 );
 
+// Verifies the telephone link displays the correct number, uses the tel: protocol, and has the correct href.
 Then(
   "The number will be correct, the href will be as expected, and the telephone protocol will correct {string}",
   async function (this: CustomWorld, telNo: string) {
@@ -27,6 +39,7 @@ Then(
   },
 );
 
+// Verifies the HTML <title> of the page matches the expected string exactly.
 Then(
   "The webpage title will be as expected {string}",
   async function (this: CustomWorld, title: string) {
@@ -34,6 +47,7 @@ Then(
   },
 );
 
+// Verifies the NBS Source logo links to the expected href attribute value.
 Then(
   "The href attribute of the Source logo will be as expected {string}",
   async function (this: CustomWorld, expectedHref: string) {
@@ -41,6 +55,7 @@ Then(
   },
 );
 
+// Verifies the external manufacturer link (Contact manufacturer button) points to the correct URL.
 Then(
   "The manufacturer website link is correct {string}",
   async function (this: CustomWorld, expectedLink: string) {
@@ -48,6 +63,7 @@ Then(
   },
 );
 
+// Verifies the Contact manufacturer button displays the correct visible text.
 Then(
   "The button will display the correct text {string}",
   async function (this: CustomWorld, expectedText: string) {
@@ -55,6 +71,7 @@ Then(
   },
 );
 
+// Runs an Axe accessibility scan on the current page and outputs any violations to an HTML report.
 Then(
   "The results of the accessibility checks will be output to the console",
   async function (this: CustomWorld) {
@@ -62,10 +79,12 @@ Then(
   },
 );
 
+// Calls the geolocation API, validates the JSON response, and verifies the UI locale label matches.
 Then("The api reponse and content is expected", async function (this: CustomWorld) {
   await this.dysonPage.verifyUIandAPIContent();
 });
 
+// Verifies the Dyson navigation bar contains the correct tabs with the expected href links.
 Then(
   "The Dyson navigation bar should have the correct tabs and href links",
   async function (this: CustomWorld) {
