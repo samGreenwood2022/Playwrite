@@ -48,8 +48,8 @@ export class HomePage {
         });
 
         // Clear and type the search term
-        await this.searchField.fill("");
-        await this.searchField.fill(term, { timeout: 10000 });
+        await this.searchField.click();
+        await this.searchField.pressSequentially(term, { delay: 100 });
 
         // Wait for the dropdown result to appear
         await this.selectSearchResult.waitFor({
