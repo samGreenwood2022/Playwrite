@@ -15,7 +15,7 @@ test.beforeEach(async ({ page }) => {
   await homePage.navigateToNBSHomepageAndClickToAcceptCookies();
 
   // Expect the page title to contain the substring 'NBS Source'
-  await basePage.verifyWebpageURL("https://source.thenbs.com/");
+  await basePage.verifyWebpageURL("https://source.thenbs.com/en/");
   // Debug step
   await page.pause();
   // Search for and select Dyson result
@@ -25,7 +25,7 @@ test.beforeEach(async ({ page }) => {
 test("Verify the manufacturers homepage URL contains expected text", async () => {
   // Expect the page title to contain the substring 'NBS Source'
   await basePage.verifyWebpageURL(
-    "https://source.thenbs.com/manufacturer/dyson/nakAxHWxDZprdqkBaCdn4U/overview",
+    "https://source.thenbs.com/en/manufacturer/dyson/nakAxHWxDZprdqkBaCdn4U/overview",
   );
 });
 
@@ -41,7 +41,7 @@ test("I verify the webpage html Title on page is as expected", async () => {
 
 test("I verify the href attribute of the Source logo is as expected", async () => {
   // Expect the page title to contain the substring 'NBS Source'
-  await basePage.logoHref("/");
+  await basePage.logoHref("/en/");
 });
 
 test("I verify the contact manufacturer button link attribute contains the correct url", async () => {
