@@ -6,9 +6,12 @@
     "noEmit": true,
     "allowImportingTsExtensions": true,
     "esModuleInterop": true,
-    "outDir": "dist"
+    "outDir": "dist",
+    "types": ["node"]
   },
   "include": [
-    "tests/**/*.ts"
-, "tests/regression-tests.spec.ts-bckUp"  ]
+    "tests/**/*.ts",
+    "tests/regression-tests.spec.ts-bckUp",
+    "playwright.config.ts"
+  ]
 }
