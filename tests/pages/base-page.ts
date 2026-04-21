@@ -1,13 +1,21 @@
+// base-page.ts — Base Page Object Model shared across all pages.
+//
+// Contains locators and methods that are common to every page in the test suite.
+// Other page objects do not extend this class — they are instantiated separately
+// and used alongside it. Any assertion or action that applies site-wide (URL checks,
+// page title, logo, accessibility) belongs here rather than in a specific page object.
+
 import { Page, Locator, expect } from "@playwright/test";
 import { expect as playwrightExpect } from "@playwright/test";
 import { AxeBuilder } from "@axe-core/playwright";
 import fs from "fs";
 import { createHtmlReport } from "axe-html-reporter";
 
-// BasePage contains actions and assertions shared across all pages
 export class BasePage {
   readonly page: Page;
   readonly h1: Locator;
+  // Targets the NBS Source logo link using a compound selector that finds the anchor
+  // inside the component only when its app-name text matches "NBS Source".
   readonly nbsLogoLink: Locator;
 
   constructor(page: Page) {
@@ -40,20 +48,24 @@ export class BasePage {
     }
   }
 
+  // Verifies the h1 element is visible and contains the expected text.
   async verifyH1(title: string) {
     await playwrightExpect(this.h1).toBeVisible();
     await playwrightExpect(this.h1).toHaveText(title);
   }
 
+  // Verifies the HTML <title> element matches the expected string with a 10s timeout
+  // to account for pages that set the title after the initial render.
   async verifyWebpageTitle(title: string) {
     await playwrightExpect(this.page).toHaveTitle(title, { timeout: 10000 });
   }
 
+  // Verifies the NBS Source logo anchor has the expected href attribute value.
   async logoHref(href: string) {
     await playwrightExpect(this.nbsLogoLink).toHaveAttribute("href", href);
   }
 
-  // Runs an axe accessibility scan against the current page and writes the
+  // Runs an Axe accessibility scan against the current page and writes the
   // results to axe-report.html. Any violations are also printed to the console
   // so they show up in the test runner output without needing to open the file.
   async generateAccessibilityReport() {
