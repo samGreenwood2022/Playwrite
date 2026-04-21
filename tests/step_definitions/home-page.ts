@@ -24,7 +24,7 @@ Given(
     dysonPage = new DysonHomepage(page);
     basePage = new BasePage(page);
 
-    // await homePage.navigateToNBSHomepageAndClickToAcceptCookies();
+     await homePage.navigateToNBSHomepage();
     await basePage.verifyWebpageURL("https://source.thenbs.com/en/");
     // Debug step
     // await page.pause();

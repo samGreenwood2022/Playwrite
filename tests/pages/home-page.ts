@@ -47,9 +47,12 @@ export class HomePage {
           timeout: 15000,
         });
 
-        // Clear and type the search term
+        // Clear field, type character-by-character to trigger autocomplete,
+        // then pause to let the site's debounce fire before expecting the dropdown
         await this.searchField.click();
-        await this.searchField.pressSequentially(term, { delay: 100 });
+        await this.searchField.press('Control+a');
+        await this.page.keyboard.type(term, { delay: 150 });
+        await this.page.waitForTimeout(600);
 
         // Wait for the dropdown result to appear
         await this.selectSearchResult.waitFor({
@@ -64,8 +67,9 @@ export class HomePage {
           if (box) {
             await this.selectSearchResult.click({
               position: { x: 10, y: box.height / 2 },
-              timeout: 20000, // 20 seconds timeout
+              timeout: 20000,
             });
+            await this.page.waitForLoadState("networkidle", { timeout: 30000 });
           } else {
             throw new Error(
               "Could not find bounding box for Dyson search result",
@@ -94,29 +98,29 @@ export class HomePage {
   }
 
   // Method to perform a search and click the result
-  async navigateToNBSHomepageAndClickToAcceptCookies() {
-    await this.page.goto("https://source.thenbs.com/", {
+  async navigateToNBSHomepage() {
+    await this.page.goto("https://source.thenbs.com/en/", {
       timeout: 60000,
       waitUntil: "domcontentloaded",
     });
-    try {
-      // Wait for the Accept Cookies button to be visible (max 60s)
-      await this.acceptCookiesButton.waitFor({
-        state: "visible",
-        timeout: 60000,
-      });
-      await this.page.screenshot({ path: "cookies-banner.png" });
-      await this.acceptCookiesButton.click({ timeout: 60000 });
-      await this.acceptCookiesButton.waitFor({
-        state: "hidden",
-        timeout: 60000,
-      });
-    } catch (error) {
-      console.warn(
-        "Cookies button not found, not visible, or could not be clicked.",
-        error,
-      );
-    }
+    // try {
+    //   // Wait for the Accept Cookies button to be visible (max 60s)
+    //   await this.acceptCookiesButton.waitFor({
+    //     state: "visible",
+    //     timeout: 60000,
+    //   });
+    //   await this.page.screenshot({ path: "cookies-banner.png" });
+    //   await this.acceptCookiesButton.click({ timeout: 60000 });
+    //   await this.acceptCookiesButton.waitFor({
+    //     state: "hidden",
+    //     timeout: 60000,
+    //   });
+    // } catch (error) {
+    //   console.warn(
+    //     "Cookies button not found, not visible, or could not be clicked.",
+    //     error,
+    //   );
+    // }
   }
 
   // Method to select the Dyson result from the dropdown
