@@ -62,7 +62,7 @@ export class DysonHomepage {
   // Verifies the telephone link is visible, displays the correct number,
   // and uses the tel: protocol in its href so clicking it triggers a phone call.
   async verifyTelNo(telNo: string): Promise<void> {
-    await this.page.screenshot({ path: "telephoneLink.png" });
+    // await this.page.screenshot({ path: "telephoneLink.png" });
     await playwrightExpect(this.telephoneLink).toBeVisible({ timeout: 10000 });
     await playwrightExpect(this.telephoneLink).toHaveText(telNo, {
       timeout: 10000,
@@ -78,7 +78,7 @@ export class DysonHomepage {
   // The href assertion is commented out because the button uses a click handler
   // rather than a standard anchor href.
   async verifyExternalManufacturerLink(expectedLink: string): Promise<void> {
-    await this.page.screenshot({ path: "externalManufacturerLink.png" });
+    // await this.page.screenshot({ path: "externalManufacturerLink.png" });
     await playwrightExpect(this.externalManufacturerLink).toBeVisible({
       timeout: 10000,
     });
