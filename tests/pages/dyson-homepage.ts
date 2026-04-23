@@ -24,7 +24,7 @@ export class DysonHomepage {
       name: "Contact manufacturer",
     });
     this.navigationTabs = page.locator(".mat-mdc-tab-links");
-    this.localeLabel = page.getByRole("button", { name: "Choose region" });
+    this.localeLabel = page.getByRole("button", { name: "Choose location and language" });
   }
 
   // Makes a real HTTP request to the OneTrust geolocation API and verifies both

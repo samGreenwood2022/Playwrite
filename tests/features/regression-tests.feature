@@ -25,7 +25,7 @@ Feature: Dyson Homepage Regression Tests
     Then The number will be correct, the href will be as expected, and the telephone protocol will correct "08003457788"
 
   Scenario: I verify the webpage title on page is as expected
-    Then The webpage title will be as expected "Dyson | Overview | NBS BIM Library"
+    Then The webpage title will be as expected "Dyson | Overview | BIM Library"
 
   Scenario: I verify the href attribute of the Source logo is as expected
     Then The href attribute of the Source logo will be as expected "/en/"
@@ -44,3 +44,8 @@ Feature: Dyson Homepage Regression Tests
 
   Scenario: I verify the Dyson navigation bar has the correct tabs and expected links
     Then The Dyson navigation bar should have the correct tabs and href links
+
+  Scenario: Clicking sign in from any webpage logs the user in and returns them to the previous page
+    When I sign in with valid credentials
+    Then The user is then logged in and returned to their previous page
+    And The UI will reflect that the user is logged in

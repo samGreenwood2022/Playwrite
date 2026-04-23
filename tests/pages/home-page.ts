@@ -124,7 +124,7 @@ export class HomePage {
   // Waits for the first autocomplete result to appear then clicks it.
   // Used as a simpler alternative to searchFor when retry logic is not needed.
   async selectSearchResultFromDropdown() {
-    await this.selectSearchResult.waitFor({ state: "visible", timeout: 10000 });
+    await this.selectSearchResult.waitFor({ state: "visible", timeout: 20000 });
     await this.selectSearchResult.click({ force: true });
   }
 

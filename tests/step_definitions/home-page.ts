@@ -91,3 +91,40 @@ Then(
     await this.dysonPage.verifyDysonNavigationBar();
   },
 );
+
+// Reads the test account credentials from the environment (loaded by dotenv in world.ts),
+// records the current page URL so a later step can assert the user is returned to it,
+// clicks the header Sign in button to open the form, then runs the full sign-in flow.
+// Throws immediately if either credential is missing so the failure is obvious rather
+// than surfacing as a confusing selector timeout inside the form.
+When("I sign in with valid credentials", async function (this: CustomWorld) {
+  const email = process.env.TEST_EMAIL;
+  const password = process.env.TEST_PASSWORD;
+  if (!email || !password) {
+    throw new Error(
+      "TEST_EMAIL and TEST_PASSWORD must be set in .env for the sign-in scenario.",
+    );
+  }
+  this.capturedUrl = this.page.url();
+  await this.basePage.signInButton.click();
+  await this.loginPage.signIn(email, password);
+});
+
+// Strict equality against the URL captured before sign-in. Uses toBe rather than
+// basePage.verifyWebpageURL because that helper does a substring match, which would
+// let a redirect to a different path silently pass.
+Then(
+  "The user is then logged in and returned to their previous page",
+  function (this: CustomWorld) {
+    expect(this.page.url()).toBe(this.capturedUrl);
+  },
+);
+
+// Delegates to BasePage which encapsulates all three header checks
+// (Sign in hidden, user menu visible, avatar initials correct).
+Then(
+  "The UI will reflect that the user is logged in",
+  async function (this: CustomWorld) {
+    await this.basePage.verifyLoggedInUI();
+  },
+);

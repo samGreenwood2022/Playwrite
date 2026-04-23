@@ -17,6 +17,14 @@ export class BasePage {
   // Targets the NBS Source logo link using a compound selector that finds the anchor
   // inside the component only when its app-name text matches "NBS Source".
   readonly nbsLogoLink: Locator;
+  // Header Sign in button, visible on every page until the user authenticates.
+  // Lives here (rather than on LoginPage) because it is a site-wide header element.
+  readonly signInButton: Locator;
+  // Logged-in header elements — the user menu button and the avatar figure
+  // that displays the account initials. Both replace the Sign in button once
+  // authentication succeeds.
+  readonly openUserMenuButton: Locator;
+  readonly userInitials: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -24,6 +32,11 @@ export class BasePage {
     this.nbsLogoLink = page.locator(
       'app-product-logo-with-name:has(app-name:text("NBS Source")) a',
     );
+    this.signInButton = page.getByRole("button", { name: "Sign in" });
+    this.openUserMenuButton = page.getByRole("button", {
+      name: "Open user menu",
+    });
+    this.userInitials = page.getByRole("figure");
   }
 
   // Polls the current URL every 200ms until it contains the expected substring.
@@ -63,6 +76,15 @@ export class BasePage {
   // Verifies the NBS Source logo anchor has the expected href attribute value.
   async logoHref(href: string) {
     await playwrightExpect(this.nbsLogoLink).toHaveAttribute("href", href);
+  }
+
+  // Verifies the header reflects an authenticated user: the Sign in button
+  // is gone, the user menu button has appeared, and the avatar figure shows
+  // the expected account initials.
+  async verifyLoggedInUI() {
+    await playwrightExpect(this.signInButton).toBeHidden();
+    await playwrightExpect(this.openUserMenuButton).toBeVisible();
+    await playwrightExpect(this.userInitials).toContainText("TH");
   }
 
   // Runs an Axe accessibility scan against the current page and writes the
