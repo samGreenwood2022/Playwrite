@@ -1,3 +1,9 @@
+// home-page.ts — Page Object Model for the NBS Source homepage.
+//
+// Handles navigation to the NBS Source homepage and the search interaction
+// needed to reach a manufacturer page. The search logic includes retry and
+// refresh behaviour because the site's autocomplete can be flaky on first load.
+
 import { Page, Locator } from "@playwright/test";
 import { expect as playwrightExpect } from "@playwright/test";
 import { AxeBuilder } from "@axe-core/playwright";
@@ -12,94 +18,124 @@ export class HomePage {
   readonly selectSearchResult: Locator;
   readonly nbsLogoLink: Locator;
 
-  //Locators
-  // Constructor to initialize the page and locators
   constructor(page: Page) {
     this.page = page;
-    // Locator for the search input field using the data-cy attribute
+    // Uses the data-cy attribute for a stable, test-specific selector.
+    // .last() is used because the search field appears twice in the DOM (mobile + desktop).
     this.searchField = page.locator('[data-cy="searchFieldSearch"]').last();
-    // Locator for the search button using the data-cy attribute
     this.searchButton = page.locator('[data-cy="searchButton"]').last();
-    // Locator for selecting an option from the search results drop down menu
+    // Matches the exact text "Dyson" in the autocomplete dropdown to avoid partial matches.
     this.selectSearchResult = page.locator("a").filter({ hasText: /^Dyson$/ });
-    // Locator for the Accept All Cookies button
     this.acceptCookiesButton = page.getByRole("button", {
       name: "Accept All Cookies",
     });
-    // Locator for the NBS logo link (update selector as needed)
     this.nbsLogoLink = page.locator(
       'app-product-logo-with-name a:has(app-name:text("NBS Source"))',
     );
   }
 
-  //Actions
-
-  // Method to perform a search operation and click on the results from the dropdown menu that appears after entering the search term
+  // Searches for the given term and clicks the matching autocomplete result.
+  // Retries up to 3 times with a page reload between attempts to handle cases
+  // where the autocomplete dropdown fails to appear on the first load.
   async searchFor(term: string) {
-    // Retry the whole type-and-wait flow up to 3 times. The dropdown
-    // intermittently fails to render on the first attempt; re-typing into
-    // a freshly cleared field reliably re-triggers the autocomplete.
     const maxAttempts = 3;
-    // Per-attempt wait for the dropdown result. Kept short so a missed
-    // dropdown fails fast and the retry kicks in, instead of burning the
-    // full test timeout on a single bad attempt.
-    const perAttemptTimeout = 5000;
+    let attempt = 0;
 
-    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-      // Focus the search field, clear any prior value, then type.
-      await this.searchField.click();
-      // fill('') clears reliably regardless of the current value.
-      await this.searchField.fill("");
-      // pressSequentially (not keyboard.type) fires per-character input
-      // events that the autocomplete component debounces on. delay: 100
-      // gives the debounce time to settle between keystrokes.
-      await this.searchField.pressSequentially(term, { delay: 100 });
-
+    while (attempt < maxAttempts) {
+      attempt++;
       try {
-        // Web-first assertion auto-retries until the result is visible
-        // or the timeout elapses — the idiomatic Playwright wait.
-        await playwrightExpect(this.selectSearchResult).toBeVisible({
-          timeout: perAttemptTimeout,
+        await this.page.waitForLoadState("domcontentloaded", {
+          timeout: 15000,
         });
-        await this.selectSearchResult.click();
-        return;
-      } catch {
-        // Dropdown didn't render this attempt. Swallow the error and
-        // loop unless we've exhausted all attempts.
-        if (attempt === maxAttempts) {
-          throw new Error(
-            `Search dropdown for "${term}" did not appear after ${maxAttempts} attempts`,
-          );
+
+        // Selects all existing text before typing to avoid appending to a previous search.
+        // Types character-by-character with a 150ms delay to trigger the site's autocomplete debounce.
+        await this.searchField.click();
+        await this.searchField.press("Control+a");
+        await this.page.keyboard.type(term, { delay: 150 });
+        await this.page.waitForTimeout(600);
+
+        await this.selectSearchResult.waitFor({
+          state: "visible",
+          timeout: 20000,
+        });
+
+        if (await this.selectSearchResult.isVisible()) {
+          // Clicks 10px from the left edge to avoid hitting any icons within the result element.
+          const box = await this.selectSearchResult.boundingBox();
+          if (box) {
+            await this.selectSearchResult.click({
+              position: { x: 10, y: box.height / 2 },
+              timeout: 20000,
+            });
+            await this.page.waitForLoadState("networkidle", { timeout: 30000 });
+          } else {
+            throw new Error(
+              "Could not find bounding box for Dyson search result",
+            );
+          }
+          return;
         }
+      } catch (error) {
+        console.warn(`Attempt ${attempt} failed:`, error);
+      }
+
+      // Reloads the page before the next attempt if the dropdown did not appear.
+      if (attempt < maxAttempts && !this.page.isClosed()) {
+        await this.page.reload({
+          waitUntil: "domcontentloaded",
+          timeout: 20000,
+        });
       }
     }
+
+    throw new Error(
+      `Failed to find and click the "${term}" search result after ${maxAttempts} attempts (with page reloads).`,
+    );
   }
 
-  // Method to perform a search and click the result
-  async navigateToNBSHomepageAndClickToAcceptCookies() {
+  // Navigates directly to the NBS Source homepage and waits for the DOM to be ready.
+  // The cookie banner handling is commented out as it is not consistently present.
+  async navigateToNBSHomepage() {
     await this.page.goto("https://source.thenbs.com/en/", {
       timeout: 60000,
       waitUntil: "domcontentloaded",
     });
+    // try {
+    //   // Wait for the Accept Cookies button to be visible (max 60s)
+    //   await this.acceptCookiesButton.waitFor({
+    //     state: "visible",
+    //     timeout: 60000,
+    //   });
+    //   await this.page.screenshot({ path: "cookies-banner.png" });
+    //   await this.acceptCookiesButton.click({ timeout: 60000 });
+    //   await this.acceptCookiesButton.waitFor({
+    //     state: "hidden",
+    //     timeout: 60000,
+    //   });
+    // } catch (error) {
+    //   console.warn(
+    //     "Cookies button not found, not visible, or could not be clicked.",
+    //     error,
+    //   );
+    // }
   }
 
-  // Method to select the Dyson result from the dropdown
+  // Waits for the first autocomplete result to appear then clicks it.
+  // Used as a simpler alternative to searchFor when retry logic is not needed.
   async selectSearchResultFromDropdown() {
-    // Wait for the result to appear (up to 10 seconds)
-    await this.selectSearchResult.waitFor({ state: "visible", timeout: 10000 });
-    // Click the result if it is visible
+    await this.selectSearchResult.waitFor({ state: "visible", timeout: 20000 });
     await this.selectSearchResult.click({ force: true });
   }
 
-  // Method to verify H1 (Title of the webpage)
+  // Verifies the NBS Source logo anchor has the expected href attribute value.
   async logoHref(href: string) {
-    // Assert the href attribute of the logo is correct
     await playwrightExpect(this.nbsLogoLink).toHaveAttribute("href", href);
   }
 
-  // Method to generate a report showing accessibility violations
+  // Runs an Axe accessibility scan against the current page and writes the
+  // results to axe-report.html. Violations are also printed to the console.
   async generateAccessibilityReport() {
-    // Logic to generate the report
     console.log("Generating accessibility report...");
     const accessibilityScanResults = await new AxeBuilder({
       page: this.page,

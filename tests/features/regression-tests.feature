@@ -44,3 +44,8 @@ Feature: Dyson Homepage Regression Tests
 
   Scenario: I verify the Dyson navigation bar has the correct tabs and expected links
     Then The Dyson navigation bar should have the correct tabs and href links
+
+  Scenario: Clicking sign in from any webpage logs the user in and returns them to the previous page
+    When I sign in with valid credentials
+    Then The user is then logged in and returned to their previous page
+    And The UI will reflect that the user is logged in

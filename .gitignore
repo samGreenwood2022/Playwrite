@@ -8,3 +8,7 @@ node_modules/
 
 # Cucumber
 /reports/
+
+# Accessibility reports
+axe-report.html
+accessibilityReport.html
