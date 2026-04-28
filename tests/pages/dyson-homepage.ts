@@ -105,15 +105,21 @@ export class DysonHomepage {
 
     // Grab all anchor elements within the nav container and read their text in DOM order.
     const allTabs = this.navigationTabs.locator("a");
+    // console.log(allTabs)
     const actualTabs = await allTabs.allInnerTexts();
-
+    // console.log(actualTabs);
     // Strip surrounding whitespace from each tab label before comparing.
     const trimmedTabs = actualTabs.map((t) => t.trim());
+    // console.log(trimmedTabs);
 
-    // Compare each tab against the expected name at the same index.
-    // Any mismatch means a tab is missing or in the wrong position.
+    // Loop through each expected tab name by its position (index).
+    // i starts at 0 (first tab) and increments by 1 each iteration until
+    // all expected tabs have been checked.
     for (let i = 0; i < tabNames.length; i++) {
+      // Compare the actual tab at this position against the expected tab name.
+      // If they don't match, the tab is either wrong or in the wrong order.
       if (trimmedTabs[i] !== tabNames[i]) {
+        // i + 1 is used in the message so the position is human-readable (1-based, not 0-based).
         throw new Error(
           `Tab order mismatch at position ${i + 1}: expected "${tabNames[i]}" but found "${trimmedTabs[i]}"`
         );
