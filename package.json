@@ -8,7 +8,7 @@
     "test-headless": "npx playwright test --project=chromium --reporter=html",
     "codegen": "npx playwright codegen https://source.thenbs.com/en/",
     "test:twice": "npx playwright test || npx playwright test",
-    "cucumber": "cucumber-js --require-module ts-node/register --require tests/step_definitions/*.ts tests/features/*.feature --parallel 1"
+    "cucumber": "cucumber-js --require-module ts-node/register --require tests/step_definitions/*.ts tests/features/*.feature --parallel 1 --format html:reports/cucumber-report.html --format progress"
   },
   "author": "S Greenwood",
   "license": "ISC",
