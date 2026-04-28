@@ -14,7 +14,7 @@ export class DysonHomepage {
         this.telephoneLink = page.locator('a[action="telephone"]');
         this.externalManufacturerLink = page.getByRole('button', { name: 'Contact manufacturer' });
         this.navigationTabs = page.locator('.mat-mdc-tab-links');
-        this.localeLabel = page.getByRole('button', { name: 'Choose region' });
+        this.localeLabel = page.getByRole('button', { name: 'Choose location and language' });
     }
 
     // Actions
