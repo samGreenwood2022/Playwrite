@@ -48,9 +48,7 @@ export class DysonHomepage {
     // Method to verify a webpage URL
     async verifyTelNo(telNo: string): Promise<void> {
         // Assert the link is visible
-        await this.page.screenshot({ path: 'telephoneLink.png' });
         await playwrightExpect(this.telephoneLink).toBeVisible({ timeout: 10000 });
-
         // Assert the link text is correct
         await playwrightExpect(this.telephoneLink).toHaveText(telNo, { timeout: 10000 });
 
@@ -60,8 +58,6 @@ export class DysonHomepage {
 
     // Method to verify the contact manufacturer link
     async verifyExternalManufacturerLink(expectedLink: string): Promise<void> {
-
-        await this.page.screenshot({ path: 'externalManufacturerLink.png' });
         // Assert the external manufacturer link is visible
         await playwrightExpect(this.externalManufacturerLink).toBeVisible({ timeout: 10000 });
         // Assert the button text is correct and visible
