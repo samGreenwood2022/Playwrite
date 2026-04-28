@@ -8,6 +8,7 @@ node_modules/
 
 # Cucumber
 /reports/
+/.features-gen/
 
 # Accessibility reports
 axe-report.html
