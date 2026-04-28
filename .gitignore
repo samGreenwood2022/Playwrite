@@ -13,4 +13,5 @@ node_modules/
 # Accessibility reports
 axe-report.html
 accessibilityReport.html
+artifacts/accessibilityReport.html
 cucumber-report.html
