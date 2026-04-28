@@ -36,21 +36,36 @@ export class HomePage {
 
   // Method to perform a search operation and click on the results from the dropdown menu that appears after entering the search term
   async searchFor(term: string) {
+    // Retry the whole type-and-wait flow up to 3 times. The dropdown
+    // intermittently fails to render on the first attempt; re-typing into
+    // a freshly cleared field reliably re-triggers the autocomplete.
     const maxAttempts = 3;
+    // Per-attempt wait for the dropdown result. Kept short so a missed
+    // dropdown fails fast and the retry kicks in, instead of burning the
+    // full test timeout on a single bad attempt.
     const perAttemptTimeout = 5000;
 
     for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      // Focus the search field, clear any prior value, then type.
       await this.searchField.click();
+      // fill('') clears reliably regardless of the current value.
       await this.searchField.fill("");
+      // pressSequentially (not keyboard.type) fires per-character input
+      // events that the autocomplete component debounces on. delay: 100
+      // gives the debounce time to settle between keystrokes.
       await this.searchField.pressSequentially(term, { delay: 100 });
 
       try {
+        // Web-first assertion auto-retries until the result is visible
+        // or the timeout elapses — the idiomatic Playwright wait.
         await playwrightExpect(this.selectSearchResult).toBeVisible({
           timeout: perAttemptTimeout,
         });
         await this.selectSearchResult.click();
         return;
       } catch {
+        // Dropdown didn't render this attempt. Swallow the error and
+        // loop unless we've exhausted all attempts.
         if (attempt === maxAttempts) {
           throw new Error(
             `Search dropdown for "${term}" did not appear after ${maxAttempts} attempts`,
