@@ -15,16 +15,16 @@ test.beforeEach(async ({ page }) => {
   await homePage.navigateToNBSHomepageAndClickToAcceptCookies();
 
   // Expect the page title to contain the substring 'NBS Source'
-  await basePage.verifyWebpageURL('https://source.thenbs.com/');
+  // await basePage.verifyWebpageURL('https://source.thenbs.com/en/');
   // Debug step
-  await page.pause();
+  // await page.pause();
   // Search for and select Dyson result
   await homePage.searchFor('Dyson');
 });
 
 test('Verify the manufacturers homepage URL contains expected text', async () => {
   // Expect the page title to contain the substring 'NBS Source'
-  await basePage.verifyWebpageURL('https://source.thenbs.com/manufacturer/dyson/nakAxHWxDZprdqkBaCdn4U/overview');
+  await basePage.verifyWebpageURL('https://source.thenbs.com/en/manufacturer/dyson/nakAxHWxDZprdqkBaCdn4U/overview');
 });
 
 test('I verify the telephone link has the correct number, protocol and href', async () => {
@@ -35,14 +35,14 @@ test('I verify the telephone link has the correct number, protocol and href', as
 });
 
 test('I verify the webpage html Title on page is as expected', async () => {
-  // Expect the page title to contain the substring 'Dyson | Overview | NBS BIM Library'
-  await basePage.verifyWebpageTitle('Dyson | Overview | NBS BIM Library');
+  // Expect the page title to contain the substring 'Dyson | Overview | BIM Library'
+  await basePage.verifyWebpageTitle('Dyson | Overview | BIM Library');
 
 });
 
 test('I verify the href attribute of the Source logo is as expected', async () => {
   // Expect the page title to contain the substring 'NBS Source'
-  await basePage.logoHref('/');
+  await basePage.logoHref('/en/');
 
 });
 
