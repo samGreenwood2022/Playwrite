@@ -89,9 +89,8 @@ export class DysonHomepage {
     // await playwrightExpect(this.externalManufacturerLink).toHaveAttribute('href', expectedLink, { timeout: 10000 });
   }
 
-  // Verifies the navigation bar is visible and that each of the six expected
-  // tabs is present. Tabs are located by text within the nav container to avoid
-  // brittle index-based selectors.
+  // Verifies the navigation bar is visible, that each expected tab is present,
+  // and that they appear in the correct order.
   async verifyDysonNavigationBar(): Promise<void> {
     await playwrightExpect(this.navigationTabs).toBeVisible();
 
@@ -104,9 +103,21 @@ export class DysonHomepage {
       "About us",
     ];
 
-    for (const tab of tabNames) {
-      const tabLocator = this.navigationTabs.locator("a", { hasText: tab });
-      await playwrightExpect(tabLocator).toBeVisible();
+    // Grab all anchor elements within the nav container and read their text in DOM order.
+    const allTabs = this.navigationTabs.locator("a");
+    const actualTabs = await allTabs.allInnerTexts();
+
+    // Strip surrounding whitespace from each tab label before comparing.
+    const trimmedTabs = actualTabs.map((t) => t.trim());
+
+    // Compare each tab against the expected name at the same index.
+    // Any mismatch means a tab is missing or in the wrong position.
+    for (let i = 0; i < tabNames.length; i++) {
+      if (trimmedTabs[i] !== tabNames[i]) {
+        throw new Error(
+          `Tab order mismatch at position ${i + 1}: expected "${tabNames[i]}" but found "${trimmedTabs[i]}"`
+        );
+      }
     }
   }
 }
