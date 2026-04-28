@@ -7,11 +7,8 @@ node_modules/
 /playwright/.cache/
 
 # Cucumber
-/reports/
 /.features-gen/
 
-# Accessibility reports
-axe-report.html
-accessibilityReport.html
-artifacts/accessibilityReport.html
-cucumber-report.html
+# Reports — all HTML reports are written to /reports/
+/reports/
+/artifacts/

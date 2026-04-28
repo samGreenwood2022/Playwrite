@@ -134,14 +134,15 @@ export class HomePage {
   }
 
   // Runs an Axe accessibility scan against the current page and writes the
-  // results to axe-report.html. Violations are also printed to the console.
+  // results to reports/accessibility-report.html. Violations are also printed to the console.
   async generateAccessibilityReport() {
     console.log("Generating accessibility report...");
     const accessibilityScanResults = await new AxeBuilder({
       page: this.page,
     }).analyze();
     const html = createHtmlReport({ results: accessibilityScanResults });
-    fs.writeFileSync("axe-report.html", html);
+    fs.mkdirSync("reports", { recursive: true });
+    fs.writeFileSync("reports/accessibility-report.html", html);
     console.log(accessibilityScanResults.violations);
   }
 }
