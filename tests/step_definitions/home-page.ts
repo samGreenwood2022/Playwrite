@@ -133,3 +133,12 @@ Then(
     await this.basePage.verifyLoggedInUI();
   },
 );
+
+Then(
+  "I take a screenshot of the Dyson homepage and compare it to the baseline image to check for visual regressions",
+  async function (this: CustomWorld) {
+    await this.basePage.verifyVisualRegression();
+  },
+);
+
+

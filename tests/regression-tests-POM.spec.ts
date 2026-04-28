@@ -12,7 +12,7 @@ test.beforeEach(async ({ page }) => {
   dysonPage = new DysonHomepage(page);
   basePage = new BasePage(page);
 
-  await homePage.navigateToNBSHomepageAndClickToAcceptCookies();
+  await homePage.navigateToNBSHomepage();
 
   // Expect the page title to contain the substring 'NBS Source'
   // await basePage.verifyWebpageURL('https://source.thenbs.com/en/');

@@ -9,7 +9,10 @@ import { Page, Locator, expect } from "@playwright/test";
 import { expect as playwrightExpect } from "@playwright/test";
 import { AxeBuilder } from "@axe-core/playwright";
 import fs from "fs";
+import path from "path";
 import { createHtmlReport } from "axe-html-reporter";
+import pixelmatch from "pixelmatch";
+import { PNG } from "pngjs";
 
 export class BasePage {
   readonly page: Page;
@@ -98,4 +101,48 @@ export class BasePage {
     fs.writeFileSync("axe-report.html", html);
     console.log(accessibilityScanResults.violations);
   }
+
+  // Takes a full-page screenshot and compares it against a stored baseline using
+  // pixelmatch. On first run the baseline is created automatically. Subsequent
+  // runs fail if more than 2% of pixels differ beyond the per-pixel threshold.
+  async verifyVisualRegression(name: string = "baseline") {
+    const snapshotDir = path.resolve("tests/snapshots");
+    const baselinePath = path.join(snapshotDir, `${name}.png`);
+    const actualPath = path.join(snapshotDir, `${name}-actual.png`);
+    const diffPath = path.join(snapshotDir, `${name}-diff.png`);
+
+    fs.mkdirSync(snapshotDir, { recursive: true });
+
+    const screenshotBuffer = await this.page.screenshot({ fullPage: true });
+
+    if (!fs.existsSync(baselinePath)) {
+      fs.writeFileSync(baselinePath, screenshotBuffer);
+      console.log(`Baseline created at ${baselinePath}. Re-run to compare.`);
+      return;
+    }
+
+    fs.writeFileSync(actualPath, screenshotBuffer);
+
+    const baseline = PNG.sync.read(fs.readFileSync(baselinePath));
+    const actual = PNG.sync.read(screenshotBuffer);
+    const { width, height } = baseline;
+    const diff = new PNG({ width, height });
+
+    const diffPixels = pixelmatch(
+      baseline.data, actual.data, diff.data,
+      width, height,
+      { threshold: 0.2 }
+    );
+
+    fs.writeFileSync(diffPath, PNG.sync.write(diff));
+
+    const diffRatio = diffPixels / (width * height);
+    if (diffRatio > 0.02) {
+      throw new Error(
+        `Visual regression detected: ${diffPixels} pixels differ (${(diffRatio * 100).toFixed(2)}%). Diff saved to ${diffPath}`
+      );
+    }
+  }
+
+
 }
