@@ -20,6 +20,7 @@ Given(
     await this.homePage.navigateToNBSHomepage();
     await this.basePage.verifyWebpageURL("https://source.thenbs.com/en/");
     await this.homePage.searchFor("Dyson");
+    // await this.basePage.verifyWebpageURL("/en/manufacturers/dyson/");
   },
 );
 
@@ -137,7 +138,9 @@ Then(
 Then(
   "I take a screenshot of the Dyson homepage and compare it to the baseline image to check for visual regressions",
   async function (this: CustomWorld) {
-    await this.basePage.verifyVisualRegression();
+    await this.basePage.verifyVisualRegression("baseline", [
+      this.dysonPage.navigationTabs,
+    ]);
   },
 );
 

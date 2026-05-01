@@ -62,3 +62,9 @@ test('I perform an api test and verify the response and content is as expected',
   await dysonPage.verifyUIandAPIContent();
 
 });
+
+test('Visual regression testing of the Dyson homepage will show no significant differences compared to the baseline image', async () => {
+  // Perform visual regression test
+  await basePage.verifyVisualRegression('dyson-homepage');
+
+});

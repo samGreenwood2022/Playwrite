@@ -103,10 +103,51 @@ export class BasePage {
     console.log(accessibilityScanResults.violations);
   }
 
+  // Triggers any intersection-observer lazy loading by scrolling the full document
+  // height in steps, then scrolls back to the top. Necessary because Playwright's
+  // fullPage screenshot does scroll the page, but if the site uses lazy loading
+  // some images may not finish loading before the screenshot frames are stitched.
+  async triggerLazyLoad() {
+    await this.page.evaluate(async () => {
+      const total = document.body.scrollHeight;
+      const step = window.innerHeight;
+      for (let y = 0; y < total; y += step) {
+        window.scrollTo(0, y);
+        await new Promise((r) => setTimeout(r, 100));
+      }
+      window.scrollTo(0, 0);
+    });
+  }
+
+  // Resolves once every <img> on the page is either fully loaded (complete and
+  // has a real naturalWidth) or has failed to load. Errored images are not
+  // considered blockers since waiting indefinitely would hang the test.
+  async waitForImagesLoaded(timeout: number = 15000) {
+    await this.page.waitForFunction(
+      () =>
+        Array.from(document.images).every(
+          (img) => img.complete && (img.naturalWidth > 0 || img.src === ""),
+        ),
+      undefined,
+      { timeout },
+    );
+  }
+
   // Takes a full-page screenshot and compares it against a stored baseline using
   // pixelmatch. On first run the baseline is created automatically. Subsequent
   // runs fail if more than 2% of pixels differ beyond the per-pixel threshold.
-  async verifyVisualRegression(name: string = "baseline") {
+  // Callers pass page-specific locators in `waitFor` so the screenshot is only
+  // taken once those elements are visible — keeps BasePage generic while still
+  // gating capture on page-readiness.
+  async verifyVisualRegression(name: string = "baseline", waitFor: Locator[] = []) {
+    for (const loc of waitFor) {
+      await loc.waitFor({ state: "visible", timeout: 15000 });
+    }
+
+    await this.triggerLazyLoad();
+    await this.waitForImagesLoaded();
+    await this.page.evaluate(() => document.fonts.ready);
+
     const snapshotDir = path.resolve("tests/snapshots");
     const baselinePath = path.join(snapshotDir, `${name}.png`);
     const actualPath = path.join(snapshotDir, `${name}-actual.png`);

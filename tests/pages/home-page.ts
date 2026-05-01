@@ -61,19 +61,13 @@ export class HomePage {
         });
 
         if (await this.selectSearchResult.isVisible()) {
-          // Clicks 10px from the left edge to avoid hitting any icons within the result element.
-          const box = await this.selectSearchResult.boundingBox();
-          if (box) {
-            await this.selectSearchResult.click({
-              position: { x: 10, y: box.height / 2 },
-              timeout: 20000,
-            });
-            await this.page.waitForLoadState("networkidle", { timeout: 30000 });
-          } else {
-            throw new Error(
-              "Could not find bounding box for Dyson search result",
-            );
-          }
+          // Race the click against a URL waiter so a no-op click (dropdown closes
+          // without navigating) throws instead of silently passing. The waiter is
+          // registered before the click fires so navigation cannot complete first.
+          await Promise.all([
+            this.page.waitForURL(/\/manufacturer\/dyson\//, { timeout: 30000 }),
+            this.selectSearchResult.click({ timeout: 20000 }),
+          ]);
           return;
         }
       } catch (error) {
