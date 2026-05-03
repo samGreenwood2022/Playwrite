@@ -68,9 +68,7 @@ Then(
 Then(
   "The button will display the correct text {string}",
   async function (this: CustomWorld, expectedText: string) {
-    await expect(this.dysonPage.externalManufacturerLink).toHaveText(
-      expectedText,
-    );
+    await this.dysonPage.verifyContactButtonText(expectedText);
   },
 );
 

@@ -7,6 +7,7 @@
 
 import js from "@eslint/js";
 import tseslint from "typescript-eslint";
+import globals from "globals";
 
 export default [
   {
@@ -24,6 +25,14 @@ export default [
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,
+  {
+    // Helper scripts run under Node, so expose Node globals (process,
+    // console, Buffer, etc.) instead of ESLint's default browser globals.
+    files: ["scripts/**/*.{js,mjs,cjs}"],
+    languageOptions: {
+      globals: globals.node,
+    },
+  },
   {
     rules: {
       // Treat names prefixed with _ (variables, args, caught errors,

@@ -92,6 +92,16 @@ export class DysonHomepage {
     // await playwrightExpect(this.externalManufacturerLink).toHaveAttribute('href', _expectedLink, { timeout: 10000 });
   }
 
+  // Verifies the Contact manufacturer button displays the exact text passed in.
+  // Separate from verifyExternalManufacturerLink because this assertion is
+  // parameterised by the feature file (different scenarios may pass different
+  // expected strings) whereas the other locks the text to "Contact manufacturer".
+  async verifyContactButtonText(expectedText: string): Promise<void> {
+    await playwrightExpect(this.externalManufacturerLink).toHaveText(
+      expectedText,
+    );
+  }
+
   // Verifies the navigation bar is visible, that each expected tab is present,
   // and that they appear in the correct order.
   async verifyDysonNavigationBar(): Promise<void> {

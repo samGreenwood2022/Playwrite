@@ -28,6 +28,7 @@
     "axe-html-reporter": "^2.2.11",
     "dotenv": "^17.4.2",
     "eslint": "^10.2.1",
+    "globals": "^17.6.0",
     "jest": "^30.3.0",
     "pixelmatch": "^7.1.1",
     "pngjs": "^7.0.0",

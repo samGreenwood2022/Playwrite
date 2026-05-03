@@ -7,10 +7,6 @@
 // is intermittently slow / sometimes fails to open on the live site.
 
 import { Page, Locator } from "@playwright/test";
-import { expect as playwrightExpect } from "@playwright/test";
-import { AxeBuilder } from "@axe-core/playwright";
-import fs from "fs";
-import { createHtmlReport } from "axe-html-reporter";
 
 export class HomePage {
   readonly page: Page;
@@ -19,7 +15,6 @@ export class HomePage {
   readonly acceptCookiesButton: Locator;
   readonly searchAutocomplete: Locator;
   readonly dysonManufacturerOption: Locator;
-  readonly nbsLogoLink: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -41,9 +36,6 @@ export class HomePage {
     this.acceptCookiesButton = page.getByRole("button", {
       name: "Accept All Cookies",
     });
-    this.nbsLogoLink = page.locator(
-      'app-product-logo-with-name a:has(app-name:text("NBS Source"))',
-    );
   }
 
   // Searches for the given term and clicks the matching Dyson manufacturer
@@ -169,21 +161,4 @@ export class HomePage {
     // }
   }
 
-  // Verifies the NBS Source logo anchor has the expected href attribute value.
-  async logoHref(href: string) {
-    await playwrightExpect(this.nbsLogoLink).toHaveAttribute("href", href);
-  }
-
-  // Runs an Axe accessibility scan against the current page and writes the
-  // results to reports/accessibility-report.html. Violations are also printed to the console.
-  async generateAccessibilityReport() {
-    console.log("Generating accessibility report...");
-    const accessibilityScanResults = await new AxeBuilder({
-      page: this.page,
-    }).analyze();
-    const html = createHtmlReport({ results: accessibilityScanResults });
-    fs.mkdirSync("reports", { recursive: true });
-    fs.writeFileSync("reports/accessibility-report.html", html);
-    console.log(accessibilityScanResults.violations);
-  }
 }
