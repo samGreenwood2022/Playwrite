@@ -28,3 +28,11 @@ jobs:
         name: cucumber-report
         path: reports/
         retention-days: 30
+    # Uploads visual regression snapshots so the Linux baseline generated
+    # on a first CI run can be downloaded and committed to the repo.
+    - uses: actions/upload-artifact@v4
+      if: ${{ !cancelled() }}
+      with:
+        name: visual-regression-snapshots
+        path: tests/snapshots/
+        retention-days: 30

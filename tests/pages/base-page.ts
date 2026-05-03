@@ -210,10 +210,17 @@ export class BasePage {
     await this.page.waitForTimeout(500);
 
     // --- Set up file paths ---
+    // Baselines are per-OS because text rendering differs between Windows
+    // (ClearType) and Linux (freetype), causing different text wrapping and
+    // therefore different page layout heights. process.platform is "win32"
+    // locally and "linux" in GitHub Actions, so each environment compares
+    // against its own committed baseline. Both baselines should be checked
+    // into git; CI will fail if its baseline file is missing on second run.
     const snapshotDir = path.resolve("tests/snapshots");
-    const baselinePath = path.join(snapshotDir, `${name}.png`);
-    const actualPath = path.join(snapshotDir, `${name}-actual.png`);
-    const diffPath = path.join(snapshotDir, `${name}-diff.png`);
+    const platformSuffix = process.platform;
+    const baselinePath = path.join(snapshotDir, `${name}-${platformSuffix}.png`);
+    const actualPath = path.join(snapshotDir, `${name}-${platformSuffix}-actual.png`);
+    const diffPath = path.join(snapshotDir, `${name}-${platformSuffix}-diff.png`);
 
     fs.mkdirSync(snapshotDir, { recursive: true });
 
@@ -243,7 +250,7 @@ export class BasePage {
     const diffPixels = pixelmatch(
       baseline.data, actual.data, diff.data,
       width, height,
-      { threshold: 0.6 },
+      { threshold: 0.2 },
     );
 
     fs.writeFileSync(diffPath, PNG.sync.write(diff));

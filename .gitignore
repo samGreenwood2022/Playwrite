@@ -12,3 +12,9 @@ node_modules/
 # Reports — all HTML reports are written to /reports/
 /reports/
 /artifacts/
+
+# Visual regression — only commit the platform-suffixed baselines
+# (e.g. baseline-win32.png, baseline-linux.png). Per-run actual/diff
+# images are regenerated on every test run.
+/tests/snapshots/*-actual.png
+/tests/snapshots/*-diff.png

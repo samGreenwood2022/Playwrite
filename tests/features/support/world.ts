@@ -42,7 +42,14 @@ setWorldConstructor(CustomWorld);
 // and page, then instantiates all page objects against that page.
 Before(async function (this: CustomWorld) {
   this.browser = await chromium.launch();
-  this.context = await this.browser.newContext();
+  // Pin viewport and device scale factor so screenshots have consistent
+  // dimensions across local (Windows) and CI (Linux) — visual regression
+  // baselines depend on this. Layout differences from OS font rendering
+  // are handled separately by per-OS baseline filenames.
+  this.context = await this.browser.newContext({
+    viewport: { width: 1280, height: 800 },
+    deviceScaleFactor: 1,
+  });
   this.page = await this.context.newPage();
   this.homePage = new HomePage(this.page);
   this.dysonPage = new DysonHomepage(this.page);
