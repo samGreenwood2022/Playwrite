@@ -30,12 +30,5 @@
     "prettier": "^3.8.0",
     "ts-node": "^10.9.2",
     "typescript": "^6.0.3"
-  },
-  "compilerOptions": {
-    "outDir": "dist",
-    "allowImportingTsExtensions": true,
-    "module": "commonjs",
-    "target": "es6",
-    "strict": true
   }
 }
