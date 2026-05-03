@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test } from '@playwright/test';
 import { HomePage } from './pages/home-page';
 import { DysonHomepage } from './pages/dyson-homepage'
 import { BasePage } from './pages/base-page'

@@ -10,7 +10,10 @@
     "test-headed": "npx playwright test --project=chromium --headed",
     "test-debug": "npx playwright test --debug",
     "test:twice": "npx playwright test || npx playwright test",
-    "cucumber": "cucumber-js --require-module ts-node/register --require tests/features/support/*.ts --require tests/step_definitions/*.ts tests/features/*.feature --parallel 1 --format html:reports/cucumber-report.html"
+    "cucumber": "cucumber-js --require-module ts-node/register --require tests/features/support/*.ts --require tests/step_definitions/*.ts tests/features/*.feature --parallel 2 --format html:reports/cucumber-report.html",
+    "cucumberx10": "node scripts/run-cucumber-times.mjs 10",
+    "lint": "eslint . --ext .ts",
+    "lint:fix": "eslint . --ext .ts --fix"
   },
   "author": "S Greenwood",
   "license": "ISC",

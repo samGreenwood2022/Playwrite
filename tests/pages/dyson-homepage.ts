@@ -77,8 +77,11 @@ export class DysonHomepage {
   // Verifies the Contact manufacturer button is visible and displays the correct text.
   // The href assertion is commented out because the button uses a click handler
   // rather than a standard anchor href.
-  async verifyExternalManufacturerLink(expectedLink: string): Promise<void> {
-    // await this.page.screenshot({ path: "externalManufacturerLink.png" });
+  async verifyExternalManufacturerLink(_expectedLink: string): Promise<void> {
+    // _expectedLink is currently unused — prefixed with _ to silence the
+    // no-unused-vars rule. It will be wired into the commented-out href
+    // assertion below once the button switches from a click handler to a
+    // standard anchor href.
     await playwrightExpect(this.externalManufacturerLink).toBeVisible({
       timeout: 10000,
     });
@@ -86,7 +89,7 @@ export class DysonHomepage {
       " Contact manufacturer ",
       { timeout: 10000 },
     );
-    // await playwrightExpect(this.externalManufacturerLink).toHaveAttribute('href', expectedLink, { timeout: 10000 });
+    // await playwrightExpect(this.externalManufacturerLink).toHaveAttribute('href', _expectedLink, { timeout: 10000 });
   }
 
   // Verifies the navigation bar is visible, that each expected tab is present,
