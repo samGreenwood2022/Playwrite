@@ -107,47 +107,109 @@ export class BasePage {
   // height in steps, then scrolls back to the top. Necessary because Playwright's
   // fullPage screenshot does scroll the page, but if the site uses lazy loading
   // some images may not finish loading before the screenshot frames are stitched.
+  // The 250ms pause at each step gives the IntersectionObserver time to fire and
+  // the browser time to start the image download — without this pause we scroll
+  // past viewport positions before lazy loads kick in.
   async triggerLazyLoad() {
     await this.page.evaluate(async () => {
       const total = document.body.scrollHeight;
       const step = window.innerHeight;
       for (let y = 0; y < total; y += step) {
         window.scrollTo(0, y);
-        await new Promise((r) => setTimeout(r, 100));
+        await new Promise((r) => setTimeout(r, 250));
       }
       window.scrollTo(0, 0);
+      await new Promise((r) => setTimeout(r, 250));
     });
   }
 
-  // Resolves once every <img> on the page is either fully loaded (complete and
-  // has a real naturalWidth) or has failed to load. Errored images are not
-  // considered blockers since waiting indefinitely would hang the test.
+  // Resolves once every <img> on the page has finished loading or has errored
+  // out. We only check `img.complete` — the browser sets it to true after a
+  // successful load, a failed load (404, broken src), or when no src was ever
+  // set. Errored images are not considered blockers since waiting indefinitely
+  // would hang the test, and a previous `naturalWidth > 0` check excluded them
+  // by mistake. By the time this runs, networkidle has already given every
+  // image its chance to download.
   async waitForImagesLoaded(timeout: number = 15000) {
     await this.page.waitForFunction(
-      () =>
-        Array.from(document.images).every(
-          (img) => img.complete && (img.naturalWidth > 0 || img.src === ""),
-        ),
+      () => Array.from(document.images).every((img) => img.complete),
       undefined,
       { timeout },
     );
   }
 
-  // Takes a full-page screenshot and compares it against a stored baseline using
-  // pixelmatch. On first run the baseline is created automatically. Subsequent
-  // runs fail if more than 2% of pixels differ beyond the per-pixel threshold.
-  // Callers pass page-specific locators in `waitFor` so the screenshot is only
-  // taken once those elements are visible — keeps BasePage generic while still
-  // gating capture on page-readiness.
+  // Captures a full-page screenshot and compares it pixel-by-pixel against a
+  // saved "baseline" image to catch unintended visual changes (layout shifts,
+  // missing images, font swaps, colour regressions, etc).
+  //
+  // How it works (read top-to-bottom):
+  //   1. Wait for the caller's "must be visible" locators — the page-specific
+  //      things (hero banner, product grid, etc.) that prove the page is ready.
+  //      BasePage doesn't know what each page should contain, so callers pass
+  //      these in.
+  //   2. Scroll the whole page to trigger lazy-loaded images. Many sites only
+  //      fetch images when they scroll into view; without this, the screenshot
+  //      would capture empty placeholder boxes.
+  //   3. Wait for the network to go idle so the image requests kicked off by
+  //      the scroll actually finish downloading. This is the key step that was
+  //      missing before — scrolling *starts* the downloads, networkidle waits
+  //      for them to *complete*.
+  //   4. Belt-and-braces check that every <img> element is decoded and ready.
+  //   5. Wait for web fonts. Text rendered with a fallback font has different
+  //      metrics and would cause false positives.
+  //   6. Small settle pause for any final paint/animation frame to land.
+  //   7. Take the screenshot and compare to baseline with pixelmatch.
+  //
+  // Files written to tests/snapshots/:
+  //   <name>.png         — the baseline (commit this; it's the source of truth)
+  //   <name>-actual.png  — what the page looked like on this run
+  //   <name>-diff.png    — pink-highlighted PNG showing where the two differ
+  //
+  // First run: no baseline exists, so the current screenshot is saved as the
+  // baseline and the method returns. Re-run to actually compare.
   async verifyVisualRegression(name: string = "baseline", waitFor: Locator[] = []) {
+    // 1. Wait for page-specific elements the caller said must be on screen.
     for (const loc of waitFor) {
       await loc.waitFor({ state: "visible", timeout: 15000 });
     }
 
+    // 2. Scroll top-to-bottom so any lazy-loaded images start fetching.
     await this.triggerLazyLoad();
-    await this.waitForImagesLoaded();
+
+    // 3. Wait for in-flight network requests (the images we just triggered)
+    //    to finish. Without this the screenshot can be taken while images are
+    //    still downloading and they show up as empty boxes in the baseline.
+    await this.page.waitForLoadState("networkidle", { timeout: 30000 });
+
+    // 4. Belt-and-braces check that every <img> reports complete. Soft-fails:
+    //    on pages with carousels, animations, or trackers that keep injecting
+    //    new <img> nodes, this check can never settle. networkidle (step 3)
+    //    is the real safety net for image downloads, so if this times out we
+    //    log the offenders and continue rather than fail the whole test.
+    try {
+      await this.waitForImagesLoaded();
+    } catch {
+      const pending = await this.page.evaluate(() =>
+        Array.from(document.images)
+          .filter((img) => !img.complete)
+          .map((img) => img.currentSrc || img.src || "<no src>"),
+      );
+      console.warn(
+        `waitForImagesLoaded timed out — ${pending.length} image(s) still loading. ` +
+          `Continuing with screenshot. Pending:\n  ${pending.join("\n  ")}`,
+      );
+    }
+
+    // 5. Wait for web fonts. document.fonts.ready resolves once all @font-face
+    //    declarations the page actually uses have loaded. Playwright's evaluate
+    //    awaits the returned promise.
     await this.page.evaluate(() => document.fonts.ready);
 
+    // 6. Small settle pause — cheap insurance against off-by-one-frame diffs
+    //    from final paints, CSS transitions, or skeleton fade-outs.
+    await this.page.waitForTimeout(500);
+
+    // --- Set up file paths ---
     const snapshotDir = path.resolve("tests/snapshots");
     const baselinePath = path.join(snapshotDir, `${name}.png`);
     const actualPath = path.join(snapshotDir, `${name}-actual.png`);
@@ -155,21 +217,29 @@ export class BasePage {
 
     fs.mkdirSync(snapshotDir, { recursive: true });
 
+    // 7. Capture the screenshot. fullPage: true stitches the entire scrollable
+    //    document together, not just the current viewport.
     const screenshotBuffer = await this.page.screenshot({ fullPage: true });
 
+    // First run for this `name`: save as baseline and exit. Re-run to compare.
     if (!fs.existsSync(baselinePath)) {
       fs.writeFileSync(baselinePath, screenshotBuffer);
       console.log(`Baseline created at ${baselinePath}. Re-run to compare.`);
       return;
     }
 
+    // Save what we just captured so a human can inspect it after a failure.
     fs.writeFileSync(actualPath, screenshotBuffer);
 
+    // Decode both PNGs into raw pixel buffers for pixelmatch to compare.
     const baseline = PNG.sync.read(fs.readFileSync(baselinePath));
     const actual = PNG.sync.read(screenshotBuffer);
     const { width, height } = baseline;
     const diff = new PNG({ width, height });
 
+    // threshold: 0.2 = how different two pixels must be to count as "different".
+    // Higher = more tolerant of minor colour shifts (anti-aliasing, subpixel
+    // rendering); lower = stricter. 0.2 is a sensible default.
     const diffPixels = pixelmatch(
       baseline.data, actual.data, diff.data,
       width, height,
@@ -178,6 +248,8 @@ export class BasePage {
 
     fs.writeFileSync(diffPath, PNG.sync.write(diff));
 
+    // Allow up to 2% of pixels to differ before failing — small enough to
+    // catch real regressions, big enough to forgive minor renderer noise.
     const diffRatio = diffPixels / (width * height);
     if (diffRatio > 0.02) {
       throw new Error(
