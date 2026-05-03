@@ -15,7 +15,7 @@ setDefaultTimeout(60 * 1000);
 // Navigates to the NBS Source homepage, verifies the URL, then searches for Dyson.
 // This runs as the Background step before every scenario in the feature file.
 Given(
-  "I sign into NBS and visit the manufacturer home page",
+  "I navigate to the Dyson manufacturer homepage",
   async function (this: CustomWorld) {
     await this.homePage.navigateToNBSHomepage();
     await this.basePage.verifyWebpageURL("https://source.thenbs.com/en/");

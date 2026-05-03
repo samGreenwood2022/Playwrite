@@ -10,8 +10,8 @@
 
 Feature: Dyson Homepage Regression Tests
 
-  Background: Sign into my NBS account then visit the Dyson manufacturer homepage
-    Given I sign into NBS and visit the manufacturer home page
+  Background: Navigate to Dyson manufacturer homepage
+    Given I navigate to the Dyson manufacturer homepage
 
   Scenario Outline: Manufacturer homepage URL contains expected text
     Then The URL will contain the expected text "<expectedText>"
