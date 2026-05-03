@@ -200,8 +200,11 @@ export class BasePage {
     await this.page.evaluate(() => document.fonts.ready);
 
     // 6. Small settle pause — cheap insurance against off-by-one-frame diffs
-    //    from final paints, CSS transitions, or skeleton fade-outs.
-    await this.page.waitForTimeout(500);
+    //    from final paints, CSS transitions, or skeleton fade-outs. Uses a
+    //    plain setTimeout rather than page.waitForTimeout because the latter
+    //    is discouraged by Playwright (it's a code smell in real tests, but
+    //    intentional here to absorb sub-frame paint variance).
+    await new Promise((resolve) => setTimeout(resolve, 500));
 
     // --- Set up file paths ---
     // Baselines are per-OS because text rendering differs between Windows

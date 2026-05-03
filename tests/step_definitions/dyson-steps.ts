@@ -34,7 +34,7 @@ Then(
 
 // Verifies the telephone link displays the correct number, uses the tel: protocol, and has the correct href.
 Then(
-  "The number will be correct, the href will be as expected, and the telephone protocol will correct {string}",
+  "The number will be correct, the href will be as expected, and the telephone protocol will be correct {string}",
   async function (this: CustomWorld, telNo: string) {
     await this.dysonPage.verifyTelNo(telNo);
   },
@@ -82,7 +82,7 @@ Then(
 
 // Calls the geolocation API, validates the JSON response, and verifies the UI locale label matches.
 Then(
-  "The api reponse and content is expected",
+  "The API response and content is as expected",
   async function (this: CustomWorld) {
     await this.dysonPage.verifyUIandAPIContent();
   },
