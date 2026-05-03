@@ -10,13 +10,17 @@
     "test-headed": "npx playwright test --project=chromium --headed",
     "test-debug": "npx playwright test --debug",
     "test:twice": "npx playwright test || npx playwright test",
-    "cucumber": "cucumber-js --require-module ts-node/register --require tests/features/support/*.ts --require tests/step_definitions/*.ts tests/features/*.feature --parallel 1 --format html:reports/cucumber-report.html"
+    "cucumber": "cucumber-js --require-module ts-node/register --require tests/features/support/*.ts --require tests/step_definitions/*.ts tests/features/*.feature --parallel 2 --format html:reports/cucumber-report.html",
+    "cucumberx10": "node scripts/run-cucumber-times.mjs 10",
+    "lint": "eslint . --ext .ts",
+    "lint:fix": "eslint . --ext .ts --fix"
   },
   "author": "S Greenwood",
   "license": "ISC",
   "devDependencies": {
     "@axe-core/playwright": "^4.11.2",
     "@cucumber/cucumber": "^12.8.1",
+    "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.59.1",
     "@types/node": "^25.6.0",
     "@types/pixelmatch": "^5.2.6",
@@ -29,6 +33,7 @@
     "pngjs": "^7.0.0",
     "prettier": "^3.8.0",
     "ts-node": "^10.9.2",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.59.1"
   }
 }
