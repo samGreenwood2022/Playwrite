@@ -10,10 +10,10 @@
 
 Feature: Dyson Homepage Regression Tests
 
-  Background: Sign into my NBS account then visit the Dyson manufacturer homepage
-    Given I sign into NBS and visit the manufacturer home page
+  Background: Navigate to Dyson manufacturer homepage
+    Given I navigate to the Dyson manufacturer homepage
 
-  Scenario Outline: Verify the manufacturers homepage URL contains expected text
+  Scenario Outline: Manufacturer homepage URL contains expected text
     Then The URL will contain the expected text "<expectedText>"
 
     Examples:
@@ -21,29 +21,29 @@ Feature: Dyson Homepage Regression Tests
       | /manufacturer/dyson/ |
       | /overview            |
 
-  Scenario: I verify the telephone link has the correct number, protocol and href
-    Then The number will be correct, the href will be as expected, and the telephone protocol will correct "08003457788"
+  Scenario: Telephone link has the correct number, protocol and href
+    Then The number will be correct, the href will be as expected, and the telephone protocol will be correct "08003457788"
 
-  Scenario: I verify the webpage title on page is as expected
+  Scenario: Webpage title is as expected
     Then The webpage title will be as expected "Dyson | Overview | BIM Library"
 
-  Scenario: I verify the href attribute of the Source logo is as expected
+  Scenario: Href attribute of the Source logo is as expected
     Then The href attribute of the Source logo will be as expected "/en/"
 
-  Scenario: I verify the external manufacturer link attribute contains the correct url
+  Scenario: External manufacturer link attribute contains the correct URL
     Then The manufacturer website link is correct "https://www.dyson.co.uk/commercial/overview/architects-designers"
 
-  Scenario: I verify the contact manufacturer button shows the correct text
+  Scenario: Contact manufacturer button shows the correct text
     Then The button will display the correct text "Contact manufacturer"
 
-  Scenario: I run accessibility checks on the manufacturer homepage and report results to console
+  Scenario: Accessibility checks complete and results are output to the console
     Then The results of the accessibility checks will be output to the console
 
-  Scenario: I perform an api test and verify the response and content is as expected
-    Then The api reponse and content is expected
+  Scenario: API response and content are as expected
+    Then The API response and content is as expected
 
-  Scenario: I verify the Dyson navigation bar has the correct tabs and expected links
-    Then The Dyson navigation bar should have the correct tabs and href links
+  Scenario: Tabs on the Dyson navigation bar are visible, in the correct order and have the correct href links
+    Then Tabs on the Dyson navigation bar are visible, in the correct order and have the correct href links
 
   Scenario: Clicking sign in from any webpage logs the user in and returns them to the previous page
     When I sign in with valid credentials

@@ -15,7 +15,7 @@ setDefaultTimeout(60 * 1000);
 // Navigates to the NBS Source homepage, verifies the URL, then searches for Dyson.
 // This runs as the Background step before every scenario in the feature file.
 Given(
-  "I sign into NBS and visit the manufacturer home page",
+  "I navigate to the Dyson manufacturer homepage",
   async function (this: CustomWorld) {
     await this.homePage.navigateToNBSHomepage();
     await this.basePage.verifyWebpageURL("https://source.thenbs.com/en/");
@@ -34,7 +34,7 @@ Then(
 
 // Verifies the telephone link displays the correct number, uses the tel: protocol, and has the correct href.
 Then(
-  "The number will be correct, the href will be as expected, and the telephone protocol will correct {string}",
+  "The number will be correct, the href will be as expected, and the telephone protocol will be correct {string}",
   async function (this: CustomWorld, telNo: string) {
     await this.dysonPage.verifyTelNo(telNo);
   },
@@ -82,7 +82,7 @@ Then(
 
 // Calls the geolocation API, validates the JSON response, and verifies the UI locale label matches.
 Then(
-  "The api reponse and content is expected",
+  "The API response and content is as expected",
   async function (this: CustomWorld) {
     await this.dysonPage.verifyUIandAPIContent();
   },
@@ -90,7 +90,7 @@ Then(
 
 // Verifies the Dyson navigation bar contains the correct tabs with the expected href links.
 Then(
-  "The Dyson navigation bar should have the correct tabs and href links",
+  "Tabs on the Dyson navigation bar are visible, in the correct order and have the correct href links",
   async function (this: CustomWorld) {
     await this.dysonPage.verifyDysonNavigationBar();
   },

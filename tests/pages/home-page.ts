@@ -12,7 +12,6 @@ export class HomePage {
   readonly page: Page;
   readonly searchField: Locator;
   readonly searchButton: Locator;
-  readonly acceptCookiesButton: Locator;
   readonly searchAutocomplete: Locator;
   readonly dysonManufacturerOption: Locator;
 
@@ -43,9 +42,6 @@ export class HomePage {
     this.dysonManufacturerOption = page.locator(
       'app-autocomplete article.manufacturers a[href*="/manufacturer/dyson/"]',
     );
-    this.acceptCookiesButton = page.getByRole("button", {
-      name: "Accept All Cookies",
-    });
   }
 
   // Searches for the given term and clicks the matching Dyson manufacturer
@@ -145,30 +141,11 @@ export class HomePage {
   }
 
   // Navigates directly to the NBS Source homepage and waits for the DOM to be ready.
-  // The cookie banner handling is commented out as it is not consistently present.
   async navigateToNBSHomepage() {
     await this.page.goto("https://source.thenbs.com/en/", {
       timeout: 60000,
       waitUntil: "domcontentloaded",
     });
-    // try {
-    //   // Wait for the Accept Cookies button to be visible (max 60s)
-    //   await this.acceptCookiesButton.waitFor({
-    //     state: "visible",
-    //     timeout: 60000,
-    //   });
-    //   await this.page.screenshot({ path: "cookies-banner.png" });
-    //   await this.acceptCookiesButton.click({ timeout: 60000 });
-    //   await this.acceptCookiesButton.waitFor({
-    //     state: "hidden",
-    //     timeout: 60000,
-    //   });
-    // } catch (error) {
-    //   console.warn(
-    //     "Cookies button not found, not visible, or could not be clicked.",
-    //     error,
-    //   );
-    // }
   }
 
 }
