@@ -20,6 +20,7 @@
   "devDependencies": {
     "@axe-core/playwright": "^4.11.2",
     "@cucumber/cucumber": "^12.8.1",
+    "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.59.1",
     "@types/node": "^25.6.0",
     "@types/pixelmatch": "^5.2.6",
@@ -32,6 +33,7 @@
     "pngjs": "^7.0.0",
     "prettier": "^3.8.0",
     "ts-node": "^10.9.2",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.59.1"
   }
 }
