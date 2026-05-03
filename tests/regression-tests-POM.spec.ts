@@ -12,7 +12,7 @@ test.beforeEach(async ({ page }) => {
   dysonPage = new DysonHomepage(page);
   basePage = new BasePage(page);
 
-  await homePage.navigateToNBSHomepageAndClickToAcceptCookies();
+  await homePage.navigateToNBSHomepage();
 
   // Expect the page title to contain the substring 'NBS Source'
   // await basePage.verifyWebpageURL('https://source.thenbs.com/en/');
@@ -60,5 +60,11 @@ test('Run Accessibility tests and report on any violations', async () => {
 test('I perform an api test and verify the response and content is as expected', async () => {
   // Perform api test and verify response and content
   await dysonPage.verifyUIandAPIContent();
+
+});
+
+test('Visual regression testing of the Dyson homepage will show no significant differences compared to the baseline image', async () => {
+  // Perform visual regression test
+  await basePage.verifyVisualRegression('dyson-homepage');
 
 });
