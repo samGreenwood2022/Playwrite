@@ -19,9 +19,19 @@ export class HomePage {
   constructor(page: Page) {
     this.page = page;
     // Uses the data-cy attribute for a stable, test-specific selector.
-    // .last() is used because the search field appears twice in the DOM (mobile + desktop).
-    this.searchField = page.locator('[data-cy="searchFieldSearch"]').last();
-    this.searchButton = page.locator('[data-cy="searchButton"]').last();
+    // The site renders both a mobile and a desktop copy of the header search,
+    // so we filter to the visible one and take .first() defensively in case
+    // a future layout adds another copy (e.g., a search dialog). This stays
+    // correct regardless of DOM order — unlike the previous .last() which
+    // assumed exactly two matches in a fixed order.
+    this.searchField = page
+      .locator('[data-cy="searchFieldSearch"]')
+      .filter({ visible: true })
+      .first();
+    this.searchButton = page
+      .locator('[data-cy="searchButton"]')
+      .filter({ visible: true })
+      .first();
     // The autocomplete dropdown overlay container. Anchored on the Angular
     // component selector rather than the dynamic #cdk-overlay-N id so we can
     // detect "did the dropdown actually open?" without brittle id matching.
