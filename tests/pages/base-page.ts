@@ -5,7 +5,7 @@
 // and used alongside it. Any assertion or action that applies site-wide (URL checks,
 // page title, logo, accessibility) belongs here rather than in a specific page object.
 
-import { Page, Locator, expect } from "@playwright/test";
+import { Page, Locator } from "@playwright/test";
 import { expect as playwrightExpect } from "@playwright/test";
 import { AxeBuilder } from "@axe-core/playwright";
 import fs from "fs";
@@ -42,26 +42,20 @@ export class BasePage {
     this.userInitials = page.getByRole("figure");
   }
 
-  // Polls the current URL every 200ms until it contains the expected substring.
-  // Playwright's built-in URL assertions only check at a single point in time,
-  // so this handles pages that redirect or update the URL after initial load.
+  // Asserts the current URL contains the expected substring, retrying for up
+  // to 10s. Playwright's toHaveURL auto-waits and auto-retries internally —
+  // matching the previous hand-rolled polling loop but with better error
+  // messages, trace integration, and no manual timing code.
+  //
+  // Substring semantics are preserved by escaping the input into a RegExp,
+  // because toHaveURL(string) does an EXACT match, not a contains. Callers
+  // (and the matching feature file step) pass either full URLs or path
+  // fragments and rely on the contains behaviour.
   async verifyWebpageURL(expectedURL: string) {
-    const timeout = 10000;
-    const pollInterval = 200;
-    const start = Date.now();
-    while (true) {
-      const currentUrl = this.page.url();
-      if (currentUrl.includes(expectedURL)) {
-        expect(currentUrl).toContain(expectedURL);
-        break;
-      }
-      if (Date.now() - start > timeout) {
-        throw new Error(
-          `Timed out after ${timeout}ms waiting for URL to contain "${expectedURL}". Last URL: ${currentUrl}`,
-        );
-      }
-      await new Promise((res) => setTimeout(res, pollInterval));
-    }
+    const escaped = expectedURL.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    await playwrightExpect(this.page).toHaveURL(new RegExp(escaped), {
+      timeout: 10000,
+    });
   }
 
   // Verifies the h1 element is visible and contains the expected text.
