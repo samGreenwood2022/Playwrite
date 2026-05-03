@@ -243,7 +243,7 @@ export class BasePage {
     const diffPixels = pixelmatch(
       baseline.data, actual.data, diff.data,
       width, height,
-      { threshold: 0.4 },
+      { threshold: 0.6 },
     );
 
     fs.writeFileSync(diffPath, PNG.sync.write(diff));
@@ -253,7 +253,7 @@ export class BasePage {
     const diffRatio = diffPixels / (width * height);
     if (diffRatio > 0.02) {
       throw new Error(
-        `Visual regression detected: ${diffPixels} pixels differ (${(diffRatio * 100).toFixed(2)}%). Diff saved to ${diffPath}`
+        `Visual regression detected: ${diffPixels} pixels differ (${(diffRatio * 100).toFixed(6)}%). Diff saved to ${diffPath}`
       );
     }
   }

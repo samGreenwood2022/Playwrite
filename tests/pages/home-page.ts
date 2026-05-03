@@ -1,8 +1,10 @@
 // home-page.ts — Page Object Model for the NBS Source homepage.
 //
 // Handles navigation to the NBS Source homepage and the search interaction
-// needed to reach a manufacturer page. The search logic includes retry and
-// refresh behaviour because the site's autocomplete can be flaky on first load.
+// needed to reach a manufacturer page. The search logic uses fast-fail
+// detection of the autocomplete dropdown with an in-page retype recovery
+// before falling back to a full page reload, because the site's autocomplete
+// is intermittently slow / sometimes fails to open on the live site.
 
 import { Page, Locator } from "@playwright/test";
 import { expect as playwrightExpect } from "@playwright/test";
@@ -15,7 +17,8 @@ export class HomePage {
   readonly searchField: Locator;
   readonly searchButton: Locator;
   readonly acceptCookiesButton: Locator;
-  readonly selectSearchResult: Locator;
+  readonly searchAutocomplete: Locator;
+  readonly dysonManufacturerOption: Locator;
   readonly nbsLogoLink: Locator;
 
   constructor(page: Page) {
@@ -24,8 +27,17 @@ export class HomePage {
     // .last() is used because the search field appears twice in the DOM (mobile + desktop).
     this.searchField = page.locator('[data-cy="searchFieldSearch"]').last();
     this.searchButton = page.locator('[data-cy="searchButton"]').last();
-    // Matches the exact text "Dyson" in the autocomplete dropdown to avoid partial matches.
-    this.selectSearchResult = page.locator("a").filter({ hasText: /^Dyson$/ });
+    // The autocomplete dropdown overlay container. Anchored on the Angular
+    // component selector rather than the dynamic #cdk-overlay-N id so we can
+    // detect "did the dropdown actually open?" without brittle id matching.
+    this.searchAutocomplete = page.locator("app-autocomplete");
+    // The Dyson result inside the dropdown's "Manufacturers" section
+    // specifically. The four "Dyson <product>" results below it sit in
+    // article.products-section, so scoping to article.manufacturers + the
+    // /manufacturer/dyson/ href pattern leaves exactly one match.
+    this.dysonManufacturerOption = page.locator(
+      'app-autocomplete article.manufacturers a[href*="/manufacturer/dyson/"]',
+    );
     this.acceptCookiesButton = page.getByRole("button", {
       name: "Accept All Cookies",
     });
@@ -34,47 +46,62 @@ export class HomePage {
     );
   }
 
-  // Searches for the given term and clicks the matching autocomplete result.
-  // Retries up to 3 times with a page reload between attempts to handle cases
-  // where the autocomplete dropdown fails to appear on the first load.
+  // Searches for the given term and clicks the matching Dyson manufacturer
+  // entry in the autocomplete dropdown. Reflects the real user journey of
+  // typing and clicking a result rather than navigating directly to the URL.
+  //
+  // Reliability strategy (per attempt, up to 3 attempts):
+  //   1. Focus the field and clear it with fill("") — more reliable than
+  //      Control+a + type, which can leave residual characters if focus drifts.
+  //   2. Type the term character-by-character to trigger the site's
+  //      autocomplete debounce.
+  //   3. Wait up to 5s for the dropdown CONTAINER (app-autocomplete) to
+  //      appear. Failing fast on this — instead of waiting 20s for the result
+  //      item — is what lets us recover within the Cucumber step timeout.
+  //   4. If the dropdown didn't open, do a cheap in-page nudge: clear and
+  //      retype, then re-wait. Many "didn't open" cases are first-keystroke
+  //      debounce races and resolve on a clean retype without a full reload.
+  //   5. Race the click against a URL waiter so a no-op click (dropdown closes
+  //      without navigating) throws instead of silently passing. Reload the
+  //      page only as a last-resort recovery between attempts.
   async searchFor(term: string) {
     const maxAttempts = 3;
-    let attempt = 0;
+    const dropdownTimeout = 5000;
 
-    while (attempt < maxAttempts) {
-      attempt++;
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
       try {
         await this.page.waitForLoadState("domcontentloaded", {
           timeout: 15000,
         });
 
-        // Selects all existing text before typing to avoid appending to a previous search.
-        // Types character-by-character with a 150ms delay to trigger the site's autocomplete debounce.
         await this.searchField.click();
-        await this.searchField.press("Control+a");
-        await this.page.keyboard.type(term, { delay: 150 });
-        await this.page.waitForTimeout(600);
+        await this.searchField.fill("");
+        await this.searchField.pressSequentially(term, { delay: 100 });
 
-        await this.selectSearchResult.waitFor({
-          state: "visible",
-          timeout: 20000,
-        });
-
-        if (await this.selectSearchResult.isVisible()) {
-          // Race the click against a URL waiter so a no-op click (dropdown closes
-          // without navigating) throws instead of silently passing. The waiter is
-          // registered before the click fires so navigation cannot complete first.
-          await Promise.all([
-            this.page.waitForURL(/\/manufacturer\/dyson\//, { timeout: 30000 }),
-            this.selectSearchResult.click({ timeout: 20000 }),
-          ]);
-          return;
+        try {
+          await this.searchAutocomplete.waitFor({
+            state: "visible",
+            timeout: dropdownTimeout,
+          });
+        } catch {
+          // In-page recovery: clear and retype before falling back to reload.
+          await this.searchField.fill("");
+          await this.searchField.pressSequentially(term, { delay: 100 });
+          await this.searchAutocomplete.waitFor({
+            state: "visible",
+            timeout: dropdownTimeout,
+          });
         }
+
+        await Promise.all([
+          this.page.waitForURL(/\/manufacturer\/dyson\//, { timeout: 30000 }),
+          this.dysonManufacturerOption.click({ timeout: 10000 }),
+        ]);
+        return;
       } catch (error) {
-        console.warn(`Attempt ${attempt} failed:`, error);
+        console.warn(`Attempt ${attempt} to search for "${term}" failed:`, error);
       }
 
-      // Reloads the page before the next attempt if the dropdown did not appear.
       if (attempt < maxAttempts && !this.page.isClosed()) {
         await this.page.reload({
           waitUntil: "domcontentloaded",
@@ -113,13 +140,6 @@ export class HomePage {
     //     error,
     //   );
     // }
-  }
-
-  // Waits for the first autocomplete result to appear then clicks it.
-  // Used as a simpler alternative to searchFor when retry logic is not needed.
-  async selectSearchResultFromDropdown() {
-    await this.selectSearchResult.waitFor({ state: "visible", timeout: 20000 });
-    await this.selectSearchResult.click({ force: true });
   }
 
   // Verifies the NBS Source logo anchor has the expected href attribute value.
