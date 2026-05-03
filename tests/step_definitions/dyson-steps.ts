@@ -90,7 +90,7 @@ Then(
 
 // Verifies the Dyson navigation bar contains the correct tabs with the expected href links.
 Then(
-  "The Dyson navigation bar should have the correct tabs and href links",
+  "Tabs on the Dyson navigation bar are visible, in the correct order and have the correct href links",
   async function (this: CustomWorld) {
     await this.dysonPage.verifyDysonNavigationBar();
   },

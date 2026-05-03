@@ -42,8 +42,8 @@ Feature: Dyson Homepage Regression Tests
   Scenario: API response and content are as expected
     Then The API response and content is as expected
 
-  Scenario: Dyson navigation bar has the correct tabs and expected links
-    Then The Dyson navigation bar should have the correct tabs and href links
+  Scenario: Tabs on the Dyson navigation bar are visible, in the correct order and have the correct href links
+    Then Tabs on the Dyson navigation bar are visible, in the correct order and have the correct href links
 
   Scenario: Clicking sign in from any webpage logs the user in and returns them to the previous page
     When I sign in with valid credentials
