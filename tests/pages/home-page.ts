@@ -20,10 +20,10 @@ export class HomePage {
     this.page = page;
     // Uses the data-cy attribute for a stable, test-specific selector.
     // The site renders both a mobile and a desktop copy of the header search,
-    // so we filter to the visible one and take .first() defensively in case
-    // a future layout adds another copy (e.g., a search dialog). This stays
-    // correct regardless of DOM order — unlike the previous .last() which
-    // assumed exactly two matches in a fixed order.
+    // so we first filter to visible matches. We then take .first() as a
+    // defensive fallback if a future layout exposes more than one visible
+    // copy at once (for example, a search dialog), noting that in that case
+    // selection still follows DOM order after the visibility filter.
     this.searchField = page
       .locator('[data-cy="searchFieldSearch"]')
       .filter({ visible: true })
