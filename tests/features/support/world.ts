@@ -50,7 +50,16 @@ Before(async function (this: CustomWorld) {
     viewport: { width: 1280, height: 800 },
     deviceScaleFactor: 1,
   });
+  // Open a fresh tab inside the isolated context. Each scenario gets its
+  // own page, so cookies, local storage, and history can't leak between
+  // scenarios — the source of most cross-test flakiness.
   this.page = await this.context.newPage();
+
+  // Constructor-injection: hand the same Page instance to every page
+  // object. They all act on the same browser tab, so a navigation in one
+  // POM is visible to all the others without any extra wiring. Locators
+  // inside each POM are lazy — they're declared here but only resolved
+  // against the DOM the moment a step actually uses them.
   this.homePage = new HomePage(this.page);
   this.dysonPage = new DysonHomepage(this.page);
   this.basePage = new BasePage(this.page);
