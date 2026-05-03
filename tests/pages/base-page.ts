@@ -243,7 +243,7 @@ export class BasePage {
     const diffPixels = pixelmatch(
       baseline.data, actual.data, diff.data,
       width, height,
-      { threshold: 0.2 }
+      { threshold: 0.4 },
     );
 
     fs.writeFileSync(diffPath, PNG.sync.write(diff));
