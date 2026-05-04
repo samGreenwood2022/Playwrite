@@ -133,6 +133,7 @@ Then(
   },
 );
 
+// Takes a screenshot of the Dyson homepage and compares it to a baseline image to check for visual regressions.
 Then(
   "I take a screenshot of the Dyson homepage and compare it to the baseline image to check for visual regressions",
   async function (this: CustomWorld) {
