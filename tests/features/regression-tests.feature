@@ -1,3 +1,13 @@
+#                  .-"""""""-.
+#                .'  .  .  .  '.
+#               /   o    o    o  \
+#              |  o    o    o    o |
+#              |   o    o    o     |
+#              |  o    o    o    o |
+#               \   o    o    o  /
+#                '.  .  .  .  .'
+#                  '-.........-'
+#
 # The main purpose of the project is to demonstrate the following:
 #  - Cucumber/Gherkin and Feature file implementation
 #  - Page Object Model
