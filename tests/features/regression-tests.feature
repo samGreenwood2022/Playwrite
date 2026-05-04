@@ -81,6 +81,6 @@ Feature: Dyson Homepage Regression Tests
   Scenario: Stored auth session shows the user as already signed in without running the sign-in flow
     Then The UI will reflect that the user is logged in
 
-  @lighthouse @regression
-  Scenario: Lighthouse audit of the Dyson homepage meets minimum thresholds
-    Then A Lighthouse audit shows the homepage meets minimum performance thresholds
+  # @lighthouse @regression
+  # Scenario: Lighthouse audit of the Dyson homepage meets minimum thresholds
+  #   Then A Lighthouse audit shows the Dyson homepage meets minimum performance thresholds

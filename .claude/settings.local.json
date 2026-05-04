@@ -4,7 +4,9 @@
       "Bash(npm install *)",
       "Bash(npm run *)",
       "Bash(npx tsc *)",
-      "Bash(npx cucumber-js *)"
+      "Bash(npx cucumber-js *)",
+      "Bash(grep -oE '\"runtimeError\":\\\\{\"code\":\"[^\"]+\",\"message\":\"[^\"]+' reports/lighthouse-report.html)",
+      "Bash(npm ls *)"
     ]
   }
 }

@@ -6,6 +6,7 @@
   "scripts": {
     "codegen": "npx playwright codegen https://source.thenbs.com/",
     "smoke": "cucumber-js --require-module ts-node/register --require tests/features/support/*.ts --require tests/step_definitions/*.ts tests/features/*.feature --tags @smoke --parallel 2 --format html:reports/cucumber-smoke-report.html",
+    "lighthouse": "cucumber-js --require-module ts-node/register --require tests/features/support/*.ts --require tests/step_definitions/*.ts tests/features/*.feature --tags @lighthouse --parallel 2 --format html:reports/cucumber-lighthouse-report.html",
     "regression": "cucumber-js --require-module ts-node/register --require tests/features/support/*.ts --require tests/step_definitions/*.ts tests/features/*.feature --tags @regression --parallel 2 --format html:reports/cucumber-regression-report.html",
     "regressionx10": "node scripts/run-cucumber-times.mjs 10",
     "lint": "eslint . --ext .ts",

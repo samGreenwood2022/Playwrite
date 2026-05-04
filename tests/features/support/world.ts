@@ -21,7 +21,6 @@ import {
   Browser,
   BrowserContext,
   Page,
-  LaunchOptions,
   chromium,
 } from "playwright";
 import fs from "fs";
@@ -40,11 +39,6 @@ const STORAGE_STATE_PATH = path.resolve(".auth/user.json");
 // flow. One hour is a sensible balance: short enough to catch session expiry
 // during a long dev session, long enough to skip sign-in on consecutive runs.
 const STORAGE_STATE_TTL_MS = 60 * 60 * 1000;
-
-// Fixed port that playwright-lighthouse attaches to. Only opened on Chromium
-// instances that run @lighthouse scenarios so unrelated runs aren't exposed
-// to the DevTools protocol over a TCP port.
-const LIGHTHOUSE_DEBUG_PORT = 9222;
 
 // CustomWorld extends Cucumber's base World class and holds all shared state for a scenario.
 // Properties are declared here so step definitions can access them via `this`.
@@ -128,38 +122,31 @@ BeforeAll(async function () {
 // Runs before each scenario — launches a fresh browser, creates an isolated
 // context and page, then instantiates all page objects against that page.
 //
-// The hook reads the scenario's tags so it can:
-//   - Hydrate the context from .auth/user.json for @authenticated scenarios
-//     (no sign-in step needed inside the scenario itself).
-//   - Open Chromium with --remote-debugging-port for @lighthouse scenarios
-//     so playwright-lighthouse can attach.
+// For @authenticated scenarios the context is hydrated from .auth/user.json
+// so the browser starts already signed in (no sign-in step in the scenario
+// itself). @lighthouse scenarios DON'T need any special handling here:
+// BasePage.runLighthouseAudit launches its own isolated Chrome process via
+// chrome-launcher, completely outside Playwright's browser, to avoid the
+// CDP connection conflicts that broke earlier playwright-lighthouse runs.
 Before(async function (
   this: CustomWorld,
   scenario: ITestCaseHookParameter,
 ) {
   const tags = scenario.pickle.tags.map((t) => t.name);
   const isAuthenticated = tags.includes("@authenticated");
-  const isLighthouse = tags.includes("@lighthouse");
 
-  // Lighthouse needs a TCP debugging port so the lighthouse runner can
-  // connect to the same Chromium instance Playwright is driving. Only
-  // opened when we actually need it — most scenarios stay on Playwright's
-  // default --remote-debugging-pipe (no exposed port).
-  const launchOptions: LaunchOptions = isLighthouse
-    ? { args: [`--remote-debugging-port=${LIGHTHOUSE_DEBUG_PORT}`] }
-    : {};
-  this.browser = await chromium.launch(launchOptions);
+  this.browser = await chromium.launch();
 
   // Pin viewport and device scale factor so screenshots have consistent
   // dimensions across local (Windows) and CI (Linux) — visual regression
   // baselines depend on this. Layout differences from OS font rendering
   // are handled separately by per-OS baseline filenames.
   //
-  // For @authenticated scenarios, hydrate from the saved storage state so
-  // the new context starts already signed in. The fs.existsSync guard
-  // means a missing file falls through to a normal anonymous session
-  // rather than crashing the hook — the scenario will then fail its
-  // signed-in assertion with a clear message instead.
+  // For @authenticated scenarios, hydrate from the saved storage state
+  // so the new context starts already signed in. The fs.existsSync
+  // guard means a missing file falls through to a normal anonymous
+  // session rather than crashing the hook — the scenario will then
+  // fail its signed-in assertion with a clear message instead.
   const useStoredAuth =
     isAuthenticated && fs.existsSync(STORAGE_STATE_PATH);
   this.context = await this.browser.newContext({
@@ -168,9 +155,9 @@ Before(async function (
     ...(useStoredAuth ? { storageState: STORAGE_STATE_PATH } : {}),
   });
 
-  // Open a fresh tab inside the isolated context. Each scenario gets its
-  // own page, so cookies, local storage, and history can't leak between
-  // scenarios — the source of most cross-test flakiness.
+  // Open a fresh tab inside the isolated context. Each scenario gets
+  // its own page, so cookies, local storage, and history can't leak
+  // between scenarios — the source of most cross-test flakiness.
   this.page = await this.context.newPage();
 
   // Constructor-injection: hand the same Page instance to every page
