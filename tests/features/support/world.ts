@@ -95,6 +95,11 @@ BeforeAll(async function () {
     }
   }
 
+  // Ensure the parent directory (.auth/) exists before context.storageState
+  // tries to write user.json into it — Playwright's writer doesn't create
+  // missing parents, it just throws ENOENT. recursive: true makes this a
+  // no-op when the directory already exists, so it's safe to run on every
+  // sign-in regardless of cache state.
   fs.mkdirSync(path.dirname(STORAGE_STATE_PATH), { recursive: true });
 
   // Throwaway browser for the sign-in flow. Re-uses the existing HomePage /

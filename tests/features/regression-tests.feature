@@ -19,7 +19,6 @@
 #  - Different ways of interacting and verifying UI element attributes
 #  - Tag-driven smoke / regression suites
 #  - Auth via persisted storage state
-#  - Lighthouse performance, SEO and best-practices audits
 
 Feature: Dyson Homepage Regression Tests
 
@@ -55,7 +54,7 @@ Feature: Dyson Homepage Regression Tests
   Scenario: Contact manufacturer button shows the correct text
     Then The button will display the correct text "Contact manufacturer"
 
-  @regression
+  @accessibility @regression
   Scenario: Accessibility checks complete and results are output to the console
     Then The results of the accessibility checks will be output to the console
 
@@ -81,6 +80,3 @@ Feature: Dyson Homepage Regression Tests
   Scenario: Stored auth session shows the user as already signed in without running the sign-in flow
     Then The UI will reflect that the user is logged in
 
-  # @lighthouse @regression
-  # Scenario: Lighthouse audit of the Dyson homepage meets minimum thresholds
-  #   Then A Lighthouse audit shows the Dyson homepage meets minimum performance thresholds

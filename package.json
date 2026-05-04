@@ -8,6 +8,7 @@
     "cucumber": "cucumber-js --require-module ts-node/register --require tests/features/support/*.ts --require tests/step_definitions/*.ts tests/features/*.feature --parallel 2 --format html:reports/cucumber-report.html",
     "regression": "cucumber-js --require-module ts-node/register --require tests/features/support/*.ts --require tests/step_definitions/*.ts tests/features/*.feature --tags @regression --parallel 2 --format html:reports/cucumber-report.html",
     "smoke": "cucumber-js --require-module ts-node/register --require tests/features/support/*.ts --require tests/step_definitions/*.ts tests/features/*.feature --tags @smoke --parallel 2 --format html:reports/cucumber-report.html",
+    "accessibility": "cucumber-js --require-module ts-node/register --require tests/features/support/*.ts --require tests/step_definitions/*.ts tests/features/*.feature --tags @accessibility --format html:reports/cucumber-report.html",
     "cucumberx10": "node scripts/run-cucumber-times.mjs 10",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix"
