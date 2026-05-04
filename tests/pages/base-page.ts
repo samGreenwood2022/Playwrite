@@ -262,5 +262,55 @@ export class BasePage {
     }
   }
 
+  // Runs a Lighthouse audit against the current page using
+  // playwright-lighthouse, which attaches the Lighthouse runner to the same
+  // Chromium instance Playwright already controls (via the remote debugging
+  // port opened in the @lighthouse Before hook in world.ts). The audit
+  // fails the scenario if any of the supplied category scores fall below
+  // its threshold.
+  //
+  // Parameters:
+  //   thresholds — minimum acceptable Lighthouse scores per category (0-100).
+  //                Categories not listed are not enforced. Keep these
+  //                conservative when auditing a third-party live site:
+  //                external content (CDN images, ads, fonts) drives perf
+  //                scores up and down between runs and would flake an
+  //                aggressive threshold.
+  //   reportName — filename stem for the generated HTML report under reports/.
+  //
+  // Files written to reports/:
+  //   <reportName>.html — full Lighthouse report with category scores,
+  //                       opportunities, diagnostics, and waterfall.
+  async runLighthouseAudit(
+    thresholds: {
+      performance?: number;
+      accessibility?: number;
+      "best-practices"?: number;
+      seo?: number;
+      pwa?: number;
+    },
+    reportName: string = "lighthouse-report",
+  ) {
+    // Dynamic import keeps playwright-lighthouse and its lighthouse
+    // dependency out of the hot path for unrelated scenarios — both are
+    // heavy modules and eager-loading them would slow startup for every
+    // smoke run that doesn't need them.
+    const { playAudit } = await import("playwright-lighthouse");
 
+    fs.mkdirSync("reports", { recursive: true });
+
+    // Port matches the --remote-debugging-port chosen by the @lighthouse
+    // branch of the Before hook. If they ever drift, the audit fails with
+    // a connection error rather than silently auditing the wrong target.
+    await playAudit({
+      page: this.page,
+      thresholds,
+      port: 9222,
+      reports: {
+        formats: { html: true },
+        directory: "reports",
+        name: reportName,
+      },
+    });
+  }
 }

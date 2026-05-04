@@ -142,4 +142,19 @@ Then(
   },
 );
 
-
+// Runs a Lighthouse audit against the current page and asserts each category
+// score meets its minimum threshold. Thresholds are deliberately conservative
+// because the audit runs against a live external site whose performance
+// fluctuates with CDN warmth, ad inventory, and external trackers — stricter
+// numbers would surface as flakes rather than real regressions.
+Then(
+  "A Lighthouse audit shows the homepage meets minimum performance thresholds",
+  async function (this: CustomWorld) {
+    await this.basePage.runLighthouseAudit({
+      performance: 30,
+      accessibility: 70,
+      "best-practices": 50,
+      seo: 70,
+    });
+  },
+);
