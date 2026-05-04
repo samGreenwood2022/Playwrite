@@ -18,7 +18,7 @@ jobs:
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
     - name: Run Cucumber feature tests
-      run: npm run cucumber
+      run: npm run regression
       env:
         TEST_EMAIL: ${{ secrets.TEST_EMAIL }}
         TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}

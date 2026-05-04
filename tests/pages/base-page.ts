@@ -8,6 +8,7 @@
 import { Page, Locator } from "@playwright/test";
 import { expect as playwrightExpect } from "@playwright/test";
 import { AxeBuilder } from "@axe-core/playwright";
+import { chromium } from "playwright";
 import fs from "fs";
 import path from "path";
 import { createHtmlReport } from "axe-html-reporter";
@@ -262,5 +263,151 @@ export class BasePage {
     }
   }
 
+  // Runs a Lighthouse audit against the URL the page is currently on and
+  // fails the scenario if any supplied category score falls below its
+  // threshold.
+  //
+  // Why this method launches its own Chrome instead of reusing
+  // Playwright's browser:
+  //
+  // playwright-lighthouse + Playwright share a single Chromium over CDP.
+  // Two clients on one connection fight over the navigation lifecycle:
+  // Lighthouse issues Page.navigate, Playwright's connection cancels the
+  // in-flight request, and the audit returns FAILED_DOCUMENT_REQUEST
+  // with all-zero scores. No amount of pipe vs port, persistent context,
+  // or page juggling fixes the underlying conflict.
+  //
+  // Instead we:
+  //   1. Capture the target URL from Playwright's already-navigated page.
+  //   2. Spawn a separate Chrome process via chrome-launcher (Lighthouse's
+  //      official launcher) using Playwright's bundled Chromium binary —
+  //      no system Chrome required, no version surprises.
+  //   3. Run lighthouse() directly against that isolated Chrome.
+  //   4. Kill the audit Chrome regardless of outcome.
+  //
+  // Parameters:
+  //   thresholds — minimum acceptable Lighthouse scores per category (0-100).
+  //                Categories not listed are not enforced. Keep these
+  //                conservative when auditing a third-party live site:
+  //                external content (CDN images, ads, fonts) drives perf
+  //                scores up and down between runs and would flake an
+  //                aggressive threshold.
+  //   reportName — filename stem for the generated HTML report under reports/.
+  async runLighthouseAudit(
+    thresholds: {
+      performance?: number;
+      accessibility?: number;
+      "best-practices"?: number;
+      seo?: number;
+      pwa?: number;
+    },
+    reportName: string = "lighthouse-report",
+    urlOverride?: string,
+  ) {
+    // 1. Choose the URL to audit. Defaults to whatever URL Playwright's
+    //    page is currently on (so the Background's navigation drives the
+    //    target by default). Callers can pass urlOverride to audit a
+    //    different page — e.g. when the page Playwright navigated to has
+    //    SPA-redirect behaviour that makes Lighthouse abort with
+    //    FAILED_DOCUMENT_REQUEST. The Dyson manufacturer page on NBS
+    //    Source is one such page; the homepage is a stable alternative.
+    const auditUrl = urlOverride ?? this.page.url();
 
+    // 2. Dynamic imports keep these heavy modules out of the hot path
+    //    for non-lighthouse scenarios. lighthouse is ESM-only so we use
+    //    .default to get the callable. chrome-launcher is exposed via
+    //    its `launch` export.
+    const lighthouse = (await import("lighthouse")).default;
+    const { launch: launchChrome } = await import("chrome-launcher");
+
+    // 3. Spawn an isolated Chrome process. chromePath points at the
+    //    Chromium binary Playwright already downloaded — guarantees a
+    //    version Lighthouse 13 supports without requiring a system
+    //    Chrome install.
+    //
+    //    Headed (no --headless flag) intentionally: NBS Source detects
+    //    --headless=new and aborts the navigation with
+    //    net::ERR_ABORTED, which is why the same audit run from Chrome
+    //    DevTools (headed) succeeds while a headless equivalent fails.
+    //    A short-lived Chrome window will appear during the audit;
+    //    that's expected. For CI we'd revisit this with anti-detection
+    //    flags or a non-headless-detectable build.
+    const chrome = await launchChrome({
+      chromePath: chromium.executablePath(),
+      chromeFlags: [
+        "--no-sandbox",
+        "--disable-gpu",
+      ],
+    });
+
+    try {
+      // 4. Run Lighthouse against the isolated Chrome via its DevTools
+      //    port. No Playwright connection is competing for control —
+      //    Lighthouse owns the navigation lifecycle end-to-end.
+      const result = await lighthouse(auditUrl, {
+        port: chrome.port,
+        output: "html",
+        logLevel: "error",
+      });
+
+      if (!result) {
+        throw new Error("Lighthouse audit returned no result.");
+      }
+
+      // 5. Persist the HTML report so failures can be debugged visually.
+      //    lighthouse() returns either a string or a string[] depending
+      //    on the `output` option shape — we requested a single format
+      //    so pick the first if it came back as an array.
+      fs.mkdirSync("reports", { recursive: true });
+      const report = Array.isArray(result.report)
+        ? result.report[0]
+        : result.report;
+      fs.writeFileSync(path.join("reports", `${reportName}.html`), report);
+
+      // 6. Threshold check. lighthouse scores are 0-1 floats (or null
+      //    when a category errors); thresholds are 0-100 ints, so we
+      //    convert before comparing. A null score is treated as 0 — the
+      //    same way playwright-lighthouse did it — so a broken audit
+      //    fails loudly rather than silently passing.
+      const failures: string[] = [];
+      for (const [category, minScore] of Object.entries(thresholds)) {
+        const rawScore = result.lhr.categories[category]?.score;
+        const actualScore =
+          rawScore === null || rawScore === undefined
+            ? 0
+            : Math.round(rawScore * 100);
+        if (actualScore < (minScore as number)) {
+          failures.push(
+            `${category} scored ${actualScore}, below threshold ${minScore}`,
+          );
+        }
+      }
+
+      if (failures.length > 0) {
+        throw new Error(
+          `Lighthouse thresholds not met:\n  ${failures.join("\n  ")}\n` +
+            `Full report: reports/${reportName}.html`,
+        );
+      }
+    } finally {
+      // 7. Always tear down the audit Chrome — even if lighthouse threw —
+      //    so we don't leak a Chromium process per failed run.
+      //
+      //    Wrapped in try/catch because chrome-launcher's destroyTmp step
+      //    hits EPERM on Windows when the just-killed Chrome is still
+      //    releasing file handles in the temp user-data dir. That's a
+      //    cleanup quirk, not a real failure — letting it bubble would
+      //    mask any real audit failure (the throw inside try) AND fail
+      //    otherwise-passing runs purely on Windows.
+      try {
+        await chrome.kill();
+      } catch (cleanupError) {
+        console.warn(
+          "Lighthouse audit Chrome cleanup hit a non-fatal error " +
+            "(safe to ignore on Windows):",
+          cleanupError,
+        );
+      }
+    }
+  }
 }

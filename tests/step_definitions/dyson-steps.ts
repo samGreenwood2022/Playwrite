@@ -133,6 +133,7 @@ Then(
   },
 );
 
+// Takes a screenshot of the Dyson homepage and compares it to a baseline image to check for visual regressions.
 Then(
   "I take a screenshot of the Dyson homepage and compare it to the baseline image to check for visual regressions",
   async function (this: CustomWorld) {
@@ -142,4 +143,21 @@ Then(
   },
 );
 
-
+// Runs a Lighthouse audit against the page Playwright navigated to during
+// the Background (the Dyson manufacturer overview) and asserts each
+// category score meets its minimum threshold. Thresholds are deliberately
+// conservative because the audit runs against a live external site whose
+// performance fluctuates with CDN warmth, ad inventory, and external
+// trackers — stricter numbers would surface as flakes rather than real
+// regressions.
+Then(
+  "A Lighthouse audit shows the Dyson homepage meets minimum performance thresholds",
+  async function (this: CustomWorld) {
+    await this.basePage.runLighthouseAudit({
+      performance: 30,
+      accessibility: 70,
+      "best-practices": 50,
+      seo: 70,
+    });
+  },
+);
