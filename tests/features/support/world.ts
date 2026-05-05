@@ -176,9 +176,25 @@ Before(async function (
   this.loginPage = new LoginPage(this.page);
 });
 
-// Runs after each scenario — closes the browser context and browser to free resources.
-// Optional chaining (?.) prevents errors if setup failed before these were assigned.
-After(async function (this: CustomWorld) {
+// Runs after each scenario — captures a failure screenshot, then closes
+// the browser context and browser to free resources. Optional chaining
+// (?.) prevents errors if setup failed before these were assigned.
+//
+// On failure we attach a PNG to the cucumber result via this.attach.
+// The HTML report generator picks attachments up automatically and
+// embeds them inline next to the failed step, so a triager can see
+// the page state at the moment of failure without re-running the suite.
+After(async function (this: CustomWorld, scenario: ITestCaseHookParameter) {
+  if (scenario.result?.status === "FAILED" && this.page) {
+    try {
+      const screenshot = await this.page.screenshot({ fullPage: true });
+      this.attach(screenshot, "image/png");
+    } catch {
+      // Page may already be closed or in a broken state — swallow so the
+      // teardown still runs and the original failure (not a screenshot
+      // error) is what the report surfaces.
+    }
+  }
   await this.context?.close();
   await this.browser?.close();
 });
