@@ -24,6 +24,15 @@ const suites = {
     out: "reports/cucumber-report",
     name: "Cucumber Tests",
   },
+  "cucumber-trace": {
+    tags: null,
+    parallel: 2,
+    jsonDir: "reports/json/cucumber-trace",
+    json: "reports/json/cucumber-trace/cucumber-trace.json",
+    out: "reports/cucumber-trace-report",
+    name: "Cucumber Tests (with Traces)",
+    traceDir: "reports/traces/cucumber",
+  },
   regression: {
     tags: "@regression",
     parallel: 2,
@@ -66,6 +75,14 @@ if (!suite) {
 fs.rmSync(suite.jsonDir, { recursive: true, force: true });
 fs.mkdirSync(suite.jsonDir, { recursive: true });
 
+// When the suite opts into tracing, wipe and recreate the trace dir so
+// the run starts with a clean slate. world.ts reads PW_TRACE_DIR and
+// emits a .zip per scenario into it.
+if (suite.traceDir) {
+  fs.rmSync(suite.traceDir, { recursive: true, force: true });
+  fs.mkdirSync(suite.traceDir, { recursive: true });
+}
+
 const cucumberArgs = [
   "cucumber-js",
   "--require-module",
@@ -85,6 +102,12 @@ console.log(`\nRunning ${suite.name}...\n`);
 const cucumberResult = spawnSync("npx", cucumberArgs, {
   stdio: "inherit",
   shell: true,
+  env: {
+    ...process.env,
+    ...(suite.traceDir
+      ? { PW_TRACE: "1", PW_TRACE_DIR: suite.traceDir }
+      : {}),
+  },
 });
 
 // Generate the report regardless of cucumber's exit code, but only if a

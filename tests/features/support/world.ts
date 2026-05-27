@@ -160,6 +160,18 @@ Before(async function (
     ...(useStoredAuth ? { storageState: STORAGE_STATE_PATH } : {}),
   });
 
+  // When the runner sets PW_TRACE=1 (see scripts/run-cucumber-suite.mjs
+  // cucumber-trace suite), start a Playwright trace for the scenario.
+  // Sources are included so the trace viewer can show the step that
+  // triggered each action — invaluable when triaging a failure.
+  if (process.env.PW_TRACE === "1") {
+    await this.context.tracing.start({
+      screenshots: true,
+      snapshots: true,
+      sources: true,
+    });
+  }
+
   // Open a fresh tab inside the isolated context. Each scenario gets
   // its own page, so cookies, local storage, and history can't leak
   // between scenarios — the source of most cross-test flakiness.
@@ -195,6 +207,29 @@ After(async function (this: CustomWorld, scenario: ITestCaseHookParameter) {
       // error) is what the report surfaces.
     }
   }
+
+  // Stop the trace before closing the context — once the context is
+  // closed, tracing.stop has nothing to flush. One .zip per scenario,
+  // named after the scenario plus a timestamp so parallel runs of the
+  // same scenario don't overwrite each other.
+  if (process.env.PW_TRACE === "1" && this.context) {
+    try {
+      const traceDir = process.env.PW_TRACE_DIR || "reports/traces";
+      fs.mkdirSync(traceDir, { recursive: true });
+      const safeName = scenario.pickle.name
+        .replace(/[^a-z0-9]+/gi, "_")
+        .toLowerCase();
+      const tracePath = path.join(
+        traceDir,
+        `${safeName}-${Date.now()}.zip`,
+      );
+      await this.context.tracing.stop({ path: tracePath });
+    } catch {
+      // Tracing may already have been stopped or the context torn down;
+      // don't mask the real scenario result with a teardown error.
+    }
+  }
+
   await this.context?.close();
   await this.browser?.close();
 });

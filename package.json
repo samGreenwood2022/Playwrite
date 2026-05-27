@@ -6,6 +6,8 @@
   "scripts": {
     "codegen": "npx playwright codegen https://source.thenbs.com/",
     "cucumber": "node scripts/run-cucumber-suite.mjs cucumber",
+    "cucumber:trace": "node scripts/run-cucumber-suite.mjs cucumber-trace",
+    "show-trace": "playwright show-trace",
     "regression": "node scripts/run-cucumber-suite.mjs regression",
     "smoke": "node scripts/run-cucumber-suite.mjs smoke",
     "accessibility": "node scripts/run-cucumber-suite.mjs accessibility",
