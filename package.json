@@ -21,7 +21,7 @@
     "@axe-core/playwright": "^4.11.2",
     "@cucumber/cucumber": "^12.8.1",
     "@eslint/js": "^10.0.1",
-    "@playwright/test": "^1.59.1",
+    "@playwright/test": "^1.60.0",
     "@types/node": "^25.6.0",
     "@types/pixelmatch": "^5.2.6",
     "@types/pngjs": "^6.0.5",
