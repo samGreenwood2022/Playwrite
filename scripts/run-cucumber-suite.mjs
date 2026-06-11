@@ -9,7 +9,6 @@
 //   e.g. node scripts/run-cucumber-suite.mjs regression
 
 import { spawnSync } from "node:child_process";
-import path from "node:path";
 import fs from "node:fs";
 
 // Each suite writes its JSON into its own directory because

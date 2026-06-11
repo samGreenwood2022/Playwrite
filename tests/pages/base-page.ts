@@ -265,9 +265,14 @@ export class BasePage {
     // catch real regressions, big enough to forgive minor renderer noise.
     const diffRatio = diffPixels / (width * height);
     if (diffRatio > 0.02) {
-      throw new Error(
+      // Attach the diff path to the error so the After hook can surface the
+      // pixel-diff PNG in the report. The live page screenshot it would
+      // otherwise capture doesn't show *what* changed — the diff does.
+      const error = new Error(
         `Visual regression detected: ${diffPixels} pixels differ (${(diffRatio * 100).toFixed(6)}%). Diff saved to ${diffPath}`
       );
+      (error as Error & { diffPath?: string }).diffPath = diffPath;
+      throw error;
     }
   }
 

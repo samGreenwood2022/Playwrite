@@ -13,7 +13,6 @@ import {
   Before,
   After,
   BeforeAll,
-  IWorldOptions,
   ITestCaseHookParameter,
   World,
 } from "@cucumber/cucumber";
@@ -54,6 +53,11 @@ export class CustomWorld extends World {
   // the user is returned to the same page. Optional because not every
   // scenario sets it.
   capturedUrl?: string;
+  // Path to the pixel-diff PNG written by a failed visual regression check.
+  // When set, the After hook attaches this (rather than a live page
+  // screenshot) so the report shows exactly what changed. Optional because
+  // only scenarios that run a visual check and fail it set it.
+  visualDiffPath?: string;
 
   // constructor(options: IWorldOptions) {
   //   super(options);
@@ -198,13 +202,26 @@ Before(async function (
 // the page state at the moment of failure without re-running the suite.
 After(async function (this: CustomWorld, scenario: ITestCaseHookParameter) {
   if (scenario.result?.status === "FAILED" && this.page) {
-    try {
-      const screenshot = await this.page.screenshot({ fullPage: true });
-      this.attach(screenshot, "image/png");
-    } catch {
-      // Page may already be closed or in a broken state — swallow so the
-      // teardown still runs and the original failure (not a screenshot
-      // error) is what the report surfaces.
+    // A visual regression failure records the pixel-diff PNG path on the
+    // world. That diff highlights exactly what changed, so attach it instead
+    // of a live page screenshot (which only shows the current state, not the
+    // mismatch). Any other failure falls back to the live screenshot.
+    if (this.visualDiffPath && fs.existsSync(this.visualDiffPath)) {
+      try {
+        this.attach(fs.readFileSync(this.visualDiffPath), "image/png");
+      } catch {
+        // Diff file unreadable — fall through to nothing rather than mask the
+        // real failure with an attachment error.
+      }
+    } else {
+      try {
+        const screenshot = await this.page.screenshot({ fullPage: true });
+        this.attach(screenshot, "image/png");
+      } catch {
+        // Page may already be closed or in a broken state — swallow so the
+        // teardown still runs and the original failure (not a screenshot
+        // error) is what the report surfaces.
+      }
     }
   }
 
