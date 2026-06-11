@@ -9,8 +9,8 @@ jobs:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
+    - uses: actions/checkout@v6
+    - uses: actions/setup-node@v6
       with:
         node-version: lts/*
     - name: Install dependencies
@@ -22,7 +22,7 @@ jobs:
       env:
         TEST_EMAIL: ${{ secrets.TEST_EMAIL }}
         TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v6
       if: ${{ !cancelled() }}
       with:
         name: cucumber-report
@@ -30,7 +30,7 @@ jobs:
         retention-days: 7
     # Uploads visual regression snapshots so the Linux baseline generated
     # on a first CI run can be downloaded and committed to the repo.
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v6
       if: ${{ !cancelled() }}
       with:
         name: visual-regression-snapshots
