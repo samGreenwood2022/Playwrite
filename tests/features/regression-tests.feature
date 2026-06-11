@@ -42,7 +42,7 @@ Feature: Dyson Homepage Regression Tests
 
   @smoke @regression @authenticated
   Scenario: Webpage title is as expected
-    Then The webpage title will be as expected "Dysox | Overview | BIM Library"
+    Then The webpage title will be as expected "Dyson | Overview | BIM Library"
 
   @smoke @regression @authenticated
   Scenario: Href attribute of the Source logo is as expected
