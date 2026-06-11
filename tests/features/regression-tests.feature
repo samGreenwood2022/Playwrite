@@ -40,10 +40,6 @@ Feature: Dyson Homepage Regression Tests
       | /manufacturer/dyson/ |
       | /overview            |
 
-  # @smoke @regression
-  # Scenario: Telephone link has the correct number, protocol and href
-  #   Then The number will be correct, the href will be as expected, and the telephone protocol will be correct "08003457788"
-
   @smoke @regression @authenticated
   Scenario: Webpage title is as expected
     Then The webpage title will be as expected "Dyson | Overview | BIM Library"
@@ -71,12 +67,6 @@ Feature: Dyson Homepage Regression Tests
   @smoke @regression @authenticated
   Scenario: Tabs on the Dyson navigation bar are visible, in the correct order and have the correct href links
     Then Tabs on the Dyson navigation bar are visible, in the correct order and have the correct href links
-
-  # @regression @authenticated
-  # Scenario: Clicking sign in from any webpage logs the user in and returns them to the previous page
-  #   When I sign in with valid credentials
-  #   Then The user is then logged in and returned to their previous page
-  #   And The UI will reflect that the user is logged in
 
   @regression @authenticated
   Scenario: Visual regression testing of the Dyson homepage will show no significant differences compared to the baseline image
