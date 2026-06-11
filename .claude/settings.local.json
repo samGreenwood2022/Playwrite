@@ -6,7 +6,9 @@
       "Bash(npx tsc *)",
       "Bash(npx cucumber-js *)",
       "Bash(grep -oE '\"runtimeError\":\\\\{\"code\":\"[^\"]+\",\"message\":\"[^\"]+' reports/lighthouse-report.html)",
-      "Bash(npm ls *)"
+      "Bash(npm ls *)",
+      "PowerShell(npm run *)",
+      "PowerShell(npx tsc --noEmit 2>&1 | Select-Object -First 20)"
     ]
   }
 }

@@ -61,8 +61,8 @@ Feature: Dyson Homepage Regression Tests
     Then The button will display the correct text "Contact manufacturer"
 
   @accessibility @regression @authenticated
-  Scenario: Accessibility checks complete and results are output to the console
-    Then The results of the accessibility checks will be output to the console
+  Scenario: Accessibility checks complete and results are output to an HTML report
+    Then The results of the accessibility checks will be output to an HTML report
 
   @smoke @regression
   Scenario: API response and content are as expected

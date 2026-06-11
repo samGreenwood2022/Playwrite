@@ -74,7 +74,7 @@ Then(
 
 // Runs an Axe accessibility scan on the current page and outputs any violations to an HTML report.
 Then(
-  "The results of the accessibility checks will be output to the console",
+  "The results of the accessibility checks will be output to an HTML report",
   async function (this: CustomWorld) {
     await this.basePage.generateAccessibilityReport();
   },
@@ -137,9 +137,16 @@ Then(
 Then(
   "I take a screenshot of the Dyson homepage and compare it to the baseline image to check for visual regressions",
   async function (this: CustomWorld) {
-    await this.basePage.verifyVisualRegression("baseline", [
-      this.dysonPage.navigationTabs,
-    ]);
+    try {
+      await this.basePage.verifyVisualRegression("baseline", [
+        this.dysonPage.navigationTabs,
+      ]);
+    } catch (err) {
+      // Record the diff PNG path so the After hook attaches it to the report
+      // instead of a live page screenshot, then rethrow to fail the step.
+      this.visualDiffPath = (err as { diffPath?: string }).diffPath;
+      throw err;
+    }
   },
 );
 

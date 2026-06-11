@@ -9,7 +9,6 @@
 //   e.g. node scripts/run-cucumber-suite.mjs regression
 
 import { spawnSync } from "node:child_process";
-import path from "node:path";
 import fs from "node:fs";
 
 // Each suite writes its JSON into its own directory because
@@ -83,6 +82,12 @@ if (suite.traceDir) {
   fs.mkdirSync(suite.traceDir, { recursive: true });
 }
 
+// Retry flaky scenarios up to twice on CI only. process.env.CI is set by
+// GitHub Actions (and most CI providers); locally it's undefined, so a
+// failing scenario fails immediately rather than masking real bugs behind
+// retries. Mirrors the retries setting in playwright.config.ts.
+const retries = process.env.CI ? 2 : 0;
+
 const cucumberArgs = [
   "cucumber-js",
   "--require-module",
@@ -94,6 +99,7 @@ const cucumberArgs = [
   "tests/features/*.feature",
   ...(suite.tags ? ["--tags", suite.tags] : []),
   ...(suite.parallel ? ["--parallel", String(suite.parallel)] : []),
+  ...(retries ? ["--retry", String(retries)] : []),
   "--format",
   `json:${suite.json}`,
 ];

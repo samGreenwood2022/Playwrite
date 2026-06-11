@@ -13,7 +13,6 @@ import {
   Before,
   After,
   BeforeAll,
-  IWorldOptions,
   ITestCaseHookParameter,
   World,
 } from "@cucumber/cucumber";
@@ -54,10 +53,15 @@ export class CustomWorld extends World {
   // the user is returned to the same page. Optional because not every
   // scenario sets it.
   capturedUrl?: string;
+  // Path to the pixel-diff PNG written by a failed visual regression check.
+  // When set, the After hook attaches this (rather than a live page
+  // screenshot) so the report shows exactly what changed. Optional because
+  // only scenarios that run a visual check and fail it set it.
+  visualDiffPath?: string;
 
-  constructor(options: IWorldOptions) {
-    super(options);
-  }
+  // constructor(options: IWorldOptions) {
+  //   super(options);
+  // }
 }
 
 // Registers CustomWorld as the world constructor so Cucumber uses it for every scenario.
@@ -120,7 +124,19 @@ BeforeAll(async function () {
   await basePage.signInButton.click();
   await loginPage.signIn(email, password);
 
-  await context.storageState({ path: STORAGE_STATE_PATH });
+  // Write the storage state atomically. Under --parallel, cucumber runs this
+  // BeforeAll once per worker process; on a cold runner both workers miss the
+  // cache and sign in, so two processes would otherwise write this same file
+  // concurrently. A direct storageState({ path }) is a truncate-and-write, so
+  // a shorter document landing over a longer one leaves trailing bytes —
+  // surfacing later as "Unexpected non-whitespace character after JSON". We
+  // serialize to a process-unique temp file then rename() into place; rename
+  // is atomic, so any reader (or the other worker) sees either the old file
+  // or a complete new one, never a half-written one.
+  const state = await context.storageState();
+  const tmpPath = `${STORAGE_STATE_PATH}.${process.pid}.tmp`;
+  fs.writeFileSync(tmpPath, JSON.stringify(state));
+  fs.renameSync(tmpPath, STORAGE_STATE_PATH);
   await browser.close();
 });
 
@@ -198,13 +214,26 @@ Before(async function (
 // the page state at the moment of failure without re-running the suite.
 After(async function (this: CustomWorld, scenario: ITestCaseHookParameter) {
   if (scenario.result?.status === "FAILED" && this.page) {
-    try {
-      const screenshot = await this.page.screenshot({ fullPage: true });
-      this.attach(screenshot, "image/png");
-    } catch {
-      // Page may already be closed or in a broken state — swallow so the
-      // teardown still runs and the original failure (not a screenshot
-      // error) is what the report surfaces.
+    // A visual regression failure records the pixel-diff PNG path on the
+    // world. That diff highlights exactly what changed, so attach it instead
+    // of a live page screenshot (which only shows the current state, not the
+    // mismatch). Any other failure falls back to the live screenshot.
+    if (this.visualDiffPath && fs.existsSync(this.visualDiffPath)) {
+      try {
+        this.attach(fs.readFileSync(this.visualDiffPath), "image/png");
+      } catch {
+        // Diff file unreadable — fall through to nothing rather than mask the
+        // real failure with an attachment error.
+      }
+    } else {
+      try {
+        const screenshot = await this.page.screenshot({ fullPage: true });
+        this.attach(screenshot, "image/png");
+      } catch {
+        // Page may already be closed or in a broken state — swallow so the
+        // teardown still runs and the original failure (not a screenshot
+        // error) is what the report surfaces.
+      }
     }
   }
 

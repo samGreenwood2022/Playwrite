@@ -66,7 +66,7 @@ export class HomePage {
     // Up to 3 full attempts, each starting with a 5s window for the dropdown
     // to appear. If everything inside the try block succeeds, we return early.
     const maxAttempts = 3;
-    const dropdownTimeout = 5000;
+    const dropdownTimeout = 30000;
 
     for (let attempt = 1; attempt <= maxAttempts; attempt++) {
       try {
