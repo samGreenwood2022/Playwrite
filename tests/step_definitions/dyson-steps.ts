@@ -74,7 +74,7 @@ Then(
 
 // Runs an Axe accessibility scan on the current page and outputs any violations to an HTML report.
 Then(
-  "The results of the accessibility checks will be output to the console",
+  "The results of the accessibility checks will be output to an HTML report",
   async function (this: CustomWorld) {
     await this.basePage.generateAccessibilityReport();
   },

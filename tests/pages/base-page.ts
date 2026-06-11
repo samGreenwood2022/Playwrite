@@ -85,16 +85,25 @@ export class BasePage {
   }
 
   // Runs an Axe accessibility scan against the current page and writes the
-  // results to reports/accessibility-report.html. Any violations are also printed to the console
-  // so they show up in the test runner output without needing to open the file.
+  // results to reports/accessibility-report.html. Open that file to review
+  // any violations.
   async generateAccessibilityReport() {
     const accessibilityScanResults = await new AxeBuilder({
       page: this.page,
     }).analyze();
-    const html = createHtmlReport({ results: accessibilityScanResults });
+    // doNotCreateReportFile stops axe-html-reporter from writing its own
+    // copy to artifacts/ and logging its generic "HTML report" message — we
+    // write the file ourselves and log a clearer, accessibility-specific one.
+    const html = createHtmlReport({
+      results: accessibilityScanResults,
+      options: { doNotCreateReportFile: true },
+    });
     fs.mkdirSync("reports", { recursive: true });
-    fs.writeFileSync("reports/accessibility-report.html", html);
-    console.log(accessibilityScanResults.violations);
+    const reportPath = path.resolve("reports/accessibility-report.html");
+    fs.writeFileSync(reportPath, html);
+    console.info(
+      `Accessibility report was saved into the following directory ${reportPath}`,
+    );
   }
 
   // Triggers any intersection-observer lazy loading by scrolling the full document

@@ -55,9 +55,9 @@ export class CustomWorld extends World {
   // scenario sets it.
   capturedUrl?: string;
 
-  constructor(options: IWorldOptions) {
-    super(options);
-  }
+  // constructor(options: IWorldOptions) {
+  //   super(options);
+  // }
 }
 
 // Registers CustomWorld as the world constructor so Cucumber uses it for every scenario.
