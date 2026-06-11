@@ -10,7 +10,9 @@
       "PowerShell(npm run *)",
       "PowerShell(npx tsc --noEmit 2>&1 | Select-Object -First 20)",
       "WebSearch",
-      "WebFetch(domain:github.com)"
+      "WebFetch(domain:github.com)",
+      "Bash(node scripts/generate-report.mjs reports/json/cucumber reports/cucumber-report \"Cucumber Tests\")",
+      "Bash(node *)"
     ]
   }
 }

@@ -43,6 +43,60 @@ const pkgPath = path.resolve(
 );
 const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
 
+// Tally scenario pass/fail across every cucumber JSON in the dir so the Run
+// info panel can surface the headline numbers — the donut charts show the
+// split but not the raw counts. Counting mirrors how the reporter derives a
+// scenario's status: any failed step (including Before/After hooks) fails the
+// scenario; otherwise every step must have passed for it to count as passed.
+// Anything else (skipped/pending/undefined) is tallied separately so the
+// totals still add up rather than silently dropping scenarios.
+function tallyScenarios(dir) {
+  let passed = 0;
+  let failed = 0;
+  let other = 0;
+  const files = fs.readdirSync(dir).filter((f) => f.endsWith(".json"));
+  for (const file of files) {
+    let features;
+    try {
+      features = JSON.parse(fs.readFileSync(path.join(dir, file), "utf8"));
+    } catch {
+      continue; // skip unreadable/partial JSON rather than crash the report
+    }
+    if (!Array.isArray(features)) continue;
+    for (const feature of features) {
+      for (const element of feature.elements ?? []) {
+        // Backgrounds aren't scenarios — their steps are reported inline on
+        // each scenario, so skip them to avoid double counting.
+        if (element.type === "background") continue;
+        const statuses = (element.steps ?? []).map((s) => s.result?.status);
+        if (statuses.includes("failed")) failed++;
+        else if (statuses.length > 0 && statuses.every((s) => s === "passed"))
+          passed++;
+        else other++;
+      }
+    }
+  }
+  return { passed, failed, other, total: passed + failed + other };
+}
+
+const tally = tallyScenarios(jsonDir);
+
+// Build the Run info rows. Pass/fail/total are always shown; "other" only
+// appears when there actually are skipped/pending scenarios so the panel
+// stays clean on a normal run.
+const runInfoData = [
+  { label: "Project", value: pkg.name },
+  { label: "Version", value: pkg.version },
+  { label: "Suite", value: displayName },
+  { label: "Scenarios total", value: String(tally.total) },
+  { label: "Scenarios passed", value: String(tally.passed) },
+  { label: "Scenarios failed", value: String(tally.failed) },
+  ...(tally.other > 0
+    ? [{ label: "Scenarios other", value: String(tally.other) }]
+    : []),
+  { label: "Generated", value: new Date().toISOString() },
+];
+
 report.generate({
   jsonDir,
   reportPath: outDir,
@@ -58,12 +112,7 @@ report.generate({
   },
   customData: {
     title: "Run info",
-    data: [
-      { label: "Project", value: pkg.name },
-      { label: "Version", value: pkg.version },
-      { label: "Suite", value: displayName },
-      { label: "Generated", value: new Date().toISOString() },
-    ],
+    data: runInfoData,
   },
 });
 
