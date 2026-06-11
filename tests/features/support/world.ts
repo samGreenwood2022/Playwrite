@@ -124,7 +124,19 @@ BeforeAll(async function () {
   await basePage.signInButton.click();
   await loginPage.signIn(email, password);
 
-  await context.storageState({ path: STORAGE_STATE_PATH });
+  // Write the storage state atomically. Under --parallel, cucumber runs this
+  // BeforeAll once per worker process; on a cold runner both workers miss the
+  // cache and sign in, so two processes would otherwise write this same file
+  // concurrently. A direct storageState({ path }) is a truncate-and-write, so
+  // a shorter document landing over a longer one leaves trailing bytes —
+  // surfacing later as "Unexpected non-whitespace character after JSON". We
+  // serialize to a process-unique temp file then rename() into place; rename
+  // is atomic, so any reader (or the other worker) sees either the old file
+  // or a complete new one, never a half-written one.
+  const state = await context.storageState();
+  const tmpPath = `${STORAGE_STATE_PATH}.${process.pid}.tmp`;
+  fs.writeFileSync(tmpPath, JSON.stringify(state));
+  fs.renameSync(tmpPath, STORAGE_STATE_PATH);
   await browser.close();
 });
 
