@@ -64,6 +64,22 @@ Feature: Dyson Homepage Regression Tests
   Scenario: API response and content are as expected
     Then The API response and content is as expected
 
+  # The certifications GraphQL search is stubbed in the Before hook (world.ts):
+  # the first certification is renamed to a fixed value the live data never
+  # contains, so the assertion proves our app renders what the API returns —
+  # deterministically, regardless of Dyson's real certifications.
+  @regression @stub-certifications
+  Scenario: A stubbed certification name renders on the Certifications tab
+    When I open the Certifications tab
+    Then The first certification tile shows "Stubbed Test Certification"
+
+  # Forcing an empty GraphQL response exercises the no-results UI — a state the
+  # live data won't reproduce on demand (Dyson always has certifications).
+  @regression @stub-empty-certifications
+  Scenario: The Certifications tab shows the empty state when there are no certifications
+    When I open the Certifications tab
+    Then The Certifications tab shows no results
+
   @smoke @regression @authenticated
   Scenario: Tabs on the Dyson navigation bar are visible, in the correct order and have the correct href links
     Then The Dyson navigation bar displays the following tabs in order
