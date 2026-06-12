@@ -66,7 +66,14 @@ Feature: Dyson Homepage Regression Tests
 
   @smoke @regression @authenticated
   Scenario: Tabs on the Dyson navigation bar are visible, in the correct order and have the correct href links
-    Then Tabs on the Dyson navigation bar are visible, in the correct order and have the correct href links
+    Then The Dyson navigation bar displays the following tabs in order
+      | label          | href                                                                     |
+      | Overview       | /en/manufacturer/dyson/nakAxHWxDZprdqkBaCdn4U/overview                   |
+      | Products       | /en/manufacturer/dyson/nakAxHWxDZprdqkBaCdn4U/products                   |
+      | Certifications | /en/manufacturer/dyson/nakAxHWxDZprdqkBaCdn4U/third-party-certifications |
+      | Literature     | /en/manufacturer/dyson/nakAxHWxDZprdqkBaCdn4U/literature                 |
+      | Case studies   | /en/manufacturer/dyson/nakAxHWxDZprdqkBaCdn4U/case-studies               |
+      | About us       | /en/manufacturer/dyson/nakAxHWxDZprdqkBaCdn4U/about                      |
 
   @regression @authenticated
   Scenario: Visual regression testing of the Dyson homepage will show no significant differences compared to the baseline image
@@ -78,7 +85,9 @@ Feature: Dyson Homepage Regression Tests
     
   @authenticated
   Scenario: Telephone link has the correct number, protocol and href
-    Then The number will be correct, the href will be as expected, and the telephone protocol will be correct "08003457788"
+    Then The telephone link displays the correct details
+      | number      | href            |
+      | 08003457788 | tel:08003457788 |
 
 
 

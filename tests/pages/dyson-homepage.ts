@@ -61,7 +61,7 @@ export class DysonHomepage {
 
   // Verifies the telephone link is visible, displays the correct number,
   // and uses the tel: protocol in its href so clicking it triggers a phone call.
-  async verifyTelNo(telNo: string): Promise<void> {
+  async verifyTelNo(telNo: string, expectedHref: string): Promise<void> {
     // await this.page.screenshot({ path: "telephoneLink.png" });
     await playwrightExpect(this.telephoneLink).toBeVisible({ timeout: 10000 });
     await playwrightExpect(this.telephoneLink).toHaveText(telNo, {
@@ -69,7 +69,7 @@ export class DysonHomepage {
     });
     await playwrightExpect(this.telephoneLink).toHaveAttribute(
       "href",
-      `tel:${telNo}`,
+      expectedHref,
       { timeout: 10000 },
     );
   }
@@ -102,41 +102,41 @@ export class DysonHomepage {
     );
   }
 
-  // Verifies the navigation bar is visible, that each expected tab is present,
-  // and that they appear in the correct order.
-  async verifyDysonNavigationBar(): Promise<void> {
+  // Verifies the navigation bar is visible, that each expected tab is present in the
+  // correct order, and that each links to the correct href. The expected labels and
+  // hrefs are passed in from the feature file's data table rather than hardcoded here.
+  async verifyDysonNavigationBar(
+    tabs: { label: string; href: string }[],
+  ): Promise<void> {
     await playwrightExpect(this.navigationTabs).toBeVisible();
 
-    const tabNames = [
-      "Overview",
-      "Products",
-      "Certifications",
-      "Literature",
-      "Case studies",
-      "About us",
-    ];
-
-    // Grab all anchor elements within the nav container and read their text in DOM order.
+    // Grab all anchor elements within the nav container, in DOM order.
     const allTabs = this.navigationTabs.locator("a");
-    // console.log(allTabs)
-    const actualTabs = await allTabs.allInnerTexts();
-    // console.log(actualTabs);
-    // Strip surrounding whitespace from each tab label before comparing.
-    const trimmedTabs = actualTabs.map((t) => t.trim());
-    // console.log(trimmedTabs);
 
-    // Loop through each expected tab name by its position (index).
-    // i starts at 0 (first tab) and increments by 1 each iteration until
-    // all expected tabs have been checked.
-    for (let i = 0; i < tabNames.length; i++) {
-      // Compare the actual tab at this position against the expected tab name.
+    // Fail fast if the bar has a different number of tabs than expected — this
+    // catches added/removed tabs that a per-position label check alone would miss.
+    await playwrightExpect(allTabs).toHaveCount(tabs.length);
+
+    // Strip surrounding whitespace from each tab label before comparing.
+    const actualLabels = (await allTabs.allInnerTexts()).map((t) => t.trim());
+
+    // Loop through each expected tab by its position (index). i starts at 0 (first
+    // tab) and increments by 1 each iteration until all expected tabs are checked.
+    for (let i = 0; i < tabs.length; i++) {
+      // Compare the actual tab at this position against the expected label.
       // If they don't match, the tab is either wrong or in the wrong order.
-      if (trimmedTabs[i] !== tabNames[i]) {
+      if (actualLabels[i] !== tabs[i].label) {
         // i + 1 is used in the message so the position is human-readable (1-based, not 0-based).
         throw new Error(
-          `Tab order mismatch at position ${i + 1}: expected "${tabNames[i]}" but found "${trimmedTabs[i]}"`
+          `Tab order mismatch at position ${i + 1}: expected "${tabs[i].label}" but found "${actualLabels[i]}"`,
         );
       }
+
+      // Verify the tab at this position links to the expected href.
+      await playwrightExpect(allTabs.nth(i)).toHaveAttribute(
+        "href",
+        tabs[i].href,
+      );
     }
   }
 }
