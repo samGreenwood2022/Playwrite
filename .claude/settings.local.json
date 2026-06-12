@@ -12,7 +12,15 @@
       "WebSearch",
       "WebFetch(domain:github.com)",
       "Bash(node scripts/generate-report.mjs reports/json/cucumber reports/cucumber-report \"Cucumber Tests\")",
-      "Bash(node *)"
+      "Bash(node *)",
+      "Bash(type cucumber.json)",
+      "Bash(type cucumber.js)",
+      "Bash(type cucumber.cjs)",
+      "PowerShell($f = Get-Item .auth/user.json; \"user.json last written: \" + $f.LastWriteTime + \" \\(\" + [math]::Round\\(\\(\\(Get-Date\\) - $f.LastWriteTime\\).TotalMinutes,1\\) + \" min ago\\)\")",
+      "Bash(npx ts-node *)",
+      "Bash(PW_TRACE=1 PW_TRACE_DIR=reports/traces/empty-state npx cucumber-js --require-module ts-node/register --require tests/features/support/*.ts --require tests/step_definitions/*.ts tests/features/*.feature --tags \"@stub-empty-certifications\")",
+      "PowerShell(npm uninstall *)",
+      "PowerShell(npx playwright install)"
     ]
   }
 }

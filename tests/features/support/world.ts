@@ -39,6 +39,12 @@ const STORAGE_STATE_PATH = path.resolve(".auth/user.json");
 // during a long dev session, long enough to skip sign-in on consecutive runs.
 const STORAGE_STATE_TTL_MS = 60 * 60 * 1000;
 
+// The name injected into the first certification by the @stub-certifications
+// route below. The feature file asserts this exact string, so the two must stay
+// in sync. Deliberately not a real certification name so a passing test proves
+// the stub took effect (the live data never contains this value).
+const STUBBED_CERTIFICATION_NAME = "Stubbed Test Certification";
+
 // CustomWorld extends Cucumber's base World class and holds all shared state for a scenario.
 // Properties are declared here so step definitions can access them via `this`.
 export class CustomWorld extends World {
@@ -192,6 +198,55 @@ Before(async function (
   // its own page, so cookies, local storage, and history can't leak
   // between scenarios — the source of most cross-test flakiness.
   this.page = await this.context.newPage();
+
+  // Intercept the GraphQL search that backs the Certifications tab so the tab's
+  // content is deterministic and independent of Dyson's live certifications:
+  //   @stub-certifications       — rename the first certification to a known value.
+  //   @stub-empty-certifications — return zero certifications (empty-state path).
+  // Registered here (before the Background navigates) so it's active by the time
+  // the tab fires its query.
+  //
+  // Two different operations share the name "certifications": one returns the
+  // filter facets (issuingBodyByBrandId), the other the result tiles
+  // (byBrandId.paginatedResponse.items). We patch only the latter — matching on
+  // the response shape, not the operation name — which is why we fetch the real
+  // response first and modify just the tile list.
+  const renameFirstCert = tags.includes("@stub-certifications");
+  const emptyCerts = tags.includes("@stub-empty-certifications");
+  if (renameFirstCert || emptyCerts) {
+    await this.page.route(
+      "**/api.source.thenbs.com/graphql",
+      async (route) => {
+        const reqBody = JSON.parse(route.request().postData() || "[]");
+        const ops = (Array.isArray(reqBody) ? reqBody : [reqBody]).map(
+          (o) => o.operationName,
+        );
+        // Skip batches that don't touch certifications — pass them through.
+        if (!ops.includes("certifications")) return route.continue();
+
+        const response = await route.fetch();
+        let json;
+        try {
+          json = await response.json();
+        } catch {
+          return route.fulfill({ response });
+        }
+        const arr = Array.isArray(json) ? json : [json];
+        for (const entry of arr) {
+          const pr = entry?.data?.certifications?.byBrandId?.paginatedResponse;
+          if (!pr || !Array.isArray(pr.items)) continue;
+          if (emptyCerts) {
+            pr.items = [];
+            // Keep the total consistent so the UI commits to the empty state.
+            if (typeof pr.totalItems === "number") pr.totalItems = 0;
+          } else if (renameFirstCert && pr.items.length) {
+            pr.items[0].name = STUBBED_CERTIFICATION_NAME;
+          }
+        }
+        await route.fulfill({ response, json: arr });
+      },
+    );
+  }
 
   // Constructor-injection: hand the same Page instance to every page
   // object. They all act on the same browser tab, so a navigation in one
