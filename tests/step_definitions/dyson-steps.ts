@@ -5,7 +5,13 @@
 // the page objects (homePage, dysonPage, basePage) set up in world.ts.
 // The step text in each Given/Then call must match the feature file exactly.
 
-import { Given, When, Then, setDefaultTimeout } from "@cucumber/cucumber";
+import {
+  Given,
+  When,
+  Then,
+  DataTable,
+  setDefaultTimeout,
+} from "@cucumber/cucumber";
 import { expect } from "@playwright/test";
 import { CustomWorld } from "../features/support/world";
 
@@ -33,10 +39,14 @@ Then(
 );
 
 // Verifies the telephone link displays the correct number, uses the tel: protocol, and has the correct href.
+// The expected number and href are read from a single-row data table so both values
+// are visible in the feature file rather than the href being constructed in code.
 Then(
-  "The number will be correct, the href will be as expected, and the telephone protocol will be correct {string}",
-  async function (this: CustomWorld, telNo: string) {
-    await this.dysonPage.verifyTelNo(telNo);
+  "The telephone link displays the correct details",
+  async function (this: CustomWorld, details: DataTable) {
+    // hashes() turns the table into [{ number, href }] keyed by the header row.
+    const { number, href } = details.hashes()[0];
+    await this.dysonPage.verifyTelNo(number, href);
   },
 );
 
@@ -88,11 +98,18 @@ Then(
   },
 );
 
-// Verifies the Dyson navigation bar contains the correct tabs with the expected href links.
+// Verifies the Dyson navigation bar contains the expected tabs in the expected order.
+// The expected tab labels come from the feature file's data table, so the spec — not
+// the page object — owns the list of what should appear.
 Then(
-  "Tabs on the Dyson navigation bar are visible, in the correct order and have the correct href links",
-  async function (this: CustomWorld) {
-    await this.dysonPage.verifyDysonNavigationBar();
+  "The Dyson navigation bar displays the following tabs in order",
+  async function (this: CustomWorld, tabs: DataTable) {
+    // hashes() yields one object per row keyed by the header columns ("label", "href").
+    const expectedTabs = tabs.hashes().map((row) => ({
+      label: row.label,
+      href: row.href,
+    }));
+    await this.dysonPage.verifyDysonNavigationBar(expectedTabs);
   },
 );
 
