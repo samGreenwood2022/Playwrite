@@ -18,7 +18,7 @@
 #  - API Testing
 #  - Different ways of interacting and verifying UI element attributes
 #  - Tag-driven smoke / regression suites
-#  - Auth via persisted storage state
+#  - Auth via persisted storage state (created in beforeAll hook in world.ts)
 
 Feature: Dyson Homepage Regression Tests
 

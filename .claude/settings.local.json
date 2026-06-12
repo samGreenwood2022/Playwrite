@@ -12,7 +12,11 @@
       "WebSearch",
       "WebFetch(domain:github.com)",
       "Bash(node scripts/generate-report.mjs reports/json/cucumber reports/cucumber-report \"Cucumber Tests\")",
-      "Bash(node *)"
+      "Bash(node *)",
+      "Bash(type cucumber.json)",
+      "Bash(type cucumber.js)",
+      "Bash(type cucumber.cjs)",
+      "PowerShell($f = Get-Item .auth/user.json; \"user.json last written: \" + $f.LastWriteTime + \" \\(\" + [math]::Round\\(\\(\\(Get-Date\\) - $f.LastWriteTime\\).TotalMinutes,1\\) + \" min ago\\)\")"
     ]
   }
 }
