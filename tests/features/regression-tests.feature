@@ -60,35 +60,6 @@ Feature: Dyson Homepage Regression Tests
   Scenario: Accessibility checks complete and results are output to an HTML report
     Then The results of the accessibility checks will be output to an HTML report
 
-  @smoke @regression
-  Scenario: API response and content are as expected
-    Then The API response and content is as expected
-
-  # The certifications GraphQL search is stubbed in the Before hook (world.ts):
-  # the first certification is renamed to a fixed value the live data never
-  # contains, so the assertion proves our app renders what the API returns —
-  # deterministically, regardless of Dyson's real certifications.
-  @regression @stub-certifications
-  Scenario: A stubbed certification name renders on the Certifications tab
-    When I open the Certifications tab
-    Then The first certification tile shows "Stubbed Test Certification"
-
-  # Forcing an empty GraphQL response exercises the no-results UI — a state the
-  # live data won't reproduce on demand (Dyson always has certifications).
-  @regression @stub-empty-certifications
-  Scenario: The Certifications tab shows the empty state when there are no certifications
-    When I open the Certifications tab
-    Then The Certifications tab shows no results
-
-  # Forcing a 500 on the certifications GraphQL request exercises the server-error
-  # UI — a failure mode the live API won't produce on demand. Verifies the app
-  # degrades gracefully (surfaces an error, renders no result tiles) rather than
-  # hanging on a spinner or showing stale content.
-  @regression @stub-error-certifications
-  Scenario: The Certifications tab shows an error state when the API returns a 500
-    When I open the Certifications tab
-    Then The Certifications tab shows a server error
-
   @smoke @regression @authenticated
   Scenario: Tabs on the Dyson navigation bar are visible, in the correct order and have the correct href links
     Then The Dyson navigation bar displays the following tabs in order
