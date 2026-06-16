@@ -11,13 +11,13 @@
 # The main purpose of the project is to demonstrate the following:
 #  - Cucumber/Gherkin and Feature file implementation
 #  - Page Object Model Design Pattern
-#  - GitHub repository management and best practices
+#  - GitHub repository management
 #  - Independent tests
 #  - CI Pipeline Integration
 #  - Implementation of the Axe-plugin for usability reporting
-#  - API Testing
+#  - API Testing and mocked responses
 #  - Different ways of interacting and verifying UI element attributes
-#  - Tag-driven smoke / regression suites
+#  - Tag-driven Gherkin tests
 #  - Auth via persisted storage state (created in beforeAll hook in world.ts)
 
 Feature: Dyson Homepage Regression Tests

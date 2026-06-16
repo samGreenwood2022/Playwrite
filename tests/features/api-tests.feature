@@ -29,8 +29,8 @@ Feature: Dyson Manufacturer API and Network Tests
     Given I navigate to the Dyson manufacturer homepage
 
   @smoke @regression
-  Scenario: API response and content are as expected
-    Then The API response and content is as expected
+  Scenario: The geolocation API endpoint returns the expected response and the UI locale label matches
+    Then The API response and the UI locale label are as expected
 
   # The certifications GraphQL search is stubbed in the Before hook (world.ts):
   # the first certification is renamed to a fixed value the live data never

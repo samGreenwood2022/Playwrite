@@ -92,7 +92,7 @@ Then(
 
 // Calls the geolocation API, validates the JSON response, and verifies the UI locale label matches.
 Then(
-  "The API response and content is as expected",
+  "The API response and the UI locale label are as expected",
   async function (this: CustomWorld) {
     await this.dysonPage.verifyUIandAPIContent();
   },
