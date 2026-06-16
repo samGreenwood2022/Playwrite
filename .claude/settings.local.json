@@ -20,7 +20,9 @@
       "Bash(npx ts-node *)",
       "Bash(PW_TRACE=1 PW_TRACE_DIR=reports/traces/empty-state npx cucumber-js --require-module ts-node/register --require tests/features/support/*.ts --require tests/step_definitions/*.ts tests/features/*.feature --tags \"@stub-empty-certifications\")",
       "PowerShell(npm uninstall *)",
-      "PowerShell(npx playwright install)"
+      "PowerShell(npx playwright install)",
+      "Bash(mkdir -p reports/traces)",
+      "Bash(PW_TRACE=1 PW_TRACE_DIR=reports/traces npx cucumber-js --require-module ts-node/register --require \"tests/features/support/*.ts\" --require \"tests/step_definitions/*.ts\" tests/features/*.feature --tags \"@stub-error-certifications\")"
     ]
   }
 }

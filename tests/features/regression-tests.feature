@@ -80,6 +80,15 @@ Feature: Dyson Homepage Regression Tests
     When I open the Certifications tab
     Then The Certifications tab shows no results
 
+  # Forcing a 500 on the certifications GraphQL request exercises the server-error
+  # UI — a failure mode the live API won't produce on demand. Verifies the app
+  # degrades gracefully (surfaces an error, renders no result tiles) rather than
+  # hanging on a spinner or showing stale content.
+  @regression @stub-error-certifications
+  Scenario: The Certifications tab shows an error state when the API returns a 500
+    When I open the Certifications tab
+    Then The Certifications tab shows a server error
+
   @smoke @regression @authenticated
   Scenario: Tabs on the Dyson navigation bar are visible, in the correct order and have the correct href links
     Then The Dyson navigation bar displays the following tabs in order

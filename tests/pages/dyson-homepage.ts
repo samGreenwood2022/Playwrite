@@ -23,6 +23,13 @@ export class DysonHomepage {
   // The empty-state panel shown when a search (e.g. the Certifications tab)
   // returns no results.
   readonly noResultsGuidance: Locator;
+  // The Certifications tab content container, and the results wrapper inside it
+  // that holds EITHER the result tiles or the no-results empty-state. The list
+  // container always renders once the tab is open; the wrapper only renders
+  // when the backing request resolves successfully, so its absence is how we
+  // detect the server-error (500) state.
+  readonly certificateList: Locator;
+  readonly searchResultWrapper: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -37,6 +44,8 @@ export class DysonHomepage {
       '[data-cy="searchResultTileTitle"]',
     );
     this.noResultsGuidance = page.locator("app-no-results-guidance");
+    this.certificateList = page.locator("app-certificate-list");
+    this.searchResultWrapper = page.locator("app-search-result-wrapper");
   }
 
   // Makes a real HTTP request to the OneTrust geolocation API and verifies both
@@ -114,16 +123,22 @@ export class DysonHomepage {
     );
   }
 
-  // Opens the Certifications tab and waits for the panel to settle into EITHER
-  // outcome — result tiles or the empty-state guidance — so the method works for
-  // both the populated and empty scenarios without a tile-only wait timing out.
+  // Opens the Certifications tab and waits for the panel's backing request to
+  // settle. We wait on the GraphQL tile response — identified by the
+  // "paginatedResponse" selection in its query body — rather than a specific
+  // DOM element, so the method works for ALL three outcomes without relying on
+  // a timeout: populated (tiles render), empty (no-results renders), and the
+  // server-error 500 (neither renders). Each outcome's verify method then
+  // asserts the rendered state with auto-waiting assertions.
   async openCertificationsTab(): Promise<void> {
+    const tileResponse = this.page.waitForResponse(
+      (resp) =>
+        resp.url().includes("api.source.thenbs.com/graphql") &&
+        (resp.request().postData() || "").includes("paginatedResponse"),
+      { timeout: 30000 },
+    );
     await this.certificationsTab.click();
-    await this.certificationTileTitles
-      .first()
-      .or(this.noResultsGuidance)
-      .first()
-      .waitFor({ state: "visible", timeout: 30000 });
+    await tileResponse;
   }
 
   // Verifies the first certification result tile shows the expected title.
@@ -143,6 +158,24 @@ export class DysonHomepage {
       "Sorry, no results were found",
     );
     await playwrightExpect(this.certificationTileTitles).toHaveCount(0);
+  }
+
+  // Verifies how the app handles a 500 on the certifications request. Observed
+  // behaviour: the tab navigates and its list container renders, but the
+  // results wrapper that normally holds EITHER the tiles or the no-results
+  // empty-state never appears — so the user sees a blank panel with no tiles,
+  // no empty-state guidance, and no explicit error message. We assert exactly
+  // that, which also distinguishes the error state from both the populated and
+  // the (graceful) empty states.
+  async verifyCertificationsServerError(): Promise<void> {
+    // The tab itself loaded — navigation to the Certifications panel succeeded.
+    await playwrightExpect(this.certificateList).toBeAttached();
+    // The results wrapper never renders because the backing request errored.
+    await playwrightExpect(this.searchResultWrapper).toHaveCount(0);
+    // No result tiles, and crucially NOT the graceful empty-state either —
+    // this is a distinct, unhandled blank state rather than "no results".
+    await playwrightExpect(this.certificationTileTitles).toHaveCount(0);
+    await playwrightExpect(this.noResultsGuidance).toHaveCount(0);
   }
 
   // Verifies the navigation bar is visible, that each expected tab is present in the

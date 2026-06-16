@@ -203,6 +203,7 @@ Before(async function (
   // content is deterministic and independent of Dyson's live certifications:
   //   @stub-certifications       — rename the first certification to a known value.
   //   @stub-empty-certifications — return zero certifications (empty-state path).
+  //   @stub-error-certifications — fail the request with a 500 (server-error path).
   // Registered here (before the Background navigates) so it's active by the time
   // the tab fires its query.
   //
@@ -213,7 +214,8 @@ Before(async function (
   // response first and modify just the tile list.
   const renameFirstCert = tags.includes("@stub-certifications");
   const emptyCerts = tags.includes("@stub-empty-certifications");
-  if (renameFirstCert || emptyCerts) {
+  const errorCerts = tags.includes("@stub-error-certifications");
+  if (renameFirstCert || emptyCerts || errorCerts) {
     await this.page.route(
       "**/api.source.thenbs.com/graphql",
       async (route) => {
@@ -232,6 +234,33 @@ Before(async function (
           return route.fulfill({ response });
         }
         const arr = Array.isArray(json) ? json : [json];
+        // The operationName "certifications" is shared by the filter-facets
+        // query and the result-tiles query; only the latter carries a
+        // paginatedResponse. We therefore key every stub off that field so we
+        // touch ONLY the tile-list request and leave the facets request (which
+        // loads as part of the navbar/page chrome) untouched — 500ing the
+        // facets request would break the page before the tab even renders.
+        const tileEntry = arr.find(
+          (entry) =>
+            Array.isArray(
+              entry?.data?.certifications?.byBrandId?.paginatedResponse?.items,
+            ),
+        );
+
+        // @stub-error-certifications: replace the tile-list request with a 500
+        // so we can exercise the app's server-error handling. Scoped to the
+        // tile request only, so the rest of the page still loads and the user
+        // can reach the Certifications tab before it fails.
+        if (errorCerts && tileEntry) {
+          return route.fulfill({
+            status: 500,
+            contentType: "application/json",
+            body: JSON.stringify({
+              errors: [{ message: "Internal Server Error" }],
+            }),
+          });
+        }
+
         for (const entry of arr) {
           const pr = entry?.data?.certifications?.byBrandId?.paginatedResponse;
           if (!pr || !Array.isArray(pr.items)) continue;

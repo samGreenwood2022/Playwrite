@@ -119,6 +119,15 @@ Then(
   },
 );
 
+// Verifies the Certifications tab degrades gracefully when its API returns a 500:
+// the panel renders blank (no tiles, no empty-state, no error message).
+Then(
+  "The Certifications tab shows a server error",
+  async function (this: CustomWorld) {
+    await this.dysonPage.verifyCertificationsServerError();
+  },
+);
+
 // Verifies the Dyson navigation bar contains the expected tabs in the expected order.
 // The expected tab labels come from the feature file's data table, so the spec — not
 // the page object — owns the list of what should appear.
