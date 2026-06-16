@@ -22,7 +22,8 @@
       "PowerShell(npm uninstall *)",
       "PowerShell(npx playwright install)",
       "Bash(mkdir -p reports/traces)",
-      "Bash(PW_TRACE=1 PW_TRACE_DIR=reports/traces npx cucumber-js --require-module ts-node/register --require \"tests/features/support/*.ts\" --require \"tests/step_definitions/*.ts\" tests/features/*.feature --tags \"@stub-error-certifications\")"
+      "Bash(PW_TRACE=1 PW_TRACE_DIR=reports/traces npx cucumber-js --require-module ts-node/register --require \"tests/features/support/*.ts\" --require \"tests/step_definitions/*.ts\" tests/features/*.feature --tags \"@stub-error-certifications\")",
+      "PowerShell($word = $null; try { $word = New-Object -ComObject Word.Application; Write-Output \"WORD_AVAILABLE\" } catch { Write-Output \"NO_WORD\" }; if \\($word\\) { $word.Quit\\(\\) }; python -c \"import docx; print\\('PYTHON_DOCX_AVAILABLE'\\)\" 2>$null; if \\(-not $?\\) { Write-Output \"NO_PYTHON_DOCX\" })"
     ]
   }
 }
