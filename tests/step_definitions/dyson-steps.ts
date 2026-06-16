@@ -98,6 +98,27 @@ Then(
   },
 );
 
+// Opens the Certifications tab on the Dyson manufacturer page.
+When("I open the Certifications tab", async function (this: CustomWorld) {
+  await this.dysonPage.openCertificationsTab();
+});
+
+// Verifies the first certification tile renders the expected (stubbed) title.
+Then(
+  "The first certification tile shows {string}",
+  async function (this: CustomWorld, expectedTitle: string) {
+    await this.dysonPage.verifyFirstCertificationTile(expectedTitle);
+  },
+);
+
+// Verifies the Certifications tab renders its empty state (no result tiles).
+Then(
+  "The Certifications tab shows no results",
+  async function (this: CustomWorld) {
+    await this.dysonPage.verifyNoCertificationResults();
+  },
+);
+
 // Verifies the Dyson navigation bar contains the expected tabs in the expected order.
 // The expected tab labels come from the feature file's data table, so the spec — not
 // the page object — owns the list of what should appear.

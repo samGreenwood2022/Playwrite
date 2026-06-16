@@ -16,6 +16,13 @@ export class DysonHomepage {
   // Targets the tab strip container — individual tabs are queried from within it.
   readonly navigationTabs: Locator;
   readonly localeLabel: Locator;
+  // The Certifications tab in the manufacturer navigation bar, and the titles
+  // of the certification result tiles it shows.
+  readonly certificationsTab: Locator;
+  readonly certificationTileTitles: Locator;
+  // The empty-state panel shown when a search (e.g. the Certifications tab)
+  // returns no results.
+  readonly noResultsGuidance: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -25,6 +32,11 @@ export class DysonHomepage {
     });
     this.navigationTabs = page.locator(".mat-mdc-tab-links");
     this.localeLabel = page.getByRole("button", { name: "Choose location and language" });
+    this.certificationsTab = page.locator('a[data-cy="certificatesTab"]');
+    this.certificationTileTitles = page.locator(
+      '[data-cy="searchResultTileTitle"]',
+    );
+    this.noResultsGuidance = page.locator("app-no-results-guidance");
   }
 
   // Makes a real HTTP request to the OneTrust geolocation API and verifies both
@@ -100,6 +112,37 @@ export class DysonHomepage {
     await playwrightExpect(this.externalManufacturerLink).toHaveText(
       expectedText,
     );
+  }
+
+  // Opens the Certifications tab and waits for the panel to settle into EITHER
+  // outcome — result tiles or the empty-state guidance — so the method works for
+  // both the populated and empty scenarios without a tile-only wait timing out.
+  async openCertificationsTab(): Promise<void> {
+    await this.certificationsTab.click();
+    await this.certificationTileTitles
+      .first()
+      .or(this.noResultsGuidance)
+      .first()
+      .waitFor({ state: "visible", timeout: 30000 });
+  }
+
+  // Verifies the first certification result tile shows the expected title.
+  // toHaveText normalises surrounding whitespace, so the tile's padded " ... "
+  // text matches the trimmed expected string.
+  async verifyFirstCertificationTile(expectedTitle: string): Promise<void> {
+    await playwrightExpect(this.certificationTileTitles.first()).toHaveText(
+      expectedTitle,
+    );
+  }
+
+  // Verifies the Certifications tab shows the empty state: the no-results panel
+  // is visible and no result tiles are rendered.
+  async verifyNoCertificationResults(): Promise<void> {
+    await playwrightExpect(this.noResultsGuidance).toBeVisible();
+    await playwrightExpect(this.noResultsGuidance).toContainText(
+      "Sorry, no results were found",
+    );
+    await playwrightExpect(this.certificationTileTitles).toHaveCount(0);
   }
 
   // Verifies the navigation bar is visible, that each expected tab is present in the
