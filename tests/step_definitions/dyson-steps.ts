@@ -1,9 +1,9 @@
-// home-page.ts — Cucumber step definitions for the Dyson manufacturer homepage tests.
+// dyson-steps.ts — Cucumber step definitions for the Dyson tests.
 //
-// Each function here is mapped to a Gherkin step in regression-tests.feature.
-// `this` refers to the CustomWorld instance for the current scenario, which provides
-// the page objects (homePage, dysonPage, basePage) set up in world.ts.
-// The step text in each Given/Then call must match the feature file exactly.
+// Each function here links to one Gherkin step in the .feature files. `this` is
+// the CustomWorld for the current scenario, which gives us the page objects
+// (homePage, dysonPage, basePage) created in world.ts. The step text in each
+// Given/When/Then must match the feature file word for word.
 
 import {
   Given,
@@ -143,11 +143,11 @@ Then(
   },
 );
 
-// Reads the test account credentials from the environment (loaded by dotenv in world.ts),
-// records the current page URL so a later step can assert the user is returned to it,
-// clicks the header Sign in button to open the form, then runs the full sign-in flow.
-// Throws immediately if either credential is missing so the failure is obvious rather
-// than surfacing as a confusing selector timeout inside the form.
+// Reads the test account login details from the environment (loaded by dotenv
+// in world.ts), saves the current URL so a later step can check the user comes
+// back to it, clicks the header Sign in button to open the form, then signs in.
+// If either credential is missing it throws straight away, so the failure is
+// clear rather than showing up later as a confusing timeout inside the form.
 When("I sign in with valid credentials", async function (this: CustomWorld) {
   const email = process.env.TEST_EMAIL;
   const password = process.env.TEST_PASSWORD;
@@ -161,9 +161,9 @@ When("I sign in with valid credentials", async function (this: CustomWorld) {
   await this.loginPage.signIn(email, password);
 });
 
-// Strict equality against the URL captured before sign-in. Uses toBe rather than
-// basePage.verifyWebpageURL because that helper does a substring match, which would
-// let a redirect to a different path silently pass.
+// Checks the URL exactly matches the one we saved before sign-in. We use toBe
+// (an exact match) instead of the verifyWebpageURL helper, which only checks
+// "contains" and would let a redirect to a different page slip through.
 Then(
   "The user is then logged in and returned to their previous page",
   function (this: CustomWorld) {
@@ -189,8 +189,8 @@ Then(
         this.dysonPage.navigationTabs,
       ]);
     } catch (err) {
-      // Record the diff PNG path so the After hook attaches it to the report
-      // instead of a live page screenshot, then rethrow to fail the step.
+      // Save the diff image's path so the After hook attaches it to the report
+      // instead of a normal screenshot, then re-throw to make the step fail.
       this.visualDiffPath = (err as { diffPath?: string }).diffPath;
       throw err;
     }

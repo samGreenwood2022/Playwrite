@@ -1,16 +1,15 @@
-// dyson-homepage.ts — Page Object Model for the Dyson manufacturer page on NBS Source.
+// dyson-homepage.ts — page object for the Dyson manufacturer page on NBS Source.
 //
-// Handles all assertions specific to the Dyson manufacturer page, including
-// UI element verification, an API test against the OneTrust geolocation endpoint,
-// and navigation bar validation.
+// Holds the checks specific to the Dyson page: verifying UI elements, a test
+// that calls the OneTrust geolocation API, and checking the navigation bar.
 
 import { Page, Locator } from "@playwright/test";
 import { expect as playwrightExpect } from "@playwright/test";
 
 export class DysonHomepage {
   readonly page: Page;
-  // Targets the telephone link using the action attribute rather than href or text,
-  // as it is a more stable selector that is less likely to change with content updates.
+  // The telephone link. We target it by its action attribute rather than its
+  // href or text, because that's less likely to change when content is updated.
   readonly telephoneLink: Locator;
   readonly externalManufacturerLink: Locator;
   // Targets the tab strip container — individual tabs are queried from within it.
@@ -23,11 +22,11 @@ export class DysonHomepage {
   // The empty-state panel shown when a search (e.g. the Certifications tab)
   // returns no results.
   readonly noResultsGuidance: Locator;
-  // The Certifications tab content container, and the results wrapper inside it
-  // that holds EITHER the result tiles or the no-results empty-state. The list
-  // container always renders once the tab is open; the wrapper only renders
-  // when the backing request resolves successfully, so its absence is how we
-  // detect the server-error (500) state.
+  // The Certifications tab's content area, and the results wrapper inside it
+  // that holds EITHER the result tiles or the "no results" message. The content
+  // area always appears when the tab opens; the wrapper only appears if the
+  // request succeeds — so if the wrapper is missing, we know the request
+  // errored (a 500).
   readonly certificateList: Locator;
   readonly searchResultWrapper: Locator;
 
@@ -48,10 +47,10 @@ export class DysonHomepage {
     this.searchResultWrapper = page.locator("app-search-result-wrapper");
   }
 
-  // Makes a real HTTP request to the OneTrust geolocation API and verifies both
-  // the API response and the corresponding UI locale label are consistent.
-  // The response is wrapped in a JSONP callback (jsonFeed({...})) so a regex is
-  // used to extract the JSON body before parsing.
+  // Makes a real request to the OneTrust geolocation API and checks the API
+  // response and the UI's locale label agree. The response comes wrapped in a
+  // JSONP callback (jsonFeed({...})), so we use a regex to pull out the JSON
+  // inside before parsing it.
   async verifyUIandAPIContent() {
     const response = await this.page.request.get(
       "https://geolocation.onetrust.com/cookieconsentpub/v1/geo/location",
@@ -99,10 +98,9 @@ export class DysonHomepage {
   // The href assertion is commented out because the button uses a click handler
   // rather than a standard anchor href.
   async verifyExternalManufacturerLink(_expectedLink: string): Promise<void> {
-    // _expectedLink is currently unused — prefixed with _ to silence the
-    // no-unused-vars rule. It will be wired into the commented-out href
-    // assertion below once the button switches from a click handler to a
-    // standard anchor href.
+    // _expectedLink isn't used yet — the _ prefix tells the linter that's on
+    // purpose. It'll be used by the commented-out href check below once the
+    // button becomes a normal link instead of using a click handler.
     await playwrightExpect(this.externalManufacturerLink).toBeVisible({
       timeout: 10000,
     });
@@ -113,23 +111,21 @@ export class DysonHomepage {
     // await playwrightExpect(this.externalManufacturerLink).toHaveAttribute('href', _expectedLink, { timeout: 10000 });
   }
 
-  // Verifies the Contact manufacturer button displays the exact text passed in.
-  // Separate from verifyExternalManufacturerLink because this assertion is
-  // parameterised by the feature file (different scenarios may pass different
-  // expected strings) whereas the other locks the text to "Contact manufacturer".
+  // Checks the Contact manufacturer button shows exactly the text passed in.
+  // It's separate from verifyExternalManufacturerLink because here the expected
+  // text comes from the feature file (scenarios can pass different text),
+  // whereas that method always checks for "Contact manufacturer".
   async verifyContactButtonText(expectedText: string): Promise<void> {
     await playwrightExpect(this.externalManufacturerLink).toHaveText(
       expectedText,
     );
   }
 
-  // Opens the Certifications tab and waits for the panel's backing request to
-  // settle. We wait on the GraphQL tile response — identified by the
-  // "paginatedResponse" selection in its query body — rather than a specific
-  // DOM element, so the method works for ALL three outcomes without relying on
-  // a timeout: populated (tiles render), empty (no-results renders), and the
-  // server-error 500 (neither renders). Each outcome's verify method then
-  // asserts the rendered state with auto-waiting assertions.
+  // Opens the Certifications tab and waits for its data request to come back.
+  // We wait for the network response (recognised by "paginatedResponse" in the
+  // request) rather than for a specific element, so this works for all three
+  // possible outcomes: results shown, no results shown, or a 500 error (where
+  // nothing renders). Each outcome's own verify method then checks what appeared.
   async openCertificationsTab(): Promise<void> {
     const tileResponse = this.page.waitForResponse(
       (resp) =>
@@ -141,9 +137,9 @@ export class DysonHomepage {
     await tileResponse;
   }
 
-  // Verifies the first certification result tile shows the expected title.
-  // toHaveText normalises surrounding whitespace, so the tile's padded " ... "
-  // text matches the trimmed expected string.
+  // Checks the first certification tile shows the expected title. toHaveText
+  // ignores surrounding spaces, so the tile's padded " ... " text still matches
+  // the trimmed expected text.
   async verifyFirstCertificationTile(expectedTitle: string): Promise<void> {
     await playwrightExpect(this.certificationTileTitles.first()).toHaveText(
       expectedTitle,
@@ -160,20 +156,19 @@ export class DysonHomepage {
     await playwrightExpect(this.certificationTileTitles).toHaveCount(0);
   }
 
-  // Verifies how the app handles a 500 on the certifications request. Observed
-  // behaviour: the tab navigates and its list container renders, but the
-  // results wrapper that normally holds EITHER the tiles or the no-results
-  // empty-state never appears — so the user sees a blank panel with no tiles,
-  // no empty-state guidance, and no explicit error message. We assert exactly
-  // that, which also distinguishes the error state from both the populated and
-  // the (graceful) empty states.
+  // Checks how the app behaves when the certifications request returns a 500.
+  // What actually happens: the tab opens and its content area appears, but the
+  // results wrapper (which normally holds either the tiles or the "no results"
+  // message) never shows up — so the user just sees a blank panel with no tiles,
+  // no "no results" message, and no error message. We check for exactly that,
+  // which also keeps this distinct from the "has results" and "no results" states.
   async verifyCertificationsServerError(): Promise<void> {
     // The tab itself loaded — navigation to the Certifications panel succeeded.
     await playwrightExpect(this.certificateList).toBeAttached();
     // The results wrapper never renders because the backing request errored.
     await playwrightExpect(this.searchResultWrapper).toHaveCount(0);
-    // No result tiles, and crucially NOT the graceful empty-state either —
-    // this is a distinct, unhandled blank state rather than "no results".
+    // No result tiles — and importantly no "no results" message either. This is
+    // a blank, unhandled state, not the normal "no results" one.
     await playwrightExpect(this.certificationTileTitles).toHaveCount(0);
     await playwrightExpect(this.noResultsGuidance).toHaveCount(0);
   }

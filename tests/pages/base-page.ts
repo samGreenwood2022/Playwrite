@@ -1,9 +1,9 @@
-// base-page.ts — Base Page Object Model shared across all pages.
+// base-page.ts — shared page object used alongside all the others.
 //
-// Contains locators and methods that are common to every page in the test suite.
-// Other page objects do not extend this class — they are instantiated separately
-// and used alongside it. Any assertion or action that applies site-wide (URL checks,
-// page title, logo, accessibility) belongs here rather than in a specific page object.
+// Holds the elements and actions that are the same on every page (URL checks,
+// page title, the logo, accessibility scans, etc.). The other page objects don't
+// extend this one — they're created separately and used next to it. If something
+// applies to the whole site rather than one specific page, it belongs here.
 
 import { Page, Locator } from "@playwright/test";
 import { expect as playwrightExpect } from "@playwright/test";
@@ -17,15 +17,15 @@ import { PNG } from "pngjs";
 export class BasePage {
   readonly page: Page;
   readonly h1: Locator;
-  // Targets the NBS Source logo link using a compound selector that finds the anchor
-  // inside the component only when its app-name text matches "NBS Source".
+  // The NBS Source logo link. The selector finds the link inside the logo
+  // component only when its name text reads "NBS Source".
   readonly nbsLogoLink: Locator;
-  // Header Sign in button, visible on every page until the user authenticates.
-  // Lives here (rather than on LoginPage) because it is a site-wide header element.
+  // The "Sign in" button in the header, shown on every page until the user logs
+  // in. It lives here (not on LoginPage) because it's part of the site-wide header.
   readonly signInButton: Locator;
-  // Logged-in header elements — the user menu button and the avatar figure
-  // that displays the account initials. Both replace the Sign in button once
-  // authentication succeeds.
+  // The header elements shown once logged in — the user-menu button and the
+  // avatar showing the account's initials. They replace the Sign in button
+  // after a successful login.
   readonly openUserMenuButton: Locator;
   readonly userInitials: Locator;
 
@@ -42,15 +42,15 @@ export class BasePage {
     this.userInitials = page.getByRole("figure");
   }
 
-  // Asserts the current URL contains the expected substring, retrying for up
-  // to 10s. Playwright's toHaveURL auto-waits and auto-retries internally —
-  // matching the previous hand-rolled polling loop but with better error
-  // messages, trace integration, and no manual timing code.
+  // Checks the current URL contains the expected text, retrying for up to 10s.
+  // Playwright's toHaveURL waits and retries on its own, so we don't need a
+  // manual polling loop, and we get clearer error messages if it fails.
   //
-  // Substring semantics are preserved by escaping the input into a RegExp,
-  // because toHaveURL(string) does an EXACT match, not a contains. Callers
-  // (and the matching feature file step) pass either full URLs or path
-  // fragments and rely on the contains behaviour.
+  // We turn the expected text into a regular expression so it matches as
+  // "contains" rather than "equals" — toHaveURL with a plain string would
+  // require an exact match, but callers pass either full URLs or just path
+  // fragments and expect a contains check. The escaping step makes any special
+  // characters in the text be treated as plain text rather than regex symbols.
   async verifyWebpageURL(expectedURL: string) {
     const escaped = expectedURL.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     await playwrightExpect(this.page).toHaveURL(new RegExp(escaped), {
@@ -64,8 +64,8 @@ export class BasePage {
     await playwrightExpect(this.h1).toHaveText(title);
   }
 
-  // Verifies the HTML <title> element matches the expected string with a 10s timeout
-  // to account for pages that set the title after the initial render.
+  // Checks the browser tab's <title> matches the expected text. Allows 10s
+  // because some pages set their title shortly after they first load.
   async verifyWebpageTitle(title: string) {
     await playwrightExpect(this.page).toHaveTitle(title, { timeout: 10000 });
   }
@@ -75,9 +75,8 @@ export class BasePage {
     await playwrightExpect(this.nbsLogoLink).toHaveAttribute("href", href);
   }
 
-  // Verifies the header reflects an authenticated user: the Sign in button
-  // is gone, the user menu button has appeared, and the avatar figure shows
-  // the expected account initials.
+  // Checks the header shows a logged-in user: the Sign in button is gone, the
+  // user-menu button is showing, and the avatar shows the expected initials.
   async verifyLoggedInUI() {
     await playwrightExpect(this.signInButton).toBeHidden();
     await playwrightExpect(this.openUserMenuButton).toBeVisible();
@@ -91,9 +90,8 @@ export class BasePage {
     const accessibilityScanResults = await new AxeBuilder({
       page: this.page,
     }).analyze();
-    // doNotCreateReportFile stops axe-html-reporter from writing its own
-    // copy to artifacts/ and logging its generic "HTML report" message — we
-    // write the file ourselves and log a clearer, accessibility-specific one.
+    // doNotCreateReportFile stops the reporter writing its own copy and logging
+    // a generic message — we save the file and log a clearer one ourselves.
     const html = createHtmlReport({
       results: accessibilityScanResults,
       options: { doNotCreateReportFile: true },
@@ -106,13 +104,12 @@ export class BasePage {
     );
   }
 
-  // Triggers any intersection-observer lazy loading by scrolling the full document
-  // height in steps, then scrolls back to the top. Necessary because Playwright's
-  // fullPage screenshot does scroll the page, but if the site uses lazy loading
-  // some images may not finish loading before the screenshot frames are stitched.
-  // The 250ms pause at each step gives the IntersectionObserver time to fire and
-  // the browser time to start the image download — without this pause we scroll
-  // past viewport positions before lazy loads kick in.
+  // Forces "lazy-loaded" images to start loading by scrolling down the page a
+  // screen at a time, then scrolling back to the top. Many sites only load an
+  // image once it scrolls into view, and a full-page screenshot can otherwise
+  // capture them before they finish. The 250ms pause at each step gives the page
+  // time to notice the scroll and begin downloading — without it we'd scroll
+  // past each position before loading kicks in.
   async triggerLazyLoad() {
     await this.page.evaluate(async () => {
       const total = document.body.scrollHeight;
@@ -126,13 +123,12 @@ export class BasePage {
     });
   }
 
-  // Resolves once every <img> on the page has finished loading or has errored
-  // out. We only check `img.complete` — the browser sets it to true after a
-  // successful load, a failed load (404, broken src), or when no src was ever
-  // set. Errored images are not considered blockers since waiting indefinitely
-  // would hang the test, and a previous `naturalWidth > 0` check excluded them
-  // by mistake. By the time this runs, networkidle has already given every
-  // image its chance to download.
+  // Waits until every <img> on the page has finished — whether it loaded
+  // successfully, failed (e.g. a 404), or had no source at all. We check
+  // img.complete, which the browser sets to true in all of those cases. We don't
+  // treat broken images as blockers, because waiting forever would just hang the
+  // test (an earlier check accidentally did this). By the time this runs, the
+  // "network idle" wait has already given every image a chance to download.
   async waitForImagesLoaded(timeout: number = 15000) {
     await this.page.waitForFunction(
       () => Array.from(document.images).every((img) => img.complete),
@@ -141,35 +137,33 @@ export class BasePage {
     );
   }
 
-  // Captures a full-page screenshot and compares it pixel-by-pixel against a
-  // saved "baseline" image to catch unintended visual changes (layout shifts,
-  // missing images, font swaps, colour regressions, etc).
+  // Takes a full-page screenshot and compares it, pixel by pixel, against a
+  // saved "baseline" image to catch visual changes we didn't mean to make
+  // (shifted layouts, missing images, swapped fonts, colour changes, etc.).
   //
-  // How it works (read top-to-bottom):
-  //   1. Wait for the caller's "must be visible" locators — the page-specific
-  //      things (hero banner, product grid, etc.) that prove the page is ready.
-  //      BasePage doesn't know what each page should contain, so callers pass
+  // How it works (top to bottom):
+  //   1. Wait for the elements the caller says must be on screen — the page-
+  //      specific bits (hero banner, product grid, etc.) that prove the page is
+  //      ready. BasePage doesn't know what each page contains, so callers pass
   //      these in.
-  //   2. Scroll the whole page to trigger lazy-loaded images. Many sites only
-  //      fetch images when they scroll into view; without this, the screenshot
-  //      would capture empty placeholder boxes.
-  //   3. Wait for the network to go idle so the image requests kicked off by
-  //      the scroll actually finish downloading. This is the key step that was
-  //      missing before — scrolling *starts* the downloads, networkidle waits
-  //      for them to *complete*.
-  //   4. Belt-and-braces check that every <img> element is decoded and ready.
-  //   5. Wait for web fonts. Text rendered with a fallback font has different
-  //      metrics and would cause false positives.
-  //   6. Small settle pause for any final paint/animation frame to land.
-  //   7. Take the screenshot and compare to baseline with pixelmatch.
+  //   2. Scroll the whole page to start loading lazy images. Without this the
+  //      screenshot can capture empty placeholder boxes.
+  //   3. Wait for the network to go quiet so those images actually finish
+  //      downloading. Scrolling only *starts* the downloads; this waits for
+  //      them to *finish*.
+  //   4. Extra safety check that every <img> is loaded and ready.
+  //   5. Wait for web fonts to load. Text shown in a fallback font is a slightly
+  //      different size and would cause a false difference.
+  //   6. A short pause to let any final animation or repaint settle.
+  //   7. Take the screenshot and compare it to the baseline using pixelmatch.
   //
   // Files written to tests/snapshots/:
-  //   <name>.png         — the baseline (commit this; it's the source of truth)
+  //   <name>.png         — the baseline (commit this; it's the "correct" image)
   //   <name>-actual.png  — what the page looked like on this run
-  //   <name>-diff.png    — pink-highlighted PNG showing where the two differ
+  //   <name>-diff.png    — an image highlighting where the two differ (in pink)
   //
-  // First run: no baseline exists, so the current screenshot is saved as the
-  // baseline and the method returns. Re-run to actually compare.
+  // First run: there's no baseline yet, so we save the current screenshot as the
+  // baseline and stop. Run it again to actually compare against it.
   async verifyVisualRegression(name: string = "baseline", waitFor: Locator[] = []) {
     // 1. Wait for page-specific elements the caller said must be on screen.
     for (const loc of waitFor) {
@@ -184,11 +178,10 @@ export class BasePage {
     //    still downloading and they show up as empty boxes in the baseline.
     await this.page.waitForLoadState("networkidle", { timeout: 30000 });
 
-    // 4. Belt-and-braces check that every <img> reports complete. Soft-fails:
-    //    on pages with carousels, animations, or trackers that keep injecting
-    //    new <img> nodes, this check can never settle. networkidle (step 3)
-    //    is the real safety net for image downloads, so if this times out we
-    //    log the offenders and continue rather than fail the whole test.
+    // 4. Extra check that every <img> reports as loaded. This is "soft" — on
+    //    pages that keep adding new <img> tags (carousels, ads, trackers) it may
+    //    never settle, so if it times out we just log the stragglers and carry
+    //    on. Step 3 (network idle) is the real safety net for image downloads.
     try {
       await this.waitForImagesLoaded();
     } catch {
@@ -203,25 +196,23 @@ export class BasePage {
       );
     }
 
-    // 5. Wait for web fonts. document.fonts.ready resolves once all @font-face
-    //    declarations the page actually uses have loaded. Playwright's evaluate
-    //    awaits the returned promise.
+    // 5. Wait for web fonts. document.fonts.ready finishes once the fonts the
+    //    page uses have loaded. (Playwright waits for the returned promise.)
     await this.page.evaluate(() => document.fonts.ready);
 
-    // 6. Small settle pause — cheap insurance against off-by-one-frame diffs
-    //    from final paints, CSS transitions, or skeleton fade-outs. Uses a
-    //    plain setTimeout rather than page.waitForTimeout because the latter
-    //    is discouraged by Playwright (it's a code smell in real tests, but
-    //    intentional here to absorb sub-frame paint variance).
+    // 6. A short pause to absorb tiny last-moment changes (final repaints, CSS
+    //    transitions, loading skeletons fading out) that could otherwise show
+    //    up as differences. We use a plain setTimeout here on purpose —
+    //    Playwright discourages fixed waits in normal tests, but a small one is
+    //    justified for smoothing out paint timing right before a screenshot.
     await new Promise((resolve) => setTimeout(resolve, 500));
 
-    // --- Set up file paths ---
-    // Baselines are per-OS because text rendering differs between Windows
-    // (ClearType) and Linux (freetype), causing different text wrapping and
-    // therefore different page layout heights. process.platform is "win32"
-    // locally and "linux" in GitHub Actions, so each environment compares
-    // against its own committed baseline. Both baselines should be checked
-    // into git; CI will fail if its baseline file is missing on second run.
+    // --- Work out the file paths ---
+    // We keep a separate baseline per operating system because Windows and Linux
+    // render text slightly differently, which changes wrapping and overall page
+    // height. process.platform is "win32" locally and "linux" on GitHub Actions,
+    // so each environment compares against its own baseline. Commit both
+    // baselines; CI will fail if its baseline is missing on the second run.
     const snapshotDir = path.resolve("tests/snapshots");
     const platformSuffix = process.platform;
     const baselinePath = path.join(snapshotDir, `${name}-${platformSuffix}.png`);
@@ -265,9 +256,9 @@ export class BasePage {
     // catch real regressions, big enough to forgive minor renderer noise.
     const diffRatio = diffPixels / (width * height);
     if (diffRatio > 0.02) {
-      // Attach the diff path to the error so the After hook can surface the
-      // pixel-diff PNG in the report. The live page screenshot it would
-      // otherwise capture doesn't show *what* changed — the diff does.
+      // Attach the diff image's path to the error so the After hook can put that
+      // image in the report. A normal screenshot would only show the current
+      // page, not what actually changed — the diff image does.
       const error = new Error(
         `Visual regression detected: ${diffPixels} pixels differ (${(diffRatio * 100).toFixed(6)}%). Diff saved to ${diffPath}`
       );
