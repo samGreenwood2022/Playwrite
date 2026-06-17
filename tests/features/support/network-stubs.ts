@@ -24,7 +24,7 @@ export const STUBBED_CERTIFICATION_NAME = "Stubbed Test Certification";
 // comfortably under the 30s wait in openCertificationsTab and the 60s step
 // timeout, so the tab still receives its data and the test asserts a successful
 // (if delayed) render rather than a timeout.
-const SLOW_CERT_DELAY_MS = 3000;
+const SLOW_CERT_DELAY_MS = 10000;
 
 // The outcomes stubCertifications can force on the Certifications tiles request.
 //   rename    — rename the first certification to STUBBED_CERTIFICATION_NAME.

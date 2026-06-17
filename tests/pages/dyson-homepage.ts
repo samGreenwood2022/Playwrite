@@ -29,6 +29,11 @@ export class DysonHomepage {
   // errored (a 500).
   readonly certificateList: Locator;
   readonly searchResultWrapper: Locator;
+  // The "Certification bodies" section shown on the Overview tab. It's fetched
+  // and rendered asynchronously, a fraction of a second after the page shell —
+  // so anything that needs to see it must wait for it explicitly rather than
+  // assume it's there as soon as the tabs and buttons appear.
+  readonly certificationBodiesSection: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -45,6 +50,7 @@ export class DysonHomepage {
     this.noResultsGuidance = page.locator("app-no-results-guidance");
     this.certificateList = page.locator("app-certificate-list");
     this.searchResultWrapper = page.locator("app-search-result-wrapper");
+    this.certificationBodiesSection = page.getByText("Certification bodies");
   }
 
   // Makes a real request to the OneTrust geolocation API and checks the API
@@ -176,9 +182,19 @@ export class DysonHomepage {
   // Verifies the Dyson manufacturer page's core content still renders when all
   // analytics / consent / third-party requests are blocked — proving the page
   // doesn't depend on that non-essential traffic to function.
+  //
+  // As well as the page shell (nav tabs + Contact button, which appear almost
+  // immediately) we wait for the Overview's "Certification bodies" section. That
+  // section is fetched asynchronously a moment later, so waiting for it both
+  // strengthens the check (real content, not just the shell, survives blocking)
+  // and keeps it in the trace — without the wait the scenario finished and the
+  // browser closed before the section had rendered.
   async verifyCoreContentRenders(): Promise<void> {
     await playwrightExpect(this.navigationTabs).toBeVisible();
     await playwrightExpect(this.externalManufacturerLink).toBeVisible({
+      timeout: 10000,
+    });
+    await playwrightExpect(this.certificationBodiesSection).toBeVisible({
       timeout: 10000,
     });
   }
