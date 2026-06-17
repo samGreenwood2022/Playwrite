@@ -137,6 +137,52 @@ export class DysonHomepage {
     await tileResponse;
   }
 
+  // Opens the Certifications tab when its data request is expected to FAIL at
+  // the network level (e.g. an aborted / dropped connection). The normal open
+  // waits for a successful response, which never arrives here — so instead we
+  // wait for the tiles request to *fail*. Without this the click would just hang
+  // until the step times out.
+  async openCertificationsTabExpectingFailure(): Promise<void> {
+    const tileRequestFailed = this.page.waitForEvent("requestfailed", {
+      predicate: (request) =>
+        request.url().includes("api.source.thenbs.com/graphql") &&
+        (request.postData() || "").includes("paginatedResponse"),
+      timeout: 30000,
+    });
+    await this.certificationsTab.click();
+    await tileRequestFailed;
+  }
+
+  // Verifies the Certifications tab renders its results normally. Used by the
+  // slow-network scenario to prove the tab waits for a slow backend and still
+  // shows its tiles rather than erroring or giving up.
+  async verifyCertificationsRender(): Promise<void> {
+    await playwrightExpect(this.searchResultWrapper).toBeVisible();
+    await playwrightExpect(this.certificationTileTitles.first()).toBeVisible();
+  }
+
+  // Verifies the tab opened but rendered no result tiles. Used by the
+  // dropped-connection and malformed-payload scenarios: in both, the backing
+  // request never yields usable data, so the tab's content area appears but no
+  // certification tiles do. We assert the tab navigated (content area attached)
+  // and that zero tiles rendered — without asserting any specific empty/error
+  // styling, because the app gives no explicit feedback in these states (the
+  // same blank, unhandled behaviour the 500 scenario documents).
+  async verifyNoCertificationTiles(): Promise<void> {
+    await playwrightExpect(this.certificateList).toBeAttached();
+    await playwrightExpect(this.certificationTileTitles).toHaveCount(0);
+  }
+
+  // Verifies the Dyson manufacturer page's core content still renders when all
+  // analytics / consent / third-party requests are blocked — proving the page
+  // doesn't depend on that non-essential traffic to function.
+  async verifyCoreContentRenders(): Promise<void> {
+    await playwrightExpect(this.navigationTabs).toBeVisible();
+    await playwrightExpect(this.externalManufacturerLink).toBeVisible({
+      timeout: 10000,
+    });
+  }
+
   // Checks the first certification tile shows the expected title. toHaveText
   // ignores surrounding spaces, so the tile's padded " ... " text still matches
   // the trimmed expected text.

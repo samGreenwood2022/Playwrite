@@ -103,6 +103,16 @@ When("I open the Certifications tab", async function (this: CustomWorld) {
   await this.dysonPage.openCertificationsTab();
 });
 
+// Opens the Certifications tab when its data request is dropped (aborted) so no
+// response ever arrives. Uses the failure-aware open, which waits for the
+// request to fail rather than for a response that never comes.
+When(
+  "I open the Certifications tab with its request dropped",
+  async function (this: CustomWorld) {
+    await this.dysonPage.openCertificationsTabExpectingFailure();
+  },
+);
+
 // Verifies the first certification tile renders the expected (stubbed) title.
 Then(
   "The first certification tile shows {string}",
@@ -125,6 +135,33 @@ Then(
   "The Certifications tab shows a server error",
   async function (this: CustomWorld) {
     await this.dysonPage.verifyCertificationsServerError();
+  },
+);
+
+// Verifies the Certifications tab still renders its tiles after a slow response.
+Then(
+  "The Certifications tab still renders its certifications",
+  async function (this: CustomWorld) {
+    await this.dysonPage.verifyCertificationsRender();
+  },
+);
+
+// Verifies the tab opened but shows no certification tiles. Shared by the
+// dropped-connection and malformed-payload scenarios — both leave the tab with
+// no usable data and no explicit feedback to the user.
+Then(
+  "The Certifications tab renders no certification tiles",
+  async function (this: CustomWorld) {
+    await this.dysonPage.verifyNoCertificationTiles();
+  },
+);
+
+// Verifies the Dyson page's core content still renders with analytics and other
+// third-party requests blocked.
+Then(
+  "The Dyson page core content still renders",
+  async function (this: CustomWorld) {
+    await this.dysonPage.verifyCoreContentRenders();
   },
 );
 

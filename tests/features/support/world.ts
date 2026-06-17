@@ -29,6 +29,11 @@ import { HomePage } from "../../pages/home-page";
 import { DysonHomepage } from "../../pages/dyson-homepage";
 import { BasePage } from "../../pages/base-page";
 import { LoginPage } from "../../pages/login-page";
+import {
+  stubCertifications,
+  blockAnalytics,
+  CertStubMode,
+} from "./network-stubs";
 
 // The file where we save the signed-in session. BeforeAll writes it once and
 // each scenario's Before hook reads it. We use a full (absolute) path so it
@@ -40,11 +45,19 @@ const STORAGE_STATE_PATH = path.resolve(".auth/user.json");
 // enough to recover if the real session expires partway through a dev session.
 const STORAGE_STATE_TTL_MS = 60 * 60 * 1000;
 
-// A fake certification name we inject via the @stub-certifications route below.
-// The feature file checks for this exact text, so if you change it here, change
-// it there too. It's deliberately not a real name — if the test sees it, we
-// know our fake data (the "stub") was used instead of the live data.
-const STUBBED_CERTIFICATION_NAME = "Stubbed Test Certification";
+// Maps a scenario tag to the Certifications-tab outcome it wants the stub to
+// force. The Before hook looks up the scenario's tag here and calls
+// stubCertifications with the matching mode — keeping the network trickery in
+// network-stubs.ts and this hook readable. See network-stubs.ts for what each
+// mode does.
+const CERT_STUB_TAG_TO_MODE: Record<string, CertStubMode> = {
+  "@stub-certifications": "rename",
+  "@stub-empty-certifications": "empty",
+  "@stub-error-certifications": "error",
+  "@stub-slow-certifications": "slow",
+  "@stub-abort-certifications": "abort",
+  "@stub-malformed-certifications": "malformed",
+};
 
 // CustomWorld holds everything a single scenario needs to share. Each property
 // declared here is reachable from any step definition through `this`.
@@ -202,81 +215,22 @@ Before(async function (
   // — that leaking is what causes most flaky, order-dependent test failures.
   this.page = await this.context.newPage();
 
-  // Catch the network request that fills the Certifications tab so we can
-  // control exactly what it shows, instead of relying on Dyson's live data:
-  //   @stub-certifications       — rename the first certification to a known name.
-  //   @stub-empty-certifications — return no certifications (tests the empty state).
-  //   @stub-error-certifications — make the request fail with a 500 (tests errors).
-  // We set this up here, before the page navigates, so it's ready when the tab
-  // asks for its data.
-  //
-  // Tricky part: two different requests share the name "certifications" — one
-  // loads the filter options, the other loads the result tiles. We only want to
-  // change the tiles, so instead of matching on the name we look at the shape of
-  // the response: we fetch the real data first, then tweak only the tile list.
-  const renameFirstCert = tags.includes("@stub-certifications");
-  const emptyCerts = tags.includes("@stub-empty-certifications");
-  const errorCerts = tags.includes("@stub-error-certifications");
-  if (renameFirstCert || emptyCerts || errorCerts) {
-    await this.page.route(
-      "**/api.source.thenbs.com/graphql",
-      async (route) => {
-        const reqBody = JSON.parse(route.request().postData() || "[]");
-        const ops = (Array.isArray(reqBody) ? reqBody : [reqBody]).map(
-          (o) => o.operationName,
-        );
-        // Skip batches that don't touch certifications — pass them through.
-        if (!ops.includes("certifications")) return route.continue();
+  // Control the Certifications tab's data request so we can force edge cases the
+  // live API won't produce on demand (renamed item, empty, 500, dropped
+  // connection, slow response, malformed payload). The scenario's tag picks the
+  // mode; the route trickery lives in network-stubs.ts. We set this up here,
+  // before the page navigates, so it's ready when the tab asks for its data.
+  const certTag = Object.keys(CERT_STUB_TAG_TO_MODE).find((tag) =>
+    tags.includes(tag),
+  );
+  if (certTag) {
+    await stubCertifications(this.page, CERT_STUB_TAG_TO_MODE[certTag]);
+  }
 
-        const response = await route.fetch();
-        let json;
-        try {
-          json = await response.json();
-        } catch {
-          return route.fulfill({ response });
-        }
-        const arr = Array.isArray(json) ? json : [json];
-        // As noted above, both the filter-options request and the result-tiles
-        // request are called "certifications", but only the tiles one has a
-        // paginatedResponse. So we use that field to find the right one and only
-        // change that request. We must leave the filter-options request alone —
-        // it loads as part of the page itself, so failing it would break the
-        // page before the tab even appears.
-        const tileEntry = arr.find(
-          (entry) =>
-            Array.isArray(
-              entry?.data?.certifications?.byBrandId?.paginatedResponse?.items,
-            ),
-        );
-
-        // @stub-error-certifications: make only the tiles request fail with a
-        // 500 so we can test how the app handles a server error. Because it's
-        // just this request, the rest of the page still loads and the user can
-        // open the Certifications tab before it shows the error.
-        if (errorCerts && tileEntry) {
-          return route.fulfill({
-            status: 500,
-            contentType: "application/json",
-            body: JSON.stringify({
-              errors: [{ message: "Internal Server Error" }],
-            }),
-          });
-        }
-
-        for (const entry of arr) {
-          const pr = entry?.data?.certifications?.byBrandId?.paginatedResponse;
-          if (!pr || !Array.isArray(pr.items)) continue;
-          if (emptyCerts) {
-            pr.items = [];
-            // Keep the total consistent so the UI commits to the empty state.
-            if (typeof pr.totalItems === "number") pr.totalItems = 0;
-          } else if (renameFirstCert && pr.items.length) {
-            pr.items[0].name = STUBBED_CERTIFICATION_NAME;
-          }
-        }
-        await route.fulfill({ response, json: arr });
-      },
-    );
+  // @block-analytics: abort analytics / consent / third-party requests so we
+  // can prove the page still renders its core content without that noise.
+  if (tags.includes("@block-analytics")) {
+    await blockAnalytics(this.page);
   }
 
   // Give every page object the same page (tab). Because they all share one tab,
