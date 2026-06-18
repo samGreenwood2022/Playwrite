@@ -44,8 +44,9 @@ Feature: Dyson Manufacturer API and Network Tests
   Scenario: The geolocation API endpoint returns the expected response and the UI locale label matches
     Then The API response and the UI locale label are as expected
 
-  # The certifications request is faked ("stubbed") in the Before hook (world.ts):
-  # the first certification is renamed to a fixed value the live data never has,
+  # The certifications response is faked ("stubbed") in the Before hook (world.ts):
+  # the real request still goes to the live API, then the first certification in
+  # the response is renamed to a fixed value the live data never has,
   # so the check proves our app shows what the API returns — reliably, no matter
   # what Dyson's real certifications are.
   @regression @stub-certifications
