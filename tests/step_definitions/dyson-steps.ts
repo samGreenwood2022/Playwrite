@@ -12,7 +12,7 @@ import {
   DataTable,
   setDefaultTimeout,
 } from "@cucumber/cucumber";
-import { expect } from "@playwright/test";
+import { expect, Locator } from "@playwright/test";
 import { CustomWorld } from "../features/support/world";
 
 // Extends the default Cucumber step timeout to 60 seconds to allow for slow page loads.
@@ -27,6 +27,25 @@ Given(
     await this.basePage.verifyWebpageURL("https://source.thenbs.com/en/");
     await this.homePage.searchFor("Dyson");
     // await this.basePage.verifyWebpageURL("/en/manufacturers/dyson/");
+  },
+);
+
+// Navigates to a named homepage, chosen by the value passed from the feature
+// file. Used by the visual-regression Scenario Outline so one outline can cover
+// several pages. The parameter is quoted ({string}), so this never collides with
+// the unquoted "I navigate to the Dyson manufacturer homepage" Background step.
+//   "NBS"                — the NBS Source homepage (the site's first page).
+//   "Dyson manufacturer" — NBS homepage, then search through to the Dyson page.
+Given(
+  "I navigate to the {string} homepage",
+  async function (this: CustomWorld, page: string) {
+    await this.homePage.navigateToNBSHomepage();
+    await this.basePage.verifyWebpageURL("https://source.thenbs.com/en/");
+    if (page === "Dyson manufacturer") {
+      await this.homePage.searchFor("Dyson");
+    } else if (page !== "NBS") {
+      throw new Error(`Unknown page "${page}" — expected "NBS" or "Dyson manufacturer".`);
+    }
   },
 );
 
@@ -217,14 +236,33 @@ Then(
   },
 );
 
-// Takes a screenshot of the Dyson homepage and compares it to a baseline image to check for visual regressions.
+// Takes a full-page screenshot of the named page and compares it to that page's
+// baseline image to check for visual regressions. Driven by the visual-regression
+// Scenario Outline, so each page maps to its own baseline file and the locator we
+// wait for before screenshotting (a page-specific element that proves it has
+// rendered). Baselines are kept per page and per OS as <baseline>-<platform>.png.
 Then(
-  "I take a screenshot of the Dyson homepage and compare it to the baseline image to check for visual regressions",
-  async function (this: CustomWorld) {
+  "I take a screenshot of the {string} homepage and compare it to its baseline",
+  async function (this: CustomWorld, page: string) {
+    const config: Record<string, { baseline: string; waitFor: Locator[] }> = {
+      NBS: {
+        baseline: "nbs-homepage",
+        waitFor: [this.homePage.searchField],
+      },
+      "Dyson manufacturer": {
+        baseline: "dyson-homepage",
+        waitFor: [this.dysonPage.navigationTabs],
+      },
+    };
+    const pageConfig = config[page];
+    if (!pageConfig) {
+      throw new Error(`No visual baseline configured for page "${page}".`);
+    }
     try {
-      await this.basePage.verifyVisualRegression("baseline", [
-        this.dysonPage.navigationTabs,
-      ]);
+      await this.basePage.verifyVisualRegression(
+        pageConfig.baseline,
+        pageConfig.waitFor,
+      );
     } catch (err) {
       // Save the diff image's path so the After hook attaches it to the report
       // instead of a normal screenshot, then re-throw to make the step fail.
