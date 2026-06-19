@@ -20,14 +20,19 @@
 #  - Tag-driven Gherkin tests
 #  - Auth via persisted storage state (created in beforeAll hook in world.ts)
 #
-# This file holds the Dyson manufacturer page regression checks: signing in, the
-# page's URL / title / links, the navigation bar, an accessibility report, and a
-# visual comparison against a baseline image. Most scenarios are tagged
-# @authenticated, which tells the Before hook (world.ts) to load a saved sign-in
-# session so they start already logged in — only the first scenario below
-# actually runs the sign-in flow itself.
+# The regression suite is split by test type across sibling feature files:
+#  - functional-regression.feature    (this file) UI behaviour and attribute checks
+#  - api-regression.feature           network / API behaviour and stubbed responses
+#  - visual-regression.feature        baseline screenshot comparison
+#  - accessibility-regression.feature Axe accessibility scan
+#
+# This file holds the Dyson manufacturer page functional checks: signing in, the
+# page's URL / title / links, the navigation bar and the telephone link. Most
+# scenarios are tagged @authenticated, which tells the Before hook (world.ts) to
+# load a saved sign-in session so they start already logged in — only the first
+# scenario below actually runs the sign-in flow itself.
 
-Feature: Dyson Homepage Regression Tests
+Feature: Dyson Homepage Functional Regression Tests
 
   Background: Navigate to Dyson manufacturer homepage
     Given I navigate to the Dyson manufacturer homepage
@@ -73,12 +78,6 @@ Feature: Dyson Homepage Regression Tests
   Scenario: Contact manufacturer button shows the correct text
     Then The button will display the correct text "Contact manufacturer"
 
-  # Runs an Axe accessibility scan of the page and writes the results to an HTML
-  # report (reports/accessibility-report.html) for a human to review.
-  @accessibility @regression @authenticated
-  Scenario: Accessibility checks complete and results are output to an HTML report
-    Then The results of the accessibility checks will be output to an HTML report
-
   # Checks the navigation bar shows exactly these tabs, in this order, each
   # linking to the right URL. The expected labels and hrefs come from the data
   # table below, so the spec — not the page object — owns the list of what
@@ -94,22 +93,13 @@ Feature: Dyson Homepage Regression Tests
       | Case studies   | /en/manufacturer/dyson/nakAxHWxDZprdqkBaCdn4U/case-studies               |
       | About us       | /en/manufacturer/dyson/nakAxHWxDZprdqkBaCdn4U/about                      |
 
-  # Takes a full-page screenshot and compares it pixel-by-pixel against a saved
-  # baseline image to catch unintended visual changes (shifted layout, missing
-  # images, font/colour changes). It waits for the navigation tabs to be visible
-  # first so the page is fully rendered before the screenshot. First run creates
-  # the baseline; later runs compare against it.
-  @regression @authenticated
-  Scenario: Visual regression testing of the Dyson homepage will show no significant differences compared to the baseline image
-    Then I take a screenshot of the Dyson homepage and compare it to the baseline image to check for visual regressions
-
   # The counterpart to the first scenario: this one is @authenticated, so it
   # starts from the saved session and never runs the sign-in steps. It proves the
   # stored session alone is enough to show the user as already logged in.
   @authenticated @regression
   Scenario: Stored auth session shows the user as already signed in without running the sign-in flow
-    Then The UI will reflect that the user is logged in  
-    
+    Then The UI will reflect that the user is logged in
+
   # Checks the telephone link shows the right number and uses the tel: protocol
   # in its href, so tapping it on a phone starts a call. The expected number and
   # href come from the data table below.
@@ -118,6 +108,3 @@ Feature: Dyson Homepage Regression Tests
     Then The telephone link displays the correct details
       | number      | href            |
       | 08003457788 | tel:08003457788 |
-
-
-
