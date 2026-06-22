@@ -1,4 +1,4 @@
-import { expect, Page, test } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 
 // Test 1: Go to NBS Homepage and verify url
 test("Go to NBS Homepage and verify url", async ({ page }) => {
