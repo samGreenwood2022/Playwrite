@@ -4,6 +4,9 @@
   "description": "Playwrite project",
   "main": "dist/index.js",
   "scripts": {
+    "specs-ui": "npx playwright test --ui",
+    "specs-headed": "npx playwright test --headed",
+    "specs": "npx playwright test",
     "codegen": "npx playwright codegen https://source.thenbs.com/",
     "cucumber": "node scripts/run-cucumber-suite.mjs cucumber",
     "cucumber:trace": "node scripts/run-cucumber-suite.mjs cucumber-trace",
