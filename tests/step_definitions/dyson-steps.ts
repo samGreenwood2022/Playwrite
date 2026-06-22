@@ -101,11 +101,22 @@ Then(
   },
 );
 
-// Runs an Axe accessibility scan on the current page and outputs any violations to an HTML report.
+// Runs an Axe accessibility scan on the named page and outputs any violations to
+// an HTML report. Driven by the accessibility-regression Scenario Outline, so
+// each page maps to its own report slug — keeping per-page reports from
+// overwriting each other (accessibility-report-<slug>.html under reports/).
 Then(
-  "The results of the accessibility checks will be output to an HTML report",
-  async function (this: CustomWorld) {
-    await this.basePage.generateAccessibilityReport();
+  "The accessibility checks on the {string} homepage are output to an HTML report",
+  async function (this: CustomWorld, page: string) {
+    const reportSlug: Record<string, string> = {
+      NBS: "nbs",
+      "Dyson manufacturer": "dyson",
+    };
+    const slug = reportSlug[page];
+    if (!slug) {
+      throw new Error(`No accessibility report slug configured for page "${page}".`);
+    }
+    await this.basePage.generateAccessibilityReport(slug);
   },
 );
 

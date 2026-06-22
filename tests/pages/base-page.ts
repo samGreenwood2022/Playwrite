@@ -84,9 +84,11 @@ export class BasePage {
   }
 
   // Runs an Axe accessibility scan against the current page and writes the
-  // results to reports/accessibility-report.html. Open that file to review
-  // any violations.
-  async generateAccessibilityReport() {
+  // results to an HTML report under reports/. Open that file to review any
+  // violations. An optional slug gives the report its own filename
+  // (accessibility-report-<slug>.html) so scans of different pages don't
+  // overwrite each other; with no slug it falls back to accessibility-report.html.
+  async generateAccessibilityReport(reportSlug?: string) {
     const accessibilityScanResults = await new AxeBuilder({
       page: this.page,
     }).analyze();
@@ -97,7 +99,10 @@ export class BasePage {
       options: { doNotCreateReportFile: true },
     });
     fs.mkdirSync("reports", { recursive: true });
-    const reportPath = path.resolve("reports/accessibility-report.html");
+    const reportFile = reportSlug
+      ? `reports/accessibility-report-${reportSlug}.html`
+      : "reports/accessibility-report.html";
+    const reportPath = path.resolve(reportFile);
     fs.writeFileSync(reportPath, html);
     console.info(
       `Accessibility report was saved into the following directory ${reportPath}`,
