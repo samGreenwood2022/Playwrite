@@ -20,7 +20,17 @@
       "Bash(npx ts-node *)",
       "Bash(PW_TRACE=1 PW_TRACE_DIR=reports/traces/empty-state npx cucumber-js --require-module ts-node/register --require tests/features/support/*.ts --require tests/step_definitions/*.ts tests/features/*.feature --tags \"@stub-empty-certifications\")",
       "PowerShell(npm uninstall *)",
-      "PowerShell(npx playwright install)"
+      "PowerShell(npx playwright install)",
+      "Bash(mkdir -p reports/traces)",
+      "Bash(PW_TRACE=1 PW_TRACE_DIR=reports/traces npx cucumber-js --require-module ts-node/register --require \"tests/features/support/*.ts\" --require \"tests/step_definitions/*.ts\" tests/features/*.feature --tags \"@stub-error-certifications\")",
+      "PowerShell($word = $null; try { $word = New-Object -ComObject Word.Application; Write-Output \"WORD_AVAILABLE\" } catch { Write-Output \"NO_WORD\" }; if \\($word\\) { $word.Quit\\(\\) }; python -c \"import docx; print\\('PYTHON_DOCX_AVAILABLE'\\)\" 2>$null; if \\(-not $?\\) { Write-Output \"NO_PYTHON_DOCX\" })",
+      "PowerShell(npx tsc --noEmit)",
+      "PowerShell(node scripts/_tmp-quietmark.mjs 2>&1)",
+      "Bash(git mv *)",
+      "Bash(git rm *)",
+      "Bash(head -20 \"C:/Users/615594~1/AppData/Local/Temp/claude/C--Users-615594345-Downloads-Playwright-My-Playwright-Playwrite/9241c0d3-b1cf-4f24-bb1d-c4707623861b/tasks/buhvqplkx.output\")",
+      "Bash(kill %1)",
+      "Bash(git add *)"
     ]
   }
 }

@@ -88,15 +88,22 @@ if (suite.traceDir) {
 // retries. Mirrors the retries setting in playwright.config.ts.
 const retries = process.env.CI ? 2 : 0;
 
+// Glob patterns are quoted so the shell (spawnSync uses shell: true) passes
+// them through literally and cucumber-js expands them itself. Without the
+// quotes, Linux/macOS shells expand the globs before cucumber sees them: a
+// multi-file match like tests/features/support/*.ts becomes several words,
+// only the first is consumed by --require, and the rest are mis-read as
+// positional feature paths ("must end with .feature or .md"). Windows shells
+// don't expand globs for native commands, which is why this only bites on CI.
 const cucumberArgs = [
   "cucumber-js",
   "--require-module",
   "ts-node/register",
   "--require",
-  "tests/features/support/*.ts",
+  '"tests/features/support/*.ts"',
   "--require",
-  "tests/step_definitions/*.ts",
-  "tests/features/*.feature",
+  '"tests/step_definitions/*.ts"',
+  '"tests/features/*.feature"',
   ...(suite.tags ? ["--tags", suite.tags] : []),
   ...(suite.parallel ? ["--parallel", String(suite.parallel)] : []),
   ...(retries ? ["--retry", String(retries)] : []),

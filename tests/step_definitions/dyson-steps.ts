@@ -1,9 +1,9 @@
-// home-page.ts — Cucumber step definitions for the Dyson manufacturer homepage tests.
+// dyson-steps.ts — Cucumber step definitions for the Dyson tests.
 //
-// Each function here is mapped to a Gherkin step in regression-tests.feature.
-// `this` refers to the CustomWorld instance for the current scenario, which provides
-// the page objects (homePage, dysonPage, basePage) set up in world.ts.
-// The step text in each Given/Then call must match the feature file exactly.
+// Each function here links to one Gherkin step in the .feature files. `this` is
+// the CustomWorld for the current scenario, which gives us the page objects
+// (homePage, dysonPage, basePage) created in world.ts. The step text in each
+// Given/When/Then must match the feature file word for word.
 
 import {
   Given,
@@ -12,7 +12,7 @@ import {
   DataTable,
   setDefaultTimeout,
 } from "@cucumber/cucumber";
-import { expect } from "@playwright/test";
+import { expect, Locator } from "@playwright/test";
 import { CustomWorld } from "../features/support/world";
 
 // Extends the default Cucumber step timeout to 60 seconds to allow for slow page loads.
@@ -27,6 +27,25 @@ Given(
     await this.basePage.verifyWebpageURL("https://source.thenbs.com/en/");
     await this.homePage.searchFor("Dyson");
     // await this.basePage.verifyWebpageURL("/en/manufacturers/dyson/");
+  },
+);
+
+// Navigates to a named homepage, chosen by the value passed from the feature
+// file. Used by the visual-regression Scenario Outline so one outline can cover
+// several pages. The parameter is quoted ({string}), so this never collides with
+// the unquoted "I navigate to the Dyson manufacturer homepage" Background step.
+//   "NBS"                — the NBS Source homepage (the site's first page).
+//   "Dyson manufacturer" — NBS homepage, then search through to the Dyson page.
+Given(
+  "I navigate to the {string} homepage",
+  async function (this: CustomWorld, page: string) {
+    await this.homePage.navigateToNBSHomepage();
+    await this.basePage.verifyWebpageURL("https://source.thenbs.com/en/");
+    if (page === "Dyson manufacturer") {
+      await this.homePage.searchFor("Dyson");
+    } else if (page !== "NBS") {
+      throw new Error(`Unknown page "${page}" — expected "NBS" or "Dyson manufacturer".`);
+    }
   },
 );
 
@@ -82,17 +101,28 @@ Then(
   },
 );
 
-// Runs an Axe accessibility scan on the current page and outputs any violations to an HTML report.
+// Runs an Axe accessibility scan on the named page and outputs any violations to
+// an HTML report. Driven by the accessibility-regression Scenario Outline, so
+// each page maps to its own report slug — keeping per-page reports from
+// overwriting each other (accessibility-report-<slug>.html under reports/).
 Then(
-  "The results of the accessibility checks will be output to an HTML report",
-  async function (this: CustomWorld) {
-    await this.basePage.generateAccessibilityReport();
+  "The accessibility checks on the {string} homepage are output to an HTML report",
+  async function (this: CustomWorld, page: string) {
+    const reportSlug: Record<string, string> = {
+      NBS: "nbs",
+      "Dyson manufacturer": "dyson",
+    };
+    const slug = reportSlug[page];
+    if (!slug) {
+      throw new Error(`No accessibility report slug configured for page "${page}".`);
+    }
+    await this.basePage.generateAccessibilityReport(slug);
   },
 );
 
 // Calls the geolocation API, validates the JSON response, and verifies the UI locale label matches.
 Then(
-  "The API response and content is as expected",
+  "The API response and the UI locale label are as expected",
   async function (this: CustomWorld) {
     await this.dysonPage.verifyUIandAPIContent();
   },
@@ -102,6 +132,16 @@ Then(
 When("I open the Certifications tab", async function (this: CustomWorld) {
   await this.dysonPage.openCertificationsTab();
 });
+
+// Opens the Certifications tab when its data request is dropped (aborted) so no
+// response ever arrives. Uses the failure-aware open, which waits for the
+// request to fail rather than for a response that never comes.
+When(
+  "I open the Certifications tab with its request dropped",
+  async function (this: CustomWorld) {
+    await this.dysonPage.openCertificationsTabExpectingFailure();
+  },
+);
 
 // Verifies the first certification tile renders the expected (stubbed) title.
 Then(
@@ -116,6 +156,42 @@ Then(
   "The Certifications tab shows no results",
   async function (this: CustomWorld) {
     await this.dysonPage.verifyNoCertificationResults();
+  },
+);
+
+// Verifies the Certifications tab degrades gracefully when its API returns a 500:
+// the panel renders blank (no tiles, no empty-state, no error message).
+Then(
+  "The Certifications tab shows a server error",
+  async function (this: CustomWorld) {
+    await this.dysonPage.verifyCertificationsServerError();
+  },
+);
+
+// Verifies the Certifications tab still renders its tiles after a slow response.
+Then(
+  "The Certifications tab still renders its certifications",
+  async function (this: CustomWorld) {
+    await this.dysonPage.verifyCertificationsRender();
+  },
+);
+
+// Verifies the tab opened but shows no certification tiles. Shared by the
+// dropped-connection and malformed-payload scenarios — both leave the tab with
+// no usable data and no explicit feedback to the user.
+Then(
+  "The Certifications tab renders no certification tiles",
+  async function (this: CustomWorld) {
+    await this.dysonPage.verifyNoCertificationTiles();
+  },
+);
+
+// Verifies the Dyson page's core content still renders with analytics and other
+// third-party requests blocked.
+Then(
+  "The Dyson page core content still renders",
+  async function (this: CustomWorld) {
+    await this.dysonPage.verifyCoreContentRenders();
   },
 );
 
@@ -134,11 +210,11 @@ Then(
   },
 );
 
-// Reads the test account credentials from the environment (loaded by dotenv in world.ts),
-// records the current page URL so a later step can assert the user is returned to it,
-// clicks the header Sign in button to open the form, then runs the full sign-in flow.
-// Throws immediately if either credential is missing so the failure is obvious rather
-// than surfacing as a confusing selector timeout inside the form.
+// Reads the test account login details from the environment (loaded by dotenv
+// in world.ts), saves the current URL so a later step can check the user comes
+// back to it, clicks the header Sign in button to open the form, then signs in.
+// If either credential is missing it throws straight away, so the failure is
+// clear rather than showing up later as a confusing timeout inside the form.
 When("I sign in with valid credentials", async function (this: CustomWorld) {
   const email = process.env.TEST_EMAIL;
   const password = process.env.TEST_PASSWORD;
@@ -152,9 +228,9 @@ When("I sign in with valid credentials", async function (this: CustomWorld) {
   await this.loginPage.signIn(email, password);
 });
 
-// Strict equality against the URL captured before sign-in. Uses toBe rather than
-// basePage.verifyWebpageURL because that helper does a substring match, which would
-// let a redirect to a different path silently pass.
+// Checks the URL exactly matches the one we saved before sign-in. We use toBe
+// (an exact match) instead of the verifyWebpageURL helper, which only checks
+// "contains" and would let a redirect to a different page slip through.
 Then(
   "The user is then logged in and returned to their previous page",
   function (this: CustomWorld) {
@@ -171,17 +247,36 @@ Then(
   },
 );
 
-// Takes a screenshot of the Dyson homepage and compares it to a baseline image to check for visual regressions.
+// Takes a full-page screenshot of the named page and compares it to that page's
+// baseline image to check for visual regressions. Driven by the visual-regression
+// Scenario Outline, so each page maps to its own baseline file and the locator we
+// wait for before screenshotting (a page-specific element that proves it has
+// rendered). Baselines are kept per page and per OS as <baseline>-<platform>.png.
 Then(
-  "I take a screenshot of the Dyson homepage and compare it to the baseline image to check for visual regressions",
-  async function (this: CustomWorld) {
+  "I take a screenshot of the {string} homepage and compare it to its baseline",
+  async function (this: CustomWorld, page: string) {
+    const config: Record<string, { baseline: string; waitFor: Locator[] }> = {
+      NBS: {
+        baseline: "nbs-homepage",
+        waitFor: [this.homePage.searchField],
+      },
+      "Dyson manufacturer": {
+        baseline: "dyson-homepage",
+        waitFor: [this.dysonPage.navigationTabs],
+      },
+    };
+    const pageConfig = config[page];
+    if (!pageConfig) {
+      throw new Error(`No visual baseline configured for page "${page}".`);
+    }
     try {
-      await this.basePage.verifyVisualRegression("baseline", [
-        this.dysonPage.navigationTabs,
-      ]);
+      await this.basePage.verifyVisualRegression(
+        pageConfig.baseline,
+        pageConfig.waitFor,
+      );
     } catch (err) {
-      // Record the diff PNG path so the After hook attaches it to the report
-      // instead of a live page screenshot, then rethrow to fail the step.
+      // Save the diff image's path so the After hook attaches it to the report
+      // instead of a normal screenshot, then re-throw to make the step fail.
       this.visualDiffPath = (err as { diffPath?: string }).diffPath;
       throw err;
     }
