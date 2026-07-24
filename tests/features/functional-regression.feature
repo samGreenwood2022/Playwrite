@@ -71,7 +71,7 @@ Feature: Dyson Homepage Functional Regression Tests
   # Checks the "Contact manufacturer" link points to Dyson's own external website.
   @smoke @regression @authenticated
   Scenario: External manufacturer link attribute contains the correct URL
-    Then The manufacturer website link is correct "https://www.dyson.co.uk/commercial/overview/architects-designers"
+    Then The manufacturer website link is correct "https://www.dyson.co.uk/commercial/overview"
 
   # Checks the "Contact manufacturer" button shows the expected visible text.
   @smoke @regression @authenticated

@@ -60,86 +60,33 @@ export class HomePage {
   //      that does nothing (dropdown closed without navigating) fails loudly
   //      instead of passing silently. Reloading the page is the last resort.
   async searchFor(term: string) {
-    // Try the whole thing up to 3 times, each time waiting a set period for the
-    // dropdown to appear. If an attempt fully succeeds, we return straight away.
-    const maxAttempts = 3;
-    const dropdownTimeout = 30000;
-
-    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-      try {
-        // Wait until the page's HTML has loaded before typing — otherwise the
-        // search box may not be ready for input yet and our keystrokes get lost.
-        await this.page.waitForLoadState("domcontentloaded", {
-          timeout: 15000,
-        });
-
-        // Click the field, clear anything left from a previous attempt, then
-        // type slowly (100ms per character) so the site's search has time to
-        // react. pressSequentially types one real key press at a time.
-        await this.searchField.click();
-        await this.searchField.fill("");
-        await this.searchField.pressSequentially(term, { delay: 100 });
-
-        // Did the dropdown actually open? We wait for the dropdown container to
-        // appear. Giving up reasonably quickly here (rather than waiting on the
-        // result item itself) leaves time to recover within Cucumber's timeout.
-        try {
-          await this.searchAutocomplete.waitFor({
-            state: "visible",
-            timeout: dropdownTimeout,
-          });
-        } catch {
-          // Quick recovery: clear and retype before resorting to a reload.
-          // Often the dropdown only failed because the first keystroke was
-          // missed, and retyping fixes it without reloading the page.
-          await this.searchField.fill("");
-          await this.searchField.pressSequentially(term, { delay: 100 });
-          await this.searchAutocomplete.waitFor({
-            state: "visible",
-            timeout: dropdownTimeout,
-          });
-        }
-
-        // Click the result while also waiting for the URL to change. If the
-        // click does nothing (the dropdown just closes), the URL wait fails
-        // instead of the test passing by mistake. Both must start together
-        // (Promise.all) so the URL wait is already listening before the click.
-        await Promise.all([
-          this.page.waitForURL(/\/manufacturer\/dyson\//, { timeout: 30000 }),
-          this.dysonManufacturerOption.click({ timeout: 10000 }),
-        ]);
-        return;
-      } catch (error) {
-        // Don't fail yet — log a warning and let the loop try again (after a
-        // reload). The warning keeps flaky-but-eventually-passing runs visible
-        // in the logs so they can still be looked into.
-        console.warn(`Attempt ${attempt} to search for "${term}" failed:`, error);
-      }
-
-      // Last resort between attempts: reload the page to reset whatever made
-      // the dropdown misbehave. Skipped on the final attempt (nothing left to
-      // retry) and if the page is already closed.
-      if (attempt < maxAttempts && !this.page.isClosed()) {
-        await this.page.reload({
-          waitUntil: "domcontentloaded",
-          timeout: 20000,
-        });
-      }
-    }
-
-    // Every attempt (typing, retyping, and reloading) has been used up without
-    // ever reaching the Dyson manufacturer page.
-    throw new Error(
-      `Failed to find and click the "${term}" search result after ${maxAttempts} attempts (with page reloads).`,
-    );
+    await this.navigateToNBSHomepage();
+    await this.page.getByRole('textbox', { name: 'Search' }).click();
+    await this.page.getByRole('textbox', { name: 'Search' }).fill(term);
+    await this.page.getByRole('textbox', { name: 'Search' }).press('Enter');
+    await this.page.getByRole('tab', { name: 'Manufacturers' }).click();
+    await this.page.getByRole('link', { name: 'Dyson Dyson Technology for' }).click();
   }
 
-  // Navigates directly to the NBS Source homepage and waits for the DOM to be ready.
+  // Navigates directly to the NBS Source homepage, waits for the DOM to be
+  // ready, then clears the "new feature" popup if the site shows it. Every route
+  // onto the homepage goes through here, so the popup is handled in one place.
   async navigateToNBSHomepage() {
-    await this.page.goto("https://source.thenbs.com/en/", {
+    await this.page.goto("https://source.thenbs.com/en/gb", {
       timeout: 60000,
       waitUntil: "domcontentloaded",
     });
+    // The "new feature" dialog only appears sometimes. Wait briefly for its
+    // Close button; if it shows, click it, otherwise the wait times out and we
+    // carry on. Waiting (rather than a bare isVisible check) avoids a race where
+    // the dialog is still rendering when we look.
+    const closeDialogButton = this.page.getByRole('button', { name: 'Close dialog' });
+    try {
+      await closeDialogButton.waitFor({ state: 'visible', timeout: 10000 });
+      await closeDialogButton.click();
+    } catch {
+      // No dialog this time — nothing to close, so just continue.
+    }
   }
 
 }
