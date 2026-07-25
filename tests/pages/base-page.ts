@@ -93,7 +93,7 @@ export class BasePage {
       page: this.page,
     }).analyze();
     // doNotCreateReportFile stops the reporter writing its own copy and logging
-    // a generic message — we save the file and log a clearer one ourselves.
+    // a message about it — we save the file ourselves, silently.
     const html = createHtmlReport({
       results: accessibilityScanResults,
       options: { doNotCreateReportFile: true },
@@ -104,9 +104,6 @@ export class BasePage {
       : "reports/accessibility-report.html";
     const reportPath = path.resolve(reportFile);
     fs.writeFileSync(reportPath, html);
-    console.info(
-      `Accessibility report was saved into the following directory ${reportPath}`,
-    );
   }
 
   // Forces "lazy-loaded" images to start loading by scrolling down the page a
@@ -185,20 +182,13 @@ export class BasePage {
 
     // 4. Extra check that every <img> reports as loaded. This is "soft" — on
     //    pages that keep adding new <img> tags (carousels, ads, trackers) it may
-    //    never settle, so if it times out we just log the stragglers and carry
-    //    on. Step 3 (network idle) is the real safety net for image downloads.
+    //    never settle, so if it times out we just carry on quietly. Step 3
+    //    (network idle) is the real safety net for image downloads.
     try {
       await this.waitForImagesLoaded();
     } catch {
-      const pending = await this.page.evaluate(() =>
-        Array.from(document.images)
-          .filter((img) => !img.complete)
-          .map((img) => img.currentSrc || img.src || "<no src>"),
-      );
-      console.warn(
-        `waitForImagesLoaded timed out — ${pending.length} image(s) still loading. ` +
-          `Continuing with screenshot. Pending:\n  ${pending.join("\n  ")}`,
-      );
+      // Some images are still loading — proceed with the screenshot anyway.
+      // Step 3 (network idle) is the real safety net; this is a soft check.
     }
 
     // 5. Wait for web fonts. document.fonts.ready finishes once the fonts the

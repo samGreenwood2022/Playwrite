@@ -105,6 +105,7 @@ report.generate({
   displayDuration: true,
   displayReportTime: true,
   openReportInBrowser: false,
+  disableLog: true,
   metadata: {
     browser: { name: "chrome", version: "latest" },
     device: os.hostname(),
@@ -115,5 +116,3 @@ report.generate({
     data: runInfoData,
   },
 });
-
-console.log(`Report generated: ${path.join(outDir, "index.html")}`);
