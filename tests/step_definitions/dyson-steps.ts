@@ -21,11 +21,11 @@ setDefaultTimeout(60 * 1000);
 // Navigates to the NBS Source homepage, verifies the URL, then searches for Dyson.
 // This runs as the Background step before every scenario in the feature file.
 Given("I navigate to the Dyson manufacturer homepage", async function (this: CustomWorld) {
-    await this.homePage.navigateToNBSHomepage();
-    await this.basePage.verifyWebpageURL("https://source.thenbs.com/en/gb");
-    await this.homePage.searchFor("Dyson");
-    // await this.basePage.verifyWebpageURL("/en/manufacturers/dyson/");
-  },
+  await this.homePage.navigateToNBSHomepage();
+  await this.basePage.verifyWebpageURL("https://source.thenbs.com/en/gb");
+  await this.homePage.searchFor("Dyson");
+  // await this.basePage.verifyWebpageURL("/en/manufacturers/dyson/");
+},
 );
 
 // Navigates to a named homepage, chosen by the value passed from the feature
@@ -34,33 +34,27 @@ Given("I navigate to the Dyson manufacturer homepage", async function (this: Cus
 // the unquoted "I navigate to the Dyson manufacturer homepage" Background step.
 //   "NBS"                — the NBS Source homepage (the site's first page).
 //   "Dyson manufacturer" — NBS homepage, then search through to the Dyson page.
-Given(
-  "I navigate to the {string} homepage",
-  async function (this: CustomWorld, page: string) {
-    await this.homePage.navigateToNBSHomepage();
-    await this.basePage.verifyWebpageURL("https://source.thenbs.com/en/");
-    if (page === "Dyson manufacturer") {
-      await this.homePage.searchFor("Dyson");
-    } else if (page !== "NBS") {
-      throw new Error(`Unknown page "${page}" — expected "NBS" or "Dyson manufacturer".`);
-    }
-  },
+Given("I navigate to the {string} homepage", async function (this: CustomWorld, page: string) {
+  await this.homePage.navigateToNBSHomepage();
+  await this.basePage.verifyWebpageURL("https://source.thenbs.com/en/");
+  if (page === "Dyson manufacturer") {
+    await this.homePage.searchFor("Dyson");
+  } else if (page !== "NBS") {
+    throw new Error(`Unknown page "${page}" — expected "NBS" or "Dyson manufacturer".`);
+  }
+},
 );
 
 // Verifies the current page URL contains the expected substring passed from the feature file.
-Then(
-  "The URL will contain the expected text {string}",
-  async function (this: CustomWorld, expectedText: string) {
-    await this.basePage.verifyWebpageURL(expectedText);
-  },
+Then("The URL will contain the expected text {string}", async function (this: CustomWorld, expectedText: string) {
+  await this.basePage.verifyWebpageURL(expectedText);
+},
 );
 
 // Verifies the telephone link displays the correct number, uses the tel: protocol, and has the correct href.
 // The expected number and href are read from a single-row data table so both values
 // are visible in the feature file rather than the href being constructed in code.
-Then(
-  "The telephone link displays the correct details",
-  async function (this: CustomWorld, details: DataTable) {
+Then("The telephone link displays the correct details", async function (this: CustomWorld, details: DataTable) {
     // hashes() turns the table into [{ number, href }] keyed by the header row.
     const { number, href } = details.hashes()[0];
     await this.dysonPage.verifyTelNo(number, href);
@@ -68,33 +62,25 @@ Then(
 );
 
 // Verifies the HTML <title> of the page matches the expected string exactly.
-Then(
-  "The webpage title will be as expected {string}",
-  async function (this: CustomWorld, title: string) {
+Then("The webpage title will be as expected {string}",async function (this: CustomWorld, title: string) {
     await this.basePage.verifyWebpageTitle(title);
   },
 );
 
 // Verifies the NBS Source logo links to the expected href attribute value.
-Then(
-  "The href attribute of the Source logo will be as expected {string}",
-  async function (this: CustomWorld, expectedHref: string) {
+Then("The href attribute of the Source logo will be as expected {string}", async function (this: CustomWorld, expectedHref: string) {
     await this.basePage.logoHref(expectedHref);
   },
 );
 
 // Verifies the external manufacturer link (Contact manufacturer button) points to the correct URL.
-Then(
-  "The manufacturer website link is correct {string}",
-  async function (this: CustomWorld, expectedLink: string) {
+Then("The manufacturer website link is correct {string}", async function (this: CustomWorld, expectedLink: string) {
     await this.dysonPage.verifyExternalManufacturerLink(expectedLink);
   },
 );
 
 // Verifies the Contact manufacturer button displays the correct visible text.
-Then(
-  "The button will display the correct text {string}",
-  async function (this: CustomWorld, expectedText: string) {
+Then("The button will display the correct text {string}", async function (this: CustomWorld, expectedText: string) {
     await this.dysonPage.verifyContactButtonText(expectedText);
   },
 );
@@ -103,9 +89,7 @@ Then(
 // an HTML report. Driven by the accessibility-regression Scenario Outline, so
 // each page maps to its own report slug — keeping per-page reports from
 // overwriting each other (accessibility-report-<slug>.html under reports/).
-Then(
-  "The accessibility checks on the {string} homepage are output to an HTML report",
-  async function (this: CustomWorld, page: string) {
+Then("The accessibility checks on the {string} homepage are output to an HTML report", async function (this: CustomWorld, page: string) {
     const reportSlug: Record<string, string> = {
       NBS: "nbs",
       "Dyson manufacturer": "dyson",
@@ -119,9 +103,7 @@ Then(
 );
 
 // Calls the geolocation API, validates the JSON response, and verifies the UI locale label matches.
-Then(
-  "The API response and the UI locale label are as expected",
-  async function (this: CustomWorld) {
+Then("The API response and the UI locale label are as expected", async function (this: CustomWorld) {
     await this.dysonPage.verifyUIandAPIContent();
   },
 );
@@ -134,42 +116,32 @@ When("I open the Certifications tab", async function (this: CustomWorld) {
 // Opens the Certifications tab when its data request is dropped (aborted) so no
 // response ever arrives. Uses the failure-aware open, which waits for the
 // request to fail rather than for a response that never comes.
-When(
-  "I open the Certifications tab with its request dropped",
-  async function (this: CustomWorld) {
+When("I open the Certifications tab with its request dropped", async function (this: CustomWorld) {
     await this.dysonPage.openCertificationsTabExpectingFailure();
   },
 );
 
 // Verifies the first certification tile renders the expected (stubbed) title.
-Then(
-  "The first certification tile shows {string}",
-  async function (this: CustomWorld, expectedTitle: string) {
+Then("The first certification tile shows {string}", async function (this: CustomWorld, expectedTitle: string) {
     await this.dysonPage.verifyFirstCertificationTile(expectedTitle);
   },
 );
 
 // Verifies the Certifications tab renders its empty state (no result tiles).
-Then(
-  "The Certifications tab shows no results",
-  async function (this: CustomWorld) {
+Then("The Certifications tab shows no results", async function (this: CustomWorld) {
     await this.dysonPage.verifyNoCertificationResults();
   },
 );
 
 // Verifies the Certifications tab degrades gracefully when its API returns a 500:
 // the panel renders blank (no tiles, no empty-state, no error message).
-Then(
-  "The Certifications tab shows a server error",
-  async function (this: CustomWorld) {
+Then("The Certifications tab shows a server error", async function (this: CustomWorld) {
     await this.dysonPage.verifyCertificationsServerError();
   },
 );
 
 // Verifies the Certifications tab still renders its tiles after a slow response.
-Then(
-  "The Certifications tab still renders its certifications",
-  async function (this: CustomWorld) {
+Then("The Certifications tab still renders its certifications", async function (this: CustomWorld) {
     await this.dysonPage.verifyCertificationsRender();
   },
 );
@@ -177,36 +149,27 @@ Then(
 // Verifies the tab opened but shows no certification tiles. Shared by the
 // dropped-connection and malformed-payload scenarios — both leave the tab with
 // no usable data and no explicit feedback to the user.
-Then(
-  "The Certifications tab renders no certification tiles",
-  async function (this: CustomWorld) {
+Then("The Certifications tab renders no certification tiles", async function (this: CustomWorld) {
     await this.dysonPage.verifyNoCertificationTiles();
-  },
-);
+});
 
 // Verifies the Dyson page's core content still renders with analytics and other
 // third-party requests blocked.
-Then(
-  "The Dyson page core content still renders",
-  async function (this: CustomWorld) {
-    await this.dysonPage.verifyCoreContentRenders();
-  },
-);
+Then("The Dyson page core content still renders", async function (this: CustomWorld) {
+  await this.dysonPage.verifyCoreContentRenders();
+});
 
 // Verifies the Dyson navigation bar contains the expected tabs in the expected order.
 // The expected tab labels come from the feature file's data table, so the spec — not
 // the page object — owns the list of what should appear.
-Then(
-  "The Dyson navigation bar displays the following tabs in order",
-  async function (this: CustomWorld, tabs: DataTable) {
+Then("The Dyson navigation bar displays the following tabs in order", async function (this: CustomWorld, tabs: DataTable) {
     // hashes() yields one object per row keyed by the header columns ("label", "href").
     const expectedTabs = tabs.hashes().map((row) => ({
       label: row.label,
       href: row.href,
     }));
     await this.dysonPage.verifyDysonNavigationBar(expectedTabs);
-  },
-);
+});
 
 // Reads the test account login details from the environment (loaded by dotenv
 // in world.ts), saves the current URL so a later step can check the user comes
@@ -229,30 +192,22 @@ When("I sign in with valid credentials", async function (this: CustomWorld) {
 // Checks the URL exactly matches the one we saved before sign-in. We use toBe
 // (an exact match) instead of the verifyWebpageURL helper, which only checks
 // "contains" and would let a redirect to a different page slip through.
-Then(
-  "The user is then logged in and returned to their previous page",
-  function (this: CustomWorld) {
-    expect(this.page.url()).toBe(this.capturedUrl);
-  },
-);
+Then("The user is then logged in and returned to their previous page", function (this: CustomWorld) {
+  expect(this.page.url()).toBe(this.capturedUrl);
+});
 
 // Delegates to BasePage which encapsulates all three header checks
 // (Sign in hidden, user menu visible, avatar initials correct).
-Then(
-  "The UI will reflect that the user is logged in",
-  async function (this: CustomWorld) {
-    await this.basePage.verifyLoggedInUI();
-  },
-);
+Then("The UI will reflect that the user is logged in", async function (this: CustomWorld) {
+  await this.basePage.verifyLoggedInUI();
+});
 
 // Takes a full-page screenshot of the named page and compares it to that page's
 // baseline image to check for visual regressions. Driven by the visual-regression
 // Scenario Outline, so each page maps to its own baseline file and the locator we
 // wait for before screenshotting (a page-specific element that proves it has
 // rendered). Baselines are kept per page and per OS as <baseline>-<platform>.png.
-Then(
-  "I take a screenshot of the {string} homepage and compare it to its baseline",
-  async function (this: CustomWorld, page: string) {
+Then("I take a screenshot of the {string} homepage and compare it to its baseline", async function (this: CustomWorld, page: string) {
     const config: Record<
       string,
       { baseline: string; waitFor: Locator[]; mask?: Locator[] }
@@ -285,6 +240,5 @@ Then(
       this.visualDiffPath = (err as { diffPath?: string }).diffPath;
       throw err;
     }
-  },
-);
+});
 
