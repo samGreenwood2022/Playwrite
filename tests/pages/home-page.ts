@@ -14,6 +14,14 @@ export class HomePage {
   readonly searchButton: Locator;
   readonly searchAutocomplete: Locator;
   readonly dysonManufacturerOption: Locator;
+  // The "Sponsored products" and "Sponsored CPD Materials" carousels. Both are
+  // ad slots that rotate their tiles on every page load, so a full-page visual
+  // screenshot never matches a fixed baseline there. They share this component
+  // and class regardless of which sponsored slot they render, so one locator
+  // catches both. Passed as a mask to verifyVisualRegression so that area is
+  // blanked out (painted a flat colour) before comparing, instead of being
+  // compared pixel-for-pixel.
+  readonly sponsoredCarousels: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -39,6 +47,9 @@ export class HomePage {
     // exactly one.
     this.dysonManufacturerOption = page.locator(
       'app-autocomplete article.manufacturers a[href*="/manufacturer/dyson/"]',
+    );
+    this.sponsoredCarousels = page.locator(
+      "app-skeleton-tiles-carousel.sponsored",
     );
   }
 
@@ -76,16 +87,16 @@ export class HomePage {
       timeout: 60000,
       waitUntil: "domcontentloaded",
     });
-    // The "new feature" dialog only appears sometimes. Wait briefly for its
-    // Close button; if it shows, click it, otherwise the wait times out and we
-    // carry on. Waiting (rather than a bare isVisible check) avoids a race where
-    // the dialog is still rendering when we look.
-    const closeDialogButton = this.page.getByRole('button', { name: 'Close dialog' });
-    try {
-      await closeDialogButton.waitFor({ state: 'visible', timeout: 10000 });
-      await closeDialogButton.click();
-    } catch {
-      // No dialog this time — nothing to close, so just continue.
+    const overlayCloseButtons = [
+      this.page.getByRole("button", { name: "Accept all" }),
+      this.page.getByRole("button", { name: "Close dialog" }),
+    ];
+    for (const closeButton of overlayCloseButtons) {
+      try {
+        await closeButton.click({ timeout: 2000 });
+      } catch {
+        // Overlay wasn't shown this run — nothing to dismiss.
+      }
     }
   }
 

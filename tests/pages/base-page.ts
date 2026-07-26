@@ -166,7 +166,18 @@ export class BasePage {
   //
   // First run: there's no baseline yet, so we save the current screenshot as the
   // baseline and stop. Run it again to actually compare against it.
-  async verifyVisualRegression(name: string = "baseline", waitFor: Locator[] = []) {
+  //
+  // `mask` covers elements whose content changes on every load through no fault
+  // of the app (rotating ad carousels, "recently viewed" widgets, etc.) — the
+  // kind of difference a baseline can never stay in sync with. Playwright paints
+  // each masked element's box a flat colour before the screenshot is taken, so
+  // as long as its position on the page doesn't move, the baseline and the
+  // current run get an identical box there and pixelmatch sees no difference.
+  async verifyVisualRegression(
+    name: string = "baseline",
+    waitFor: Locator[] = [],
+    mask: Locator[] = [],
+  ) {
     // 1. Wait for page-specific elements the caller said must be on screen.
     for (const loc of waitFor) {
       await loc.waitFor({ state: "visible", timeout: 15000 });
@@ -217,8 +228,14 @@ export class BasePage {
     fs.mkdirSync(snapshotDir, { recursive: true });
 
     // 7. Capture the screenshot. fullPage: true stitches the entire scrollable
-    //    document together, not just the current viewport.
-    const screenshotBuffer = await this.page.screenshot({ fullPage: true });
+    //    document together, not just the current viewport. Any masked elements
+    //    get painted over with maskColor first, hiding their ever-changing
+    //    content from the comparison.
+    const screenshotBuffer = await this.page.screenshot({
+      fullPage: true,
+      mask,
+      maskColor: "#FF00FF",
+    });
 
     // First run for this `name`: save as baseline and exit. Re-run to compare.
     if (!fs.existsSync(baselinePath)) {

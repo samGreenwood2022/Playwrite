@@ -253,10 +253,16 @@ Then(
 Then(
   "I take a screenshot of the {string} homepage and compare it to its baseline",
   async function (this: CustomWorld, page: string) {
-    const config: Record<string, { baseline: string; waitFor: Locator[] }> = {
+    const config: Record<
+      string,
+      { baseline: string; waitFor: Locator[]; mask?: Locator[] }
+    > = {
       NBS: {
         baseline: "nbs-homepage",
         waitFor: [this.homePage.searchField],
+        // The sponsored carousels rotate their ad content on every load, so
+        // they're masked out rather than compared pixel-for-pixel.
+        mask: [this.homePage.sponsoredCarousels],
       },
       "Dyson manufacturer": {
         baseline: "dyson-homepage",
@@ -271,6 +277,7 @@ Then(
       await this.basePage.verifyVisualRegression(
         pageConfig.baseline,
         pageConfig.waitFor,
+        pageConfig.mask,
       );
     } catch (err) {
       // Save the diff image's path so the After hook attaches it to the report
