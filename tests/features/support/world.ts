@@ -298,6 +298,11 @@ After(async function (this: CustomWorld, scenario: ITestCaseHookParameter) {
     }
   }
 
+  // Drop any route callbacks still in flight (e.g. the "slow" cert stub's
+  // deliberate delay) so their promises don't reject with "Target page,
+  // context or browser has been closed" once we tear down below.
+  await this.page?.unrouteAll({ behavior: "ignoreErrors" });
+
   await this.context?.close();
   await this.browser?.close();
 });
