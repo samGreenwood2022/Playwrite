@@ -1,0 +1,461 @@
+- generic [ref=f2e3]:
+  - banner [ref=f2e7]:
+    - generic [ref=f2e8]:
+      - link "NBS Source" [ref=f2e10] [cursor=pointer]:
+        - /url: /en/gb
+      - button "Choose location and language" [ref=f2e16]:
+        - generic [ref=f2e17]: UK
+    - button "Sign in" [ref=f2e23]
+  - banner [ref=f2e30]:
+    - navigation "Main navigation links" [ref=f2e32]:
+      - link "Home" [ref=f2e33] [cursor=pointer]:
+        - /url: /en/gb
+      - link "What's new" [ref=f2e37] [cursor=pointer]:
+        - /url: /en/gb/whats-new
+      - article [ref=f2e41]:
+        - button "Browse" [ref=f2e42]
+        - menu "Browse menu":
+          - article:
+            - generic:
+              - heading "Categories" [level=2]
+            - generic:
+              - link "Communications, security and safety":
+                - /url: /en/gb/category/communications-security-and-safety/nuJ7UsKqsfmwphEUxxWeuT
+              - link "Coverings, coatings and finishes":
+                - /url: /en/gb/category/coverings-coatings-and-finishes/oqp3eL65AahZGgtqA5rMPh
+              - link "Doors, windows and hatches":
+                - /url: /en/gb/category/doors-windows-and-hatches/ndwwX39PgbyjJGbveGwpLu
+              - link "Electrical power and lighting":
+                - /url: /en/gb/category/electrical-power-and-lighting/bswgU4ortiBZi5YLuVoQSf
+              - link "Fittings, furnishings and equipment":
+                - /url: /en/gb/category/fittings-furnishings-and-equipment/uybG3djVP8AgJk2Fu6rgAJ
+              - link "General building products":
+                - /url: /en/gb/category/general-building-products/b6hgxiLbwdDFC4F4xjYXmL
+              - link "Lifts, elevators and escalators":
+                - /url: /en/gb/category/lifts-elevators-and-escalators/jRQcGPB9ToSXkv23L4f2XZ
+              - link "Plants and animals":
+                - /url: /en/gb/category/plants-and-animals/rb4dZEYYditbrB44aY5FxV
+              - link "Plumbing and waste disposal":
+                - /url: /en/gb/category/plumbing-and-waste-disposal/r64a5TSeKyLAFuXKMMuqHN
+              - link "Plumbing fixtures and accessories":
+                - /url: /en/gb/category/plumbing-fixtures-and-accessories/dChJUFZUmyV8tgKBRPk5ui
+              - link "Ponds, swimming pools, bunds and tanks":
+                - /url: /en/gb/category/ponds-swimming-pools-bunds-and-tanks/sP5sBNrU6ZMnUeHKng6m7H
+              - link "Roofs, ceilings and soffits":
+                - /url: /en/gb/category/roofs-ceilings-and-soffits/t1Nd7ayjeVyYfZ7YgMRAAm
+              - link "Signage and signalling":
+                - /url: /en/gb/category/signage-and-signalling/6cn4oWrA7SgQw4yiFq14Mr
+              - link "Stairs and ramps":
+                - /url: /en/gb/category/stairs-and-ramps/pWwBs9DpRrrp4fCk5MhuPn
+              - link "Structure":
+                - /url: /en/gb/category/structure/8PY9JCZZjQuUsTS8X1rsYY
+              - link "Ventilation, air conditioning and space heating":
+                - /url: /en/gb/category/ventilation-air-conditioning-and-space-heating/5TuADwMz9LKpvdc8wKdiF5
+              - link "Walls and barriers":
+                - /url: /en/gb/category/walls-and-barriers/qpNRgYeM3pQWsnzXYyf5Xr
+            - generic:
+              - link "View all categories":
+                - /url: /en/gb/categories
+          - article:
+            - generic:
+              - heading "Other" [level=2]
+            - generic:
+              - link "BIM object categories":
+                - /url: /en/gb/categories/bim
+              - link "Manufacturers":
+                - /url: /en/gb/manufacturers
+              - link "Our partners":
+                - /url: /en/gb/partners
+      - button "BIM Library" [ref=f2e47]
+      - link "Inspiration" [ref=f2e52] [cursor=pointer]:
+        - /url: /en/gb/inspiration
+      - link "Collections" [ref=f2e56] [cursor=pointer]:
+        - /url: /en/gb/collections
+      - link "CPD" [ref=f2e60] [cursor=pointer]:
+        - /url: /en/gb/cpd
+    - link "I'm a manufacturer" [ref=f2e66] [cursor=pointer]:
+      - /url: https://manufacturers.thenbs.com/nbs-source
+  - generic [ref=f2e73]:
+    - generic [ref=f2e74]:
+      - generic [ref=f2e77]:
+        - generic [ref=f2e78]:
+          - article [ref=f2e79]:
+            - heading "NBS Source" [level=1] [ref=f2e80]
+            - paragraph [ref=f2e81]: Find, select & specify with confidence
+          - generic [ref=f2e84]:
+            - textbox "Search" [ref=f2e89]:
+              - /placeholder: Search NBS Source...
+            - combobox "All" [ref=f2e94] [cursor=pointer]
+            - button "Search" [ref=f2e102] [cursor=pointer]
+          - article [ref=f2e106]:
+            - link "Browse categories" [ref=f2e107] [cursor=pointer]:
+              - /url: /en/gb/categories
+            - link "Browse manufacturers" [ref=f2e112] [cursor=pointer]:
+              - /url: /en/gb/manufacturers
+          - paragraph [ref=f2e117]: Trusted by leading specifiers and manufacturers worldwide
+        - generic [ref=f2e119]:
+          - img "Lödige Industries" [ref=f2e120]
+          - link:
+            - /url: /en/gb/manufacturer/lodige-industries/upg9c9RiM2zSFQv3wfKyRb/overview?featured_hero_brand=true
+            - article [ref=f2e121] [cursor=pointer]:
+              - paragraph [ref=f2e122]: View brand profile
+              - paragraph [ref=f2e123]: Lödige Industries
+      - generic [ref=f2e126]:
+        - paragraph [ref=f2e127]: Sponsored manufacturers
+        - generic [ref=f2e128]:
+          - article [ref=f2e129]
+          - article [ref=f2e132]
+      - generic [ref=f2e136]:
+        - banner [ref=f2e137]:
+          - heading "Popular categories" [level=2] [ref=f2e138]
+          - link "Browse all categories" [ref=f2e139] [cursor=pointer]:
+            - /url: /en/gb/categories
+        - generic [ref=f2e141]:
+          - link [ref=f2e143] [cursor=pointer]:
+            - /url: /en/gb/category/doors-windows-and-hatches/doors/ttbMzLaXfLrUgshcVzi3Yu
+            - article [ref=f2e144]:
+              - button "Doors" [ref=f2e145]
+          - link [ref=f2e150] [cursor=pointer]:
+            - /url: /en/gb/category/doors-windows-and-hatches/windows-and-glazing/bG89sxAQGhHeyr3oFcDNgV
+            - article [ref=f2e151]:
+              - button "Windows and glazing" [ref=f2e152]
+          - link [ref=f2e157] [cursor=pointer]:
+            - /url: /en/gb/category/coverings-coatings-and-finishes/protective-coating/tErt7wNmmEUX3NbB42pX4Q
+            - article [ref=f2e158]:
+              - button "Protective coatings" [ref=f2e159]
+          - link [ref=f2e164] [cursor=pointer]:
+            - /url: /en/gb/category/coverings-coatings-and-finishes/floor-coverings/5z3d7VwVksYYYKoiJu99Js
+            - article [ref=f2e165]:
+              - button "Floor coverings" [ref=f2e166]
+      - generic [ref=f2e171]:
+        - banner [ref=f2e172]:
+          - heading "Sponsored products" [level=2] [ref=f2e173]
+        - generic [ref=f2e174]:
+          - generic [ref=f2e175]:
+            - generic [ref=f2e176]:
+              - article [ref=f2e177]
+              - article [ref=f2e178]
+              - article [ref=f2e179]
+              - article [ref=f2e182]
+              - article [ref=f2e184]
+            - article [ref=f2e187]
+          - generic [ref=f2e188]:
+            - generic [ref=f2e189]:
+              - article [ref=f2e190]
+              - article [ref=f2e191]
+              - article [ref=f2e192]
+              - article [ref=f2e195]
+              - article [ref=f2e197]
+            - article [ref=f2e200]
+          - generic [ref=f2e201]:
+            - generic [ref=f2e202]:
+              - article [ref=f2e203]
+              - article [ref=f2e204]
+              - article [ref=f2e205]
+              - article [ref=f2e208]
+              - article [ref=f2e210]
+            - article [ref=f2e213]
+          - generic [ref=f2e214]:
+            - generic [ref=f2e215]:
+              - article [ref=f2e216]
+              - article [ref=f2e217]
+              - article [ref=f2e218]
+              - article [ref=f2e221]
+              - article [ref=f2e223]
+            - article [ref=f2e226]
+      - generic [ref=f2e228]:
+        - banner [ref=f2e229]:
+          - heading "Sponsored CPD Materials" [level=2] [ref=f2e230]
+        - generic [ref=f2e231]:
+          - generic [ref=f2e232]:
+            - generic [ref=f2e233]:
+              - article [ref=f2e234]
+              - article [ref=f2e235]
+              - article [ref=f2e236]
+              - article [ref=f2e239]
+              - article [ref=f2e241]
+            - article [ref=f2e244]
+          - generic [ref=f2e245]:
+            - generic [ref=f2e246]:
+              - article [ref=f2e247]
+              - article [ref=f2e248]
+              - article [ref=f2e249]
+              - article [ref=f2e252]
+              - article [ref=f2e254]
+            - article [ref=f2e257]
+          - generic [ref=f2e258]:
+            - generic [ref=f2e259]:
+              - article [ref=f2e260]
+              - article [ref=f2e261]
+              - article [ref=f2e262]
+              - article [ref=f2e265]
+              - article [ref=f2e267]
+            - article [ref=f2e270]
+          - generic [ref=f2e271]:
+            - generic [ref=f2e272]:
+              - article [ref=f2e273]
+              - article [ref=f2e274]
+              - article [ref=f2e275]
+              - article [ref=f2e278]
+              - article [ref=f2e280]
+            - article [ref=f2e283]
+      - generic [ref=f2e285]:
+        - article [ref=f2e286]:
+          - heading "The new home of the NBS National BIM Library" [level=2] [ref=f2e287]
+          - paragraph [ref=f2e288]:
+            - text: The location of the NBS National BIM Library has now changed. The new BIM Library within NBS Source is now the home for nationalbimlibrary.com, and is the only collection of high-quality BIM objects certified to meet the
+            - link "NBS BIM Object Standard" [ref=f2e289] [cursor=pointer]:
+              - /url: /en/gb/bimlibrary/nbs-bim-object-standard
+            - text: .
+          - generic [ref=f2e290]:
+            - link "View BIM Library" [ref=f2e291] [cursor=pointer]:
+              - /url: /en/gb/bimlibrary
+            - link "BIM Authoring and Hosting" [ref=f2e295] [cursor=pointer]:
+              - /url: https://manufacturers.thenbs.com/nbs-source/plans-features
+        - article [ref=f2e300]:
+          - generic [ref=f2e304]:
+            - strong [ref=f2e305]: BIM objects
+            - paragraph [ref=f2e306]: Over 28,000
+          - img "The new home of the NBS National BIM Library on a laptop screen" [ref=f2e307]
+      - generic [ref=f2e309]:
+        - banner [ref=f2e310]:
+          - heading "Recently viewed products" [level=2] [ref=f2e311]
+        - generic [ref=f2e312]:
+          - generic [ref=f2e313]:
+            - generic [ref=f2e314]:
+              - article [ref=f2e315]
+              - article [ref=f2e316]
+              - article [ref=f2e317]
+              - article [ref=f2e320]
+              - article [ref=f2e322]
+            - article [ref=f2e325]
+          - generic [ref=f2e326]:
+            - generic [ref=f2e327]:
+              - article [ref=f2e328]
+              - article [ref=f2e329]
+              - article [ref=f2e330]
+              - article [ref=f2e333]
+              - article [ref=f2e335]
+            - article [ref=f2e338]
+          - generic [ref=f2e339]:
+            - generic [ref=f2e340]:
+              - article [ref=f2e341]
+              - article [ref=f2e342]
+              - article [ref=f2e343]
+              - article [ref=f2e346]
+              - article [ref=f2e348]
+            - article [ref=f2e351]
+          - generic [ref=f2e352]:
+            - generic [ref=f2e353]:
+              - article [ref=f2e354]
+              - article [ref=f2e355]
+              - article [ref=f2e356]
+              - article [ref=f2e359]
+              - article [ref=f2e361]
+            - article [ref=f2e364]
+      - generic [ref=f2e366]:
+        - banner [ref=f2e367]:
+          - heading "Find some inspiration" [level=2] [ref=f2e368]
+        - generic [ref=f2e369]:
+          - generic [ref=f2e371]:
+            - article [ref=f2e372]
+            - article [ref=f2e373]
+          - generic [ref=f2e375]:
+            - article [ref=f2e376]
+            - article [ref=f2e377]
+          - generic [ref=f2e379]:
+            - article [ref=f2e380]
+            - article [ref=f2e381]
+          - generic [ref=f2e383]:
+            - article [ref=f2e384]
+            - article [ref=f2e385]
+          - generic [ref=f2e387]:
+            - article [ref=f2e388]
+            - article [ref=f2e389]
+          - generic [ref=f2e391]:
+            - article [ref=f2e392]
+            - article [ref=f2e393]
+          - generic [ref=f2e395]:
+            - article [ref=f2e396]
+            - article [ref=f2e397]
+          - generic [ref=f2e399]:
+            - article [ref=f2e400]
+            - article [ref=f2e401]
+          - generic [ref=f2e403]:
+            - article [ref=f2e404]
+            - article [ref=f2e405]
+          - generic [ref=f2e407]:
+            - article [ref=f2e408]
+            - article [ref=f2e409]
+          - generic [ref=f2e411]:
+            - article [ref=f2e412]
+            - article [ref=f2e413]
+          - generic [ref=f2e415]:
+            - article [ref=f2e416]
+            - article [ref=f2e417]
+      - generic [ref=f2e419]:
+        - article [ref=f2e420]:
+          - heading "Are you a manufacturer? List your products now!" [level=2] [ref=f2e421]
+          - paragraph [ref=f2e422]: Join over 1000 construction product manufacturers already listing their products on NBS Source, getting seen, selected and specified by thousands of NBS users.
+          - generic [ref=f2e423]:
+            - link "List your product" [ref=f2e424] [cursor=pointer]:
+              - /url: https://manufacturers.thenbs.com/nbs-source
+            - link "Talk to sales" [ref=f2e428] [cursor=pointer]:
+              - /url: mailto:salessupport@theNBS.com?subject=Inquiry to Join NBS Source
+        - img "Are you a manufacturer? List your products now!" [ref=f2e432]
+      - generic [ref=f2e434]:
+        - banner [ref=f2e435]:
+          - heading "How NBS can help you" [level=2] [ref=f2e436]
+          - link "Browse all articles" [ref=f2e437] [cursor=pointer]:
+            - /url: https://partnersupport.thenbs.com/support/home
+        - generic [ref=f2e440]:
+          - link [ref=f2e442] [cursor=pointer]:
+            - /url: https://www.thenbs.com/knowledge/what-is-the-golden-thread
+            - generic [ref=f2e443]:
+              - heading "What is the golden thread?" [level=3] [ref=f2e444]
+              - paragraph [ref=f2e446]: The golden thread is a term used across many business disciplines.
+            - img "What is the golden thread?" [ref=f2e449]
+          - link [ref=f2e451] [cursor=pointer]:
+            - /url: https://manufacturers.thenbs.com/resources/knowledge/nbs-source-and-industry-standards
+            - generic [ref=f2e452]:
+              - heading "NBS Source and industry standards" [level=3] [ref=f2e453]
+              - paragraph [ref=f2e455]: Walkthrough of NBS Source and how it is aligned with NBS Chorus.
+            - img "NBS Source and industry standards" [ref=f2e458]
+          - link [ref=f2e460] [cursor=pointer]:
+            - /url: /en/gb/bimlibrary/nbs-bim-object-standard
+            - generic [ref=f2e461]:
+              - heading "BIM tools and guides" [level=3] [ref=f2e462]
+              - paragraph [ref=f2e463]: A selection of BIM guides from our experts and free tools to increase your productivity.
+            - img "BIM tools and guides" [ref=f2e466]
+          - link [ref=f2e468] [cursor=pointer]:
+            - /url: https://www.thenbs.com/nbs-chorus
+            - generic [ref=f2e469]:
+              - heading "Collaborative specification writing" [level=3] [ref=f2e470]
+              - paragraph [ref=f2e472]: How can a specifier use NBS Chorus to produce a complex specification.
+            - img "Collaborative specification writing" [ref=f2e475]
+      - generic [ref=f2e477]:
+        - generic [ref=f2e478]:
+          - article [ref=f2e479]:
+            - paragraph [ref=f2e480]: We've seen a huge increase in enquiries and the number times our products are specified.
+            - paragraph [ref=f2e483]:
+              - text: "- Karl Kovac, Specification Support Manager at"
+              - link "Senior Architectural Systems" [ref=f2e484] [cursor=pointer]:
+                - /url: /en/manufacturer/senior-architectural-systems-ltd/dVSDoRHE7zaprhEbgnigyf
+          - article [ref=f2e485]:
+            - paragraph [ref=f2e486]: Having a presence on NBS Source is as important as having your own website.
+            - paragraph [ref=f2e489]:
+              - text: "- Robin Tuffley, Marketing Manager at"
+              - link "Closomat" [ref=f2e490] [cursor=pointer]:
+                - /url: /en/manufacturer/closomat/duhoHSpBx3NZPZQfq6WUQm
+          - article [ref=f2e491]:
+            - paragraph [ref=f2e492]: NBS Source is the place to be if you want to get your products specified in projects.
+            - paragraph [ref=f2e495]:
+              - text: "- James Marvin, eCommerce Manager at"
+              - link "Dryflow" [ref=f2e496] [cursor=pointer]:
+                - /url: /en/manufacturer/dryflow/4BNhTTKD35MnsqLR3G8TDJ
+        - navigation [ref=f2e497]:
+          - button "Previous testimonial" [ref=f2e498] [cursor=pointer]
+          - button "Carousel control dot for slide 1" [ref=f2e502] [cursor=pointer]
+          - button "Carousel control dot for slide 2" [ref=f2e506] [cursor=pointer]
+          - button "Carousel control dot for slide 3" [ref=f2e510] [cursor=pointer]
+          - button "Next testimonial" [ref=f2e514] [cursor=pointer]
+      - generic [ref=f2e520]:
+        - article [ref=f2e521]:
+          - heading "Find, select, specify" [level=2] [ref=f2e522]
+          - paragraph [ref=f2e523]: Discover the impact NBS Source can make to your business
+        - article [ref=f2e524]:
+          - link "Find out more" [ref=f2e525] [cursor=pointer]:
+            - /url: https://manufacturers.thenbs.com/nbs-source
+    - generic [ref=f2e530]:
+      - contentinfo [ref=f2e531]:
+        - generic [ref=f2e532]:
+          - paragraph [ref=f2e533]: Help
+          - list [ref=f2e534]:
+            - listitem [ref=f2e535]:
+              - link "Support articles" [ref=f2e536] [cursor=pointer]:
+                - /url: https://support.thenbs.com/support/solutions/7000038276
+            - listitem [ref=f2e537]:
+              - link "Submit a support ticket" [ref=f2e538] [cursor=pointer]:
+                - /url: https://support.thenbs.com/support/tickets/new
+            - listitem [ref=f2e539]:
+              - link "Feedback" [ref=f2e540] [cursor=pointer]:
+                - /url: https://support.thenbs.com/support/discussions/forums/7000015078
+        - generic [ref=f2e541]:
+          - paragraph [ref=f2e542]: Quick links
+          - list [ref=f2e543]:
+            - listitem [ref=f2e544]:
+              - link "NBS Events and webinars" [ref=f2e545] [cursor=pointer]:
+                - /url: https://www.thenbs.com/events
+        - generic [ref=f2e546]:
+          - paragraph [ref=f2e547]: Corporate information
+          - list [ref=f2e548]:
+            - listitem [ref=f2e549]:
+              - link "About us" [ref=f2e550] [cursor=pointer]:
+                - /url: https://www.thenbs.com/about-nbs
+            - listitem [ref=f2e551]:
+              - link "Terms and conditions" [ref=f2e552] [cursor=pointer]:
+                - /url: https://www.thenbs.com/terms-and-conditions
+            - listitem [ref=f2e553]:
+              - link "Privacy policy" [ref=f2e554] [cursor=pointer]:
+                - /url: https://www.thenbs.com/privacy-policy
+            - listitem [ref=f2e555]:
+              - link "Cookies" [ref=f2e556] [cursor=pointer]:
+                - /url: /en/gb/cookie-policy
+            - listitem [ref=f2e557]:
+              - link "Careers" [ref=f2e558] [cursor=pointer]:
+                - /url: https://www.thenbs.com/careers
+            - listitem [ref=f2e559]:
+              - link "Legal" [ref=f2e560] [cursor=pointer]:
+                - /url: https://www.thenbs.com/legal
+        - generic [ref=f2e561]:
+          - paragraph [ref=f2e562]: Contact us
+          - list [ref=f2e563]:
+            - listitem [ref=f2e564]: "General enquiries:"
+            - listitem [ref=f2e565]:
+              - link "0345 456 9594" [ref=f2e566] [cursor=pointer]:
+                - /url: "tel: 0345 456 9594"
+            - listitem [ref=f2e567]:
+              - link "info@theNBS.com" [ref=f2e568] [cursor=pointer]:
+                - /url: mailto:info@theNBS.com?subject=Customer enquiry from NBS Source
+          - list [ref=f2e569]:
+            - listitem [ref=f2e570]: "Manufacturer enquiries:"
+            - listitem [ref=f2e571]:
+              - link "0345 200 1056" [ref=f2e572] [cursor=pointer]:
+                - /url: "tel: 0345 200 1056"
+            - listitem [ref=f2e573]:
+              - link "salessupport@theNBS.com" [ref=f2e574] [cursor=pointer]:
+                - /url: mailto:salessupport@theNBS.com?subject=Customer enquiry from NBS Source
+        - generic [ref=f2e575]:
+          - paragraph [ref=f2e576]: Change region
+          - list [ref=f2e577]:
+            - listitem [ref=f2e578]:
+              - link "Canada" [ref=f2e579] [cursor=pointer]:
+                - /url: https://source.thenbs.com/en/ca
+            - listitem [ref=f2e580]:
+              - link "Finland" [ref=f2e581] [cursor=pointer]:
+                - /url: https://source.thenbs.com/en/fi
+            - listitem [ref=f2e582]:
+              - link "Norway" [ref=f2e583] [cursor=pointer]:
+                - /url: https://source.thenbs.com/en/no
+            - listitem [ref=f2e584]:
+              - link "Sweden" [ref=f2e585] [cursor=pointer]:
+                - /url: https://source.thenbs.com/en/se
+            - listitem [ref=f2e586]:
+              - link "United Kingdom" [ref=f2e587] [cursor=pointer]:
+                - /url: https://source.thenbs.com/en/gb
+            - listitem [ref=f2e588]:
+              - link "United States" [ref=f2e589] [cursor=pointer]:
+                - /url: https://source.thenbs.com/en/us
+        - generic [ref=f2e590]:
+          - paragraph [ref=f2e591]: Social
+          - article [ref=f2e592]:
+            - link "View Facebook" [ref=f2e593] [cursor=pointer]:
+              - /url: https://www.facebook.com/thenbscom/
+            - link "View Twitter" [ref=f2e595] [cursor=pointer]:
+              - /url: https://twitter.com/theNBS/
+            - link "View Youtube" [ref=f2e597] [cursor=pointer]:
+              - /url: https://www.youtube.com/channel/UCWeaJ3mkpBY_Jnj1oXDncYA/
+            - link "View LinkedIn" [ref=f2e599] [cursor=pointer]:
+              - /url: https://www.linkedin.com/company/nbs_3/
+      - paragraph [ref=f2e601]: © 2026 Hubexo North UK Ltd. All rights reserved.
+  - article [ref=f2e603]

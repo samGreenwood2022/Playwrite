@@ -1,0 +1,14 @@
+[     679ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://source.thenbs.com/en/gb/manufacturer/dyson:0
+[     689ms] [INFO] Executing inline script violates the following Content Security Policy directive 'script-src 'self' 'nonce-g0VATh5nAWorLLhybIsjdg==' 'unsafe-hashes' 'sha256-MhtPZXr7+LpJUY5qtMutB+qWfQtMaPccfe7QXtCcEYc=' 'sha256-3/mNUpqF9X/gMYE+bOG6g8d6I32wdYdWwWuAk90mPCM=' https://*.googleapis.com https://*.gstatic.com *.google.com https://*.ggpht.com *.googleusercontent.com blob: *.googletagmanager.com cdn.cookielaw.org cdn-ukwest.onetrust.com cookie-cdn.cookiepro.com privacyportal.onetrust.com geolocation.onetrust.com *.hotjar.com *.hotjar.io cdn.heapanalytics.com heapanalytics.com 'unsafe-eval' bat.bing.com bat.bing.net c.bing.com *.clarity.ms comms.thenbs.cloud comms.thenbs.com pi.pardot.com www.google.com www.gstatic.com'. Either the 'unsafe-inline' keyword, a hash ('sha256-VM2mZqyEQZoLzoTrp5EigFvzQ0+f1wSeBuoOn95WHCg='), or a nonce ('nonce-...') is required to enable inline execution. The policy is report-only, so the violation has been logged but no further action has been taken. @ https://source.thenbs.com/en/gb/manufacturer/dyson:36
+[     918ms] [LOG] Configs initialised @ https://source.thenbs.com/en/chunk-LH2VGCUF.js:0
+[     934ms] [LOG] Site mode detected: browser @ https://source.thenbs.com/en/main-OQXEYZ2L.js:33
+[    1207ms] [LOG] [regionBrandingGuard] currentUrl: https://source.thenbs.com/en/gb/manufacturer/dyson @ https://source.thenbs.com/en/main-OQXEYZ2L.js:33
+[    1207ms] [LOG] [regionBrandingGuard] stagedRegion: UK @ https://source.thenbs.com/en/main-OQXEYZ2L.js:33
+[    1208ms] [LOG] [regionBrandingGuard] expectedBrand: NBS @ https://source.thenbs.com/en/main-OQXEYZ2L.js:33
+[    1208ms] [LOG] [regionBrandingGuard] expectedBrandSegment: thenbs @ https://source.thenbs.com/en/main-OQXEYZ2L.js:33
+[    1208ms] [LOG] [regionBrandingGuard] currentLanguage: EN @ https://source.thenbs.com/en/main-OQXEYZ2L.js:33
+[    1208ms] [LOG] [regionBrandingGuard] hostname: source.thenbs.com @ https://source.thenbs.com/en/main-OQXEYZ2L.js:33
+[    1208ms] [LOG] [regionBrandingGuard] brand matches or localhost — no redirect @ https://source.thenbs.com/en/main-OQXEYZ2L.js:33
+[    1213ms] [LOG] [RegionService] region$ emitted (setRoutePrefix): UK @ https://source.thenbs.com/en/chunk-DTTYGE3O.js:19
+[    1213ms] [LOG] [RegionService] region$ emitted (regionWithOptions$): UK @ https://source.thenbs.com/en/chunk-DTTYGE3O.js:19
+[    1213ms] [LOG] [RegionService] regionWithOptions$ updated — region: UK | platformBrand: NBS @ https://source.thenbs.com/en/chunk-DTTYGE3O.js:19

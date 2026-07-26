@@ -1,0 +1,506 @@
+- generic [ref=f2e3]:
+  - banner [ref=f2e7]:
+    - generic [ref=f2e8]:
+      - link "NBS Source" [ref=f2e10] [cursor=pointer]:
+        - /url: /en/gb
+      - button "Choose location and language" [ref=f2e16]:
+        - generic [ref=f2e17]: UK
+    - generic [ref=f2e21]:
+      - generic [ref=f2e620]:
+        - textbox "Search" [ref=f2e625]:
+          - /placeholder: Search NBS Source...
+          - text: Dyson
+        - combobox "All" [ref=f2e632] [cursor=pointer]
+        - button "Search" [ref=f2e640] [cursor=pointer]
+      - button "Sign in" [ref=f2e23]
+  - banner [ref=f2e30]:
+    - navigation "Main navigation links" [ref=f2e32]:
+      - link "Home" [ref=f2e33] [cursor=pointer]:
+        - /url: /en/gb
+      - link "What's new" [ref=f2e37] [cursor=pointer]:
+        - /url: /en/gb/whats-new
+      - article [ref=f2e41]:
+        - button "Browse" [ref=f2e42]
+        - menu "Browse menu":
+          - article:
+            - generic:
+              - heading "Categories" [level=2]
+            - generic:
+              - link "Communications, security and safety":
+                - /url: /en/gb/category/communications-security-and-safety/nuJ7UsKqsfmwphEUxxWeuT
+              - link "Coverings, coatings and finishes":
+                - /url: /en/gb/category/coverings-coatings-and-finishes/oqp3eL65AahZGgtqA5rMPh
+              - link "Doors, windows and hatches":
+                - /url: /en/gb/category/doors-windows-and-hatches/ndwwX39PgbyjJGbveGwpLu
+              - link "Electrical power and lighting":
+                - /url: /en/gb/category/electrical-power-and-lighting/bswgU4ortiBZi5YLuVoQSf
+              - link "Fittings, furnishings and equipment":
+                - /url: /en/gb/category/fittings-furnishings-and-equipment/uybG3djVP8AgJk2Fu6rgAJ
+              - link "General building products":
+                - /url: /en/gb/category/general-building-products/b6hgxiLbwdDFC4F4xjYXmL
+              - link "Lifts, elevators and escalators":
+                - /url: /en/gb/category/lifts-elevators-and-escalators/jRQcGPB9ToSXkv23L4f2XZ
+              - link "Plants and animals":
+                - /url: /en/gb/category/plants-and-animals/rb4dZEYYditbrB44aY5FxV
+              - link "Plumbing and waste disposal":
+                - /url: /en/gb/category/plumbing-and-waste-disposal/r64a5TSeKyLAFuXKMMuqHN
+              - link "Plumbing fixtures and accessories":
+                - /url: /en/gb/category/plumbing-fixtures-and-accessories/dChJUFZUmyV8tgKBRPk5ui
+              - link "Ponds, swimming pools, bunds and tanks":
+                - /url: /en/gb/category/ponds-swimming-pools-bunds-and-tanks/sP5sBNrU6ZMnUeHKng6m7H
+              - link "Roofs, ceilings and soffits":
+                - /url: /en/gb/category/roofs-ceilings-and-soffits/t1Nd7ayjeVyYfZ7YgMRAAm
+              - link "Signage and signalling":
+                - /url: /en/gb/category/signage-and-signalling/6cn4oWrA7SgQw4yiFq14Mr
+              - link "Stairs and ramps":
+                - /url: /en/gb/category/stairs-and-ramps/pWwBs9DpRrrp4fCk5MhuPn
+              - link "Structure":
+                - /url: /en/gb/category/structure/8PY9JCZZjQuUsTS8X1rsYY
+              - link "Ventilation, air conditioning and space heating":
+                - /url: /en/gb/category/ventilation-air-conditioning-and-space-heating/5TuADwMz9LKpvdc8wKdiF5
+              - link "Walls and barriers":
+                - /url: /en/gb/category/walls-and-barriers/qpNRgYeM3pQWsnzXYyf5Xr
+            - generic:
+              - link "View all categories":
+                - /url: /en/gb/categories
+          - article:
+            - generic:
+              - heading "Other" [level=2]
+            - generic:
+              - link "BIM object categories":
+                - /url: /en/gb/categories/bim
+              - link "Manufacturers":
+                - /url: /en/gb/manufacturers
+              - link "Our partners":
+                - /url: /en/gb/partners
+      - button "BIM Library" [ref=f2e47]
+      - link "Inspiration" [ref=f2e52] [cursor=pointer]:
+        - /url: /en/gb/inspiration
+      - link "Collections" [ref=f2e56] [cursor=pointer]:
+        - /url: /en/gb/collections
+      - link "CPD" [ref=f2e60] [cursor=pointer]:
+        - /url: /en/gb/cpd
+    - link "I'm a manufacturer" [ref=f2e66] [cursor=pointer]:
+      - /url: https://manufacturers.thenbs.com/nbs-source
+  - generic [ref=f2e73]:
+    - generic [ref=f2e644]:
+      - generic [ref=f2e646]:
+        - heading "\"Dyson\"" [level=1] [ref=f2e647]
+        - paragraph [ref=f2e648]: 57 results found
+        - generic [ref=f2e649]:
+          - paragraph [ref=f2e650]: Can't find what you're looking for?
+          - button "Suggest a product ." [ref=f2e651]
+      - tablist [ref=f2e655]:
+        - generic [ref=f2e658]:
+          - tab "Products" [selected] [ref=f2e659] [cursor=pointer]
+          - tab "Manufacturers" [ref=f2e662] [cursor=pointer]
+          - tab "CPD" [ref=f2e665] [cursor=pointer]
+          - tab "Literature" [ref=f2e668] [cursor=pointer]
+          - tab "Case studies" [ref=f2e671] [cursor=pointer]
+      - tabpanel "Products" [ref=f2e674]:
+        - generic [ref=f2e675]:
+          - generic [ref=f2e679]:
+            - complementary [ref=f2e681]:
+              - generic [ref=f2e682]:
+                - heading "Applied filters" [level=2] [ref=f2e683]
+                - generic [ref=f2e684]: No filters selected
+              - generic [ref=f2e685]:
+                - generic "Meets BOS" [ref=f2e688]:
+                  - generic [ref=f2e689]:
+                    - switch "Meets BOS (8)" [ref=f2e690] [cursor=pointer]
+                    - generic [ref=f2e696] [cursor=pointer]:
+                      - paragraph [ref=f2e697]: Meets BOS
+                      - generic [ref=f2e698]: (8)
+                - generic "Has BIM object(s)" [ref=f2e702]:
+                  - generic [ref=f2e703]:
+                    - switch "Has BIM object(s) (8)" [ref=f2e704] [cursor=pointer]
+                    - generic [ref=f2e710] [cursor=pointer]:
+                      - paragraph [ref=f2e711]: Has BIM object(s)
+                      - generic [ref=f2e712]: (8)
+                - generic "Has sustainability data" [ref=f2e715]:
+                  - generic [ref=f2e716]:
+                    - switch "Has sustainability data (3)" [ref=f2e717] [cursor=pointer]
+                    - generic [ref=f2e723] [cursor=pointer]:
+                      - paragraph [ref=f2e724]: Has sustainability data
+                      - generic [ref=f2e725]: (3)
+              - generic [ref=f2e729]:
+                - button "Category" [expanded] [ref=f2e730] [cursor=pointer]
+                - region "Category" [ref=f2e736]:
+                  - generic [ref=f2e740]:
+                    - button "Hand dryers (3)" [ref=f2e741]:
+                      - generic [ref=f2e742]:
+                        - generic [ref=f2e743]: Hand dryers
+                        - generic [ref=f2e744]: (3)
+                    - button "Free-standing luminaires (1)" [ref=f2e746]:
+                      - generic [ref=f2e747]:
+                        - generic [ref=f2e748]: Free-standing luminaires
+                        - generic [ref=f2e749]: (1)
+                    - button "Combined tap and hand dryers (3)" [ref=f2e751]:
+                      - generic [ref=f2e752]:
+                        - generic [ref=f2e753]: Combined tap and hand dryers
+                        - generic [ref=f2e754]: (3)
+                    - button "Combined tap, soap dispenser and hand dryers (1)" [ref=f2e756]:
+                      - generic [ref=f2e757]:
+                        - generic [ref=f2e758]: Combined tap, soap dispenser and hand dryers
+                        - generic [ref=f2e759]: (1)
+              - generic [ref=f2e764]:
+                - button "Verification status" [expanded] [ref=f2e765] [cursor=pointer]
+                - region "Verification status" [ref=f2e771]:
+                  - generic [ref=f2e778]:
+                    - checkbox "Verified (8)" [ref=f2e781] [cursor=pointer]
+                    - generic [ref=f2e782] [cursor=pointer]:
+                      - paragraph [ref=f2e783]: Verified
+                      - generic [ref=f2e784]: (8)
+              - generic [ref=f2e788]:
+                - button "Product certifications" [expanded] [ref=f2e789] [cursor=pointer]
+                - region "Product certifications" [ref=f2e795]:
+                  - generic [ref=f2e802]:
+                    - checkbox "Quiet Mark Certification (5)" [ref=f2e805] [cursor=pointer]
+                    - generic [ref=f2e806] [cursor=pointer]:
+                      - paragraph [ref=f2e807]: Quiet Mark Certification
+                      - generic [ref=f2e808]: (5)
+              - generic [ref=f2e812]:
+                - button "Manufacturer certifications" [expanded] [ref=f2e813] [cursor=pointer]
+                - region "Manufacturer certifications" [ref=f2e819]:
+                  - generic [ref=f2e823]:
+                    - generic [ref=f2e826]:
+                      - checkbox "ISO 14001 Environmental Management Systems (4)" [ref=f2e829] [cursor=pointer]
+                      - generic [ref=f2e830] [cursor=pointer]:
+                        - paragraph [ref=f2e831]: ISO 14001 Environmental Management Systems
+                        - generic [ref=f2e832]: (4)
+                    - generic [ref=f2e835]:
+                      - checkbox "ISO 9001 Quality Management System (4)" [ref=f2e838] [cursor=pointer]
+                      - generic [ref=f2e839] [cursor=pointer]:
+                        - paragraph [ref=f2e840]: ISO 9001 Quality Management System
+                        - generic [ref=f2e841]: (4)
+              - generic [ref=f2e845]:
+                - button "Manufacturer" [expanded] [ref=f2e846] [cursor=pointer]
+                - region "Manufacturer" [ref=f2e852]:
+                  - generic [ref=f2e856]:
+                    - generic [ref=f2e859]:
+                      - checkbox "Dyson (6)" [ref=f2e862] [cursor=pointer]
+                      - generic [ref=f2e863] [cursor=pointer]:
+                        - paragraph [ref=f2e864]: Dyson
+                        - generic [ref=f2e865]: (6)
+                    - generic [ref=f2e868]:
+                      - checkbox "ehanddryers (2)" [ref=f2e871] [cursor=pointer]
+                      - generic [ref=f2e872] [cursor=pointer]:
+                        - paragraph [ref=f2e873]: ehanddryers
+                        - generic [ref=f2e874]: (2)
+              - heading "BIM OBJECTS" [level=3] [ref=f2e876]
+              - button "Software platform" [ref=f2e880] [cursor=pointer]
+              - heading "SUSTAINABILITY DATA" [level=3] [ref=f2e885]
+              - button "Country of product manufacturer" [ref=f2e889] [cursor=pointer]
+              - button "Country of material origin" [ref=f2e897] [cursor=pointer]
+              - heading "GENERAL" [level=3] [ref=f2e902]
+              - button "Width" [ref=f2e906] [cursor=pointer]
+              - button "Warranty description" [ref=f2e914] [cursor=pointer]
+              - button "Shape" [ref=f2e922] [cursor=pointer]
+              - button "Material" [ref=f2e930] [cursor=pointer]
+              - button "Length" [ref=f2e938] [cursor=pointer]
+              - generic [ref=f2e943] [cursor=pointer]: + 3 more
+            - generic [ref=f2e944]:
+              - generic [ref=f2e945]:
+                - generic [ref=f2e946]:
+                  - generic [ref=f2e947]:
+                    - text: "Sort by:"
+                    - combobox "Sort by dropdown" [ref=f2e952] [cursor=pointer]:
+                      - generic [ref=f2e953]: Relevance
+                  - radiogroup [ref=f2e959]:
+                    - radio "Switch search results to grid view" [checked] [ref=f2e960] [cursor=pointer]
+                    - radio "Switch search results to list view" [ref=f2e963] [cursor=pointer]
+                - paragraph [ref=f2e967]: Showing 1-8 of 8
+              - generic:
+                - generic:
+                  - article:
+                    - generic:
+                      - generic:
+                        - generic:
+                          - list
+              - generic [ref=f2e968]:
+                - generic [ref=f2e970]:
+                  - link "Dyson Airblade™ V Hand Dryer (HU02) Dyson Airblade™ V Hand Dryer (HU02) Verified 16 days ago Dyson A slim profile hand dryer that protrudes only 100 mm from the wall, due to the size of the Dyson 1000 W digital motor." [ref=f2e971] [cursor=pointer]:
+                    - /url: /en/gb/product/dyson-airblade-v-hand-dryer-hu02/bzLzYhZcAjz4YH1yjF8PHM/6YkdMqGGu4Zh8YuqoT566v
+                    - generic [ref=f2e972]:
+                      - article [ref=f2e973]:
+                        - generic [ref=f2e974]: BOS
+                      - img "Dyson Airblade™ V Hand Dryer (HU02)" [ref=f2e981]
+                      - generic [ref=f2e983]:
+                        - paragraph [ref=f2e984]: Dyson Airblade™ V Hand Dryer (HU02)
+                        - generic [ref=f2e985]:
+                          - article [ref=f2e987]
+                          - paragraph [ref=f2e989]: Verified 16 days ago
+                        - paragraph [ref=f2e990]: Dyson
+                        - generic [ref=f2e991]: A slim profile hand dryer that protrudes only 100 mm from the wall, due to the size of the Dyson 1000 W digital motor.
+                  - checkbox [ref=f2e999] [cursor=pointer]
+                  - generic [ref=f2e1003]:
+                    - generic "Compare product" [ref=f2e1005]:
+                      - generic [ref=f2e1007]:
+                        - checkbox "Compare" [ref=f2e1010] [cursor=pointer]
+                        - generic [ref=f2e1011] [cursor=pointer]: Compare
+                    - button "Download BIM button" [ref=f2e1013]:
+                      - generic [ref=f2e1014]: Download BIM
+                - generic [ref=f2e1018]:
+                  - link "Dyson Solarcycle™ Floor Light Dyson Solarcycle™ Floor Light Verified 1 month ago Dyson Freestanding indoor floor light with intelligent local daylight tracking." [ref=f2e1019] [cursor=pointer]:
+                    - /url: /en/gb/product/dyson-solarcycle-floor-light/fm6xiwmaunBCUdMovxxGtV/sQG2Ng3z9JeqLoBm6TByb5
+                    - generic [ref=f2e1020]:
+                      - article [ref=f2e1021]:
+                        - generic [ref=f2e1022]: BOS
+                      - img "Dyson Solarcycle™ Floor Light" [ref=f2e1029]
+                      - generic [ref=f2e1031]:
+                        - paragraph [ref=f2e1032]: Dyson Solarcycle™ Floor Light
+                        - generic [ref=f2e1033]:
+                          - article [ref=f2e1035]
+                          - paragraph [ref=f2e1037]: Verified 1 month ago
+                        - paragraph [ref=f2e1038]: Dyson
+                        - generic [ref=f2e1039]: Freestanding indoor floor light with intelligent local daylight tracking.
+                  - checkbox [ref=f2e1046] [cursor=pointer]
+                  - generic [ref=f2e1050]:
+                    - generic "Compare product" [ref=f2e1052]:
+                      - generic [ref=f2e1054]:
+                        - checkbox "Compare" [ref=f2e1057] [cursor=pointer]
+                        - generic [ref=f2e1058] [cursor=pointer]: Compare
+                    - button "Download BIM button" [ref=f2e1060]:
+                      - generic [ref=f2e1061]: Download BIM
+                - generic [ref=f2e1065]:
+                  - link "Dyson Airblade™ 9kJ Hand Dryer (HU03) Dyson Airblade™ 9kJ Hand Dryer (HU03) Verified 1 month ago Dyson A touch-free hand dryer which protrudes just 100 mm from the wall, drying hands hygienically in 10–12 seconds, using 9.1 kilojoules of energy per dry." [ref=f2e1066] [cursor=pointer]:
+                    - /url: /en/gb/product/dyson-airblade-9kj-hand-dryer-hu03/fmdLoC3ZGuYUyy8pKSG7Au/jmJPorRKb1DV8KXyP2uCS3
+                    - generic [ref=f2e1067]:
+                      - article [ref=f2e1068]:
+                        - generic [ref=f2e1069]: BOS
+                      - img "Dyson Airblade™ 9kJ Hand Dryer (HU03)" [ref=f2e1076]
+                      - generic [ref=f2e1078]:
+                        - paragraph [ref=f2e1079]: Dyson Airblade™ 9kJ Hand Dryer (HU03)
+                        - generic [ref=f2e1080]:
+                          - article [ref=f2e1082]
+                          - paragraph [ref=f2e1084]: Verified 1 month ago
+                        - paragraph [ref=f2e1085]: Dyson
+                        - generic [ref=f2e1086]: A touch-free hand dryer which protrudes just 100 mm from the wall, drying hands hygienically in 10–12 seconds, using 9.1 kilojoules of energy per dry.
+                  - checkbox [ref=f2e1093] [cursor=pointer]
+                  - generic [ref=f2e1097]:
+                    - generic "Compare product" [ref=f2e1099]:
+                      - generic [ref=f2e1101]:
+                        - checkbox "Compare" [ref=f2e1104] [cursor=pointer]
+                        - generic [ref=f2e1105] [cursor=pointer]: Compare
+                    - button "Download BIM button" [ref=f2e1107]:
+                      - generic [ref=f2e1108]: Download BIM
+                - generic [ref=f2e1112]:
+                  - link "Dyson Airblade™ Wash+Dry Tap Hand Dryer - Short (WD04) Dyson Airblade™ Wash+Dry Tap Hand Dryer - Short (WD04) Verified 1 month ago Dyson Touch-free tap with Airblade™ technology." [ref=f2e1113] [cursor=pointer]:
+                    - /url: /en/gb/product/dyson-airblade-washdry-tap-hand-dryer-short-wd04/4u2VDvyao8CjWeL3CX7i12/2re8bfdhMHKyfJy3xArnUZ
+                    - generic [ref=f2e1114]:
+                      - article [ref=f2e1115]:
+                        - generic [ref=f2e1116]: BOS
+                      - img "Dyson Airblade™ Wash+Dry Tap Hand Dryer - Short (WD04)" [ref=f2e1123]
+                      - generic [ref=f2e1125]:
+                        - paragraph [ref=f2e1126]: Dyson Airblade™ Wash+Dry Tap Hand Dryer - Short (WD04)
+                        - generic [ref=f2e1127]:
+                          - article [ref=f2e1129]
+                          - paragraph [ref=f2e1131]: Verified 1 month ago
+                        - paragraph [ref=f2e1132]: Dyson
+                        - generic [ref=f2e1133]: Touch-free tap with Airblade™ technology.
+                  - checkbox [ref=f2e1140] [cursor=pointer]
+                  - generic [ref=f2e1144]:
+                    - generic "Compare product" [ref=f2e1146]:
+                      - generic [ref=f2e1148]:
+                        - checkbox "Compare" [ref=f2e1151] [cursor=pointer]
+                        - generic [ref=f2e1152] [cursor=pointer]: Compare
+                    - button "Download BIM button" [ref=f2e1154]:
+                      - generic [ref=f2e1155]: Download BIM
+                - generic [ref=f2e1159]:
+                  - link "Dyson Airblade™ Wash+Dry Tap Hand Dryer - Long (WD05) Dyson Airblade™ Wash+Dry Tap Hand Dryer - Long (WD05) Verified 16 days ago Dyson Touch-free tap with Airblade™ technology." [ref=f2e1160] [cursor=pointer]:
+                    - /url: /en/gb/product/dyson-airblade-washdry-tap-hand-dryer-long-wd05/m2Cxx9mxbkwYMqZZmvaJ6U/wPGiKMtK4fokmJJyPwH1Eg
+                    - generic [ref=f2e1161]:
+                      - article [ref=f2e1162]:
+                        - generic [ref=f2e1163]: BOS
+                      - img "Dyson Airblade™ Wash+Dry Tap Hand Dryer - Long (WD05)" [ref=f2e1170]
+                      - generic [ref=f2e1172]:
+                        - paragraph [ref=f2e1173]: Dyson Airblade™ Wash+Dry Tap Hand Dryer - Long (WD05)
+                        - generic [ref=f2e1174]:
+                          - article [ref=f2e1176]
+                          - paragraph [ref=f2e1178]: Verified 16 days ago
+                        - paragraph [ref=f2e1179]: Dyson
+                        - generic [ref=f2e1180]: Touch-free tap with Airblade™ technology.
+                  - checkbox [ref=f2e1187] [cursor=pointer]
+                  - generic [ref=f2e1191]:
+                    - generic "Compare product" [ref=f2e1193]:
+                      - generic [ref=f2e1195]:
+                        - checkbox "Compare" [ref=f2e1198] [cursor=pointer]
+                        - generic [ref=f2e1199] [cursor=pointer]: Compare
+                    - button "Download BIM button" [ref=f2e1201]:
+                      - generic [ref=f2e1202]: Download BIM
+                - generic [ref=f2e1206]:
+                  - link "Dyson Airblade™ Wash+Dry Tap Hand Dryer - Wall (WD06) Dyson Airblade™ Wash+Dry Tap Hand Dryer - Wall (WD06) Verified 1 month ago Dyson Touch-free tap with Airblade™ technology." [ref=f2e1207] [cursor=pointer]:
+                    - /url: /en/gb/product/dyson-airblade-washdry-tap-hand-dryer-wall-wd06/tNELQaA8uq92bHhxbZ5TS4/irpRgZrUF6arEdb2sendqw
+                    - generic [ref=f2e1208]:
+                      - article [ref=f2e1209]:
+                        - generic [ref=f2e1210]: BOS
+                      - img "Dyson Airblade™ Wash+Dry Tap Hand Dryer - Wall (WD06)" [ref=f2e1217]
+                      - generic [ref=f2e1219]:
+                        - paragraph [ref=f2e1220]: Dyson Airblade™ Wash+Dry Tap Hand Dryer - Wall (WD06)
+                        - generic [ref=f2e1221]:
+                          - article [ref=f2e1223]
+                          - paragraph [ref=f2e1225]: Verified 1 month ago
+                        - paragraph [ref=f2e1226]: Dyson
+                        - generic [ref=f2e1227]: Touch-free tap with Airblade™ technology.
+                  - checkbox [ref=f2e1234] [cursor=pointer]
+                  - generic [ref=f2e1238]:
+                    - generic "Compare product" [ref=f2e1240]:
+                      - generic [ref=f2e1242]:
+                        - checkbox "Compare" [ref=f2e1245] [cursor=pointer]
+                        - generic [ref=f2e1246] [cursor=pointer]: Compare
+                    - button "Download BIM button" [ref=f2e1248]:
+                      - generic [ref=f2e1249]: Download BIM
+                - generic [ref=f2e1253]:
+                  - link "Aertek Triclone Hand Dryer - Hands-in Hand Dryer - Automatic HEPA-filtered Hygienic Dryer Aertek Triclone Hand Dryer - Hands-in Hand Dryer - Automatic HEPA-filtered Hygienic Dryer Verified 3 months ago ehanddryers The Triclone Hand Dryer is the fastest, most hygienic hands-in hand dryer. The Aertek Triclone Hand Dryer uses HEPA-filtered air to dry hands in under 10 seconds." [ref=f2e1254] [cursor=pointer]:
+                    - /url: /en/gb/product/aertek-triclone-hand-dryer-hands-in-hand-dryer/ecb8UWqtzHF43TZKt8WTsn/gqeY1fcb1gTR4D6opgPvQN
+                    - generic [ref=f2e1255]:
+                      - article [ref=f2e1256]:
+                        - generic [ref=f2e1257]: BOS
+                      - img "Aertek Triclone Hand Dryer - Hands-in Hand Dryer - Automatic HEPA-filtered Hygienic Dryer" [ref=f2e1264]
+                      - generic [ref=f2e1265]:
+                        - generic [ref=f2e1266]:
+                          - paragraph [ref=f2e1267]: Aertek Triclone Hand Dryer - Hands-in Hand Dryer - Automatic HEPA-filtered Hygienic Dryer
+                          - generic [ref=f2e1268]:
+                            - article [ref=f2e1270]
+                            - paragraph [ref=f2e1272]: Verified 3 months ago
+                          - paragraph [ref=f2e1273]: ehanddryers
+                          - generic [ref=f2e1274]: The Triclone Hand Dryer is the fastest, most hygienic hands-in hand dryer. The Aertek Triclone Hand Dryer uses HEPA-filtered air to dry hands in under 10 seconds.
+                        - article [ref=f2e1278]:
+                          - generic [ref=f2e1280]: "+3"
+                  - checkbox [ref=f2e1285] [cursor=pointer]
+                  - generic [ref=f2e1289]:
+                    - generic "Compare product" [ref=f2e1291]:
+                      - generic [ref=f2e1293]:
+                        - checkbox "Compare" [ref=f2e1296] [cursor=pointer]
+                        - generic [ref=f2e1297] [cursor=pointer]: Compare
+                    - button "Download BIM button" [ref=f2e1299]:
+                      - generic [ref=f2e1300]: Download BIM
+                - generic [ref=f2e1304]:
+                  - 'link "Aertek T3 Wash & Dry Tap, Three-in-One, Over-Sink Hand Dryer Tap Aertek T3 Wash & Dry Tap, Three-in-One, Over-Sink Hand Dryer Tap Verified 3 months ago ehanddryers A three-in-one tap with automatic foam soap dispenser, sensor water faucet and automatic warm air hand dryer. Aertek T3 Wash + Dry is the #CompleteClean hand dryer tap." [ref=f2e1305] [cursor=pointer]':
+                    - /url: /en/gb/product/aertek-t3-wash-dry-tap-three-in-one-over-sink-hand-dryer-tap/c2XGbL18j6bDT7Wi5JZgy9/hwKNjPnEd1ddzPkvNX1egG
+                    - generic [ref=f2e1306]:
+                      - article [ref=f2e1307]:
+                        - generic [ref=f2e1308]: BOS
+                      - img "Aertek T3 Wash & Dry Tap, Three-in-One, Over-Sink Hand Dryer Tap" [ref=f2e1315]
+                      - generic [ref=f2e1316]:
+                        - generic [ref=f2e1317]:
+                          - paragraph [ref=f2e1318]: Aertek T3 Wash & Dry Tap, Three-in-One, Over-Sink Hand Dryer Tap
+                          - generic [ref=f2e1319]:
+                            - article [ref=f2e1321]
+                            - paragraph [ref=f2e1323]: Verified 3 months ago
+                          - paragraph [ref=f2e1324]: ehanddryers
+                          - generic [ref=f2e1325]: "A three-in-one tap with automatic foam soap dispenser, sensor water faucet and automatic warm air hand dryer. Aertek T3 Wash + Dry is the #CompleteClean hand dryer tap."
+                        - article [ref=f2e1329]:
+                          - generic [ref=f2e1331]: "+8"
+                  - checkbox [ref=f2e1336] [cursor=pointer]
+                  - generic [ref=f2e1340]:
+                    - generic "Compare product" [ref=f2e1342]:
+                      - generic [ref=f2e1344]:
+                        - checkbox "Compare" [ref=f2e1347] [cursor=pointer]
+                        - generic [ref=f2e1348] [cursor=pointer]: Compare
+                    - button "Download BIM button" [ref=f2e1350]:
+                      - generic [ref=f2e1351]: Download BIM
+              - paragraph [ref=f2e1356]: Showing 1-8 of 8
+          - generic [ref=f2e1361]:
+            - heading [level=2]
+          - generic [ref=f2e1373]:
+            - heading [level=2]
+          - generic [ref=f2e1385]:
+            - heading [level=2]
+          - generic [ref=f2e1397]:
+            - heading [level=2]
+      - link "Feedback" [ref=f2e1406] [cursor=pointer]:
+        - /url: https://support.thenbs.com/support/discussions/topics/7000040634
+    - generic [ref=f2e530]:
+      - contentinfo [ref=f2e531]:
+        - generic [ref=f2e532]:
+          - paragraph [ref=f2e533]: Help
+          - list [ref=f2e534]:
+            - listitem [ref=f2e535]:
+              - link "Support articles" [ref=f2e536] [cursor=pointer]:
+                - /url: https://support.thenbs.com/support/solutions/7000038276
+            - listitem [ref=f2e537]:
+              - link "Submit a support ticket" [ref=f2e538] [cursor=pointer]:
+                - /url: https://support.thenbs.com/support/tickets/new
+            - listitem [ref=f2e539]:
+              - link "Feedback" [ref=f2e540] [cursor=pointer]:
+                - /url: https://support.thenbs.com/support/discussions/forums/7000015078
+        - generic [ref=f2e541]:
+          - paragraph [ref=f2e542]: Quick links
+          - list [ref=f2e543]:
+            - listitem [ref=f2e544]:
+              - link "NBS Events and webinars" [ref=f2e545] [cursor=pointer]:
+                - /url: https://www.thenbs.com/events
+        - generic [ref=f2e546]:
+          - paragraph [ref=f2e547]: Corporate information
+          - list [ref=f2e548]:
+            - listitem [ref=f2e549]:
+              - link "About us" [ref=f2e550] [cursor=pointer]:
+                - /url: https://www.thenbs.com/about-nbs
+            - listitem [ref=f2e551]:
+              - link "Terms and conditions" [ref=f2e552] [cursor=pointer]:
+                - /url: https://www.thenbs.com/terms-and-conditions
+            - listitem [ref=f2e553]:
+              - link "Privacy policy" [ref=f2e554] [cursor=pointer]:
+                - /url: https://www.thenbs.com/privacy-policy
+            - listitem [ref=f2e555]:
+              - link "Cookies" [ref=f2e556] [cursor=pointer]:
+                - /url: /en/gb/cookie-policy
+            - listitem [ref=f2e557]:
+              - link "Careers" [ref=f2e558] [cursor=pointer]:
+                - /url: https://www.thenbs.com/careers
+            - listitem [ref=f2e559]:
+              - link "Legal" [ref=f2e560] [cursor=pointer]:
+                - /url: https://www.thenbs.com/legal
+        - generic [ref=f2e561]:
+          - paragraph [ref=f2e562]: Contact us
+          - list [ref=f2e563]:
+            - listitem [ref=f2e564]: "General enquiries:"
+            - listitem [ref=f2e565]:
+              - link "0345 456 9594" [ref=f2e566] [cursor=pointer]:
+                - /url: "tel: 0345 456 9594"
+            - listitem [ref=f2e567]:
+              - link "info@theNBS.com" [ref=f2e568] [cursor=pointer]:
+                - /url: mailto:info@theNBS.com?subject=Customer enquiry from NBS Source
+          - list [ref=f2e569]:
+            - listitem [ref=f2e570]: "Manufacturer enquiries:"
+            - listitem [ref=f2e571]:
+              - link "0345 200 1056" [ref=f2e572] [cursor=pointer]:
+                - /url: "tel: 0345 200 1056"
+            - listitem [ref=f2e573]:
+              - link "salessupport@theNBS.com" [ref=f2e574] [cursor=pointer]:
+                - /url: mailto:salessupport@theNBS.com?subject=Customer enquiry from NBS Source
+        - generic [ref=f2e575]:
+          - paragraph [ref=f2e576]: Change region
+          - list [ref=f2e577]:
+            - listitem [ref=f2e578]:
+              - link "Canada" [ref=f2e579] [cursor=pointer]:
+                - /url: https://source.thenbs.com/en/ca
+            - listitem [ref=f2e580]:
+              - link "Finland" [ref=f2e581] [cursor=pointer]:
+                - /url: https://source.thenbs.com/en/fi
+            - listitem [ref=f2e582]:
+              - link "Norway" [ref=f2e583] [cursor=pointer]:
+                - /url: https://source.thenbs.com/en/no
+            - listitem [ref=f2e584]:
+              - link "Sweden" [ref=f2e585] [cursor=pointer]:
+                - /url: https://source.thenbs.com/en/se
+            - listitem [ref=f2e586]:
+              - link "United Kingdom" [ref=f2e587] [cursor=pointer]:
+                - /url: https://source.thenbs.com/en/gb
+            - listitem [ref=f2e588]:
+              - link "United States" [ref=f2e589] [cursor=pointer]:
+                - /url: https://source.thenbs.com/en/us
+        - generic [ref=f2e590]:
+          - paragraph [ref=f2e591]: Social
+          - article [ref=f2e592]:
+            - link "View Facebook" [ref=f2e593] [cursor=pointer]:
+              - /url: https://www.facebook.com/thenbscom/
+            - link "View Twitter" [ref=f2e595] [cursor=pointer]:
+              - /url: https://twitter.com/theNBS/
+            - link "View Youtube" [ref=f2e597] [cursor=pointer]:
+              - /url: https://www.youtube.com/channel/UCWeaJ3mkpBY_Jnj1oXDncYA/
+            - link "View LinkedIn" [ref=f2e599] [cursor=pointer]:
+              - /url: https://www.linkedin.com/company/nbs_3/
+      - paragraph [ref=f2e601]: © 2026 Hubexo North UK Ltd. All rights reserved.
+  - article [ref=f2e603]

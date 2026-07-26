@@ -1,0 +1,199 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - banner [ref=e7]:
+      - generic [ref=e8]:
+        - link "NBS Source" [ref=e10] [cursor=pointer]:
+          - /url: /en/gb
+        - button "Choose location and language" [ref=e16]:
+          - generic [ref=e17]: UK
+      - generic [ref=e21]:
+        - generic [ref=e24]:
+          - textbox "Search" [ref=e29]:
+            - /placeholder: Search NBS Source...
+          - combobox "All" [ref=e34] [cursor=pointer]
+          - button "Search" [ref=e42] [cursor=pointer]
+        - button "Sign in" [ref=e47]
+    - banner [ref=e54]:
+      - navigation "Main navigation links" [ref=e56]:
+        - link "Home" [ref=e57] [cursor=pointer]:
+          - /url: /en/gb
+        - link "What's new" [ref=e61] [cursor=pointer]:
+          - /url: /en/gb/whats-new
+        - article [ref=e65]:
+          - button "Browse" [ref=e66]
+          - menu "Browse menu":
+            - article:
+              - generic:
+                - heading "Categories" [level=2]
+              - generic:
+                - link "Communications, security and safety":
+                  - /url: /en/gb/category/communications-security-and-safety/nuJ7UsKqsfmwphEUxxWeuT
+                - link "Coverings, coatings and finishes":
+                  - /url: /en/gb/category/coverings-coatings-and-finishes/oqp3eL65AahZGgtqA5rMPh
+                - link "Doors, windows and hatches":
+                  - /url: /en/gb/category/doors-windows-and-hatches/ndwwX39PgbyjJGbveGwpLu
+                - link "Electrical power and lighting":
+                  - /url: /en/gb/category/electrical-power-and-lighting/bswgU4ortiBZi5YLuVoQSf
+                - link "Fittings, furnishings and equipment":
+                  - /url: /en/gb/category/fittings-furnishings-and-equipment/uybG3djVP8AgJk2Fu6rgAJ
+                - link "General building products":
+                  - /url: /en/gb/category/general-building-products/b6hgxiLbwdDFC4F4xjYXmL
+                - link "Lifts, elevators and escalators":
+                  - /url: /en/gb/category/lifts-elevators-and-escalators/jRQcGPB9ToSXkv23L4f2XZ
+                - link "Plants and animals":
+                  - /url: /en/gb/category/plants-and-animals/rb4dZEYYditbrB44aY5FxV
+                - link "Plumbing and waste disposal":
+                  - /url: /en/gb/category/plumbing-and-waste-disposal/r64a5TSeKyLAFuXKMMuqHN
+                - link "Plumbing fixtures and accessories":
+                  - /url: /en/gb/category/plumbing-fixtures-and-accessories/dChJUFZUmyV8tgKBRPk5ui
+                - link "Ponds, swimming pools, bunds and tanks":
+                  - /url: /en/gb/category/ponds-swimming-pools-bunds-and-tanks/sP5sBNrU6ZMnUeHKng6m7H
+                - link "Roofs, ceilings and soffits":
+                  - /url: /en/gb/category/roofs-ceilings-and-soffits/t1Nd7ayjeVyYfZ7YgMRAAm
+                - link "Signage and signalling":
+                  - /url: /en/gb/category/signage-and-signalling/6cn4oWrA7SgQw4yiFq14Mr
+                - link "Stairs and ramps":
+                  - /url: /en/gb/category/stairs-and-ramps/pWwBs9DpRrrp4fCk5MhuPn
+                - link "Structure":
+                  - /url: /en/gb/category/structure/8PY9JCZZjQuUsTS8X1rsYY
+                - link "Ventilation, air conditioning and space heating":
+                  - /url: /en/gb/category/ventilation-air-conditioning-and-space-heating/5TuADwMz9LKpvdc8wKdiF5
+                - link "Walls and barriers":
+                  - /url: /en/gb/category/walls-and-barriers/qpNRgYeM3pQWsnzXYyf5Xr
+              - generic:
+                - link "View all categories":
+                  - /url: /en/gb/categories
+            - article:
+              - generic:
+                - heading "Other" [level=2]
+              - generic:
+                - link "BIM object categories":
+                  - /url: /en/gb/categories/bim
+                - link "Manufacturers":
+                  - /url: /en/gb/manufacturers
+                - link "Our partners":
+                  - /url: /en/gb/partners
+        - button "BIM Library" [ref=e71]
+        - link "Inspiration" [ref=e76] [cursor=pointer]:
+          - /url: /en/gb/inspiration
+        - link "Collections" [ref=e80] [cursor=pointer]:
+          - /url: /en/gb/collections
+        - link "CPD" [ref=e84] [cursor=pointer]:
+          - /url: /en/gb/cpd
+      - link "I'm a manufacturer" [ref=e90] [cursor=pointer]:
+        - /url: https://manufacturers.thenbs.com/nbs-source
+    - generic [ref=e97]:
+      - generic [ref=e99]:
+        - text: "404"
+        - generic [ref=e100]:
+          - heading "Sorry, the page you were looking for doesn't exist" [level=2] [ref=e101]
+          - paragraph [ref=e102]: You may have mistyped the address or the page may have moved.
+          - link "Back to home" [ref=e103] [cursor=pointer]:
+            - /url: /en/
+      - generic [ref=e105]:
+        - contentinfo [ref=e106]:
+          - generic [ref=e107]:
+            - paragraph [ref=e108]: Help
+            - list [ref=e109]:
+              - listitem [ref=e110]:
+                - link "Support articles" [ref=e111] [cursor=pointer]:
+                  - /url: https://support.thenbs.com/support/solutions/7000038276
+              - listitem [ref=e112]:
+                - link "Submit a support ticket" [ref=e113] [cursor=pointer]:
+                  - /url: https://support.thenbs.com/support/tickets/new
+              - listitem [ref=e114]:
+                - link "Feedback" [ref=e115] [cursor=pointer]:
+                  - /url: https://support.thenbs.com/support/discussions/forums/7000015078
+          - generic [ref=e116]:
+            - paragraph [ref=e117]: Quick links
+            - list [ref=e118]:
+              - listitem [ref=e119]:
+                - link "NBS Events and webinars" [ref=e120] [cursor=pointer]:
+                  - /url: https://www.thenbs.com/events
+          - generic [ref=e121]:
+            - paragraph [ref=e122]: Corporate information
+            - list [ref=e123]:
+              - listitem [ref=e124]:
+                - link "About us" [ref=e125] [cursor=pointer]:
+                  - /url: https://www.thenbs.com/about-nbs
+              - listitem [ref=e126]:
+                - link "Terms and conditions" [ref=e127] [cursor=pointer]:
+                  - /url: https://www.thenbs.com/terms-and-conditions
+              - listitem [ref=e128]:
+                - link "Privacy policy" [ref=e129] [cursor=pointer]:
+                  - /url: https://www.thenbs.com/privacy-policy
+              - listitem [ref=e130]:
+                - link "Cookies" [ref=e131] [cursor=pointer]:
+                  - /url: /en/gb/cookie-policy
+              - listitem [ref=e132]:
+                - link "Careers" [ref=e133] [cursor=pointer]:
+                  - /url: https://www.thenbs.com/careers
+              - listitem [ref=e134]:
+                - link "Legal" [ref=e135] [cursor=pointer]:
+                  - /url: https://www.thenbs.com/legal
+          - generic [ref=e136]:
+            - paragraph [ref=e137]: Contact us
+            - list [ref=e138]:
+              - listitem [ref=e139]: "General enquiries:"
+              - listitem [ref=e140]:
+                - link "0345 456 9594" [ref=e141] [cursor=pointer]:
+                  - /url: "tel: 0345 456 9594"
+              - listitem [ref=e142]:
+                - link "info@theNBS.com" [ref=e143] [cursor=pointer]:
+                  - /url: mailto:info@theNBS.com?subject=Customer enquiry from NBS Source
+            - list [ref=e144]:
+              - listitem [ref=e145]: "Manufacturer enquiries:"
+              - listitem [ref=e146]:
+                - link "0345 200 1056" [ref=e147] [cursor=pointer]:
+                  - /url: "tel: 0345 200 1056"
+              - listitem [ref=e148]:
+                - link "salessupport@theNBS.com" [ref=e149] [cursor=pointer]:
+                  - /url: mailto:salessupport@theNBS.com?subject=Customer enquiry from NBS Source
+          - generic [ref=e150]:
+            - paragraph [ref=e151]: Change region
+            - list [ref=e152]:
+              - listitem [ref=e153]:
+                - link "Canada" [ref=e154] [cursor=pointer]:
+                  - /url: https://source.thenbs.com/en/ca
+              - listitem [ref=e155]:
+                - link "Finland" [ref=e156] [cursor=pointer]:
+                  - /url: https://source.thenbs.com/en/fi
+              - listitem [ref=e157]:
+                - link "Norway" [ref=e158] [cursor=pointer]:
+                  - /url: https://source.thenbs.com/en/no
+              - listitem [ref=e159]:
+                - link "Sweden" [ref=e160] [cursor=pointer]:
+                  - /url: https://source.thenbs.com/en/se
+              - listitem [ref=e161]:
+                - link "United Kingdom" [ref=e162] [cursor=pointer]:
+                  - /url: https://source.thenbs.com/en/gb
+              - listitem [ref=e163]:
+                - link "United States" [ref=e164] [cursor=pointer]:
+                  - /url: https://source.thenbs.com/en/us
+          - generic [ref=e165]:
+            - paragraph [ref=e166]: Social
+            - article [ref=e167]:
+              - link "View Facebook" [ref=e168] [cursor=pointer]:
+                - /url: https://www.facebook.com/thenbscom/
+              - link "View Twitter" [ref=e170] [cursor=pointer]:
+                - /url: https://twitter.com/theNBS/
+              - link "View Youtube" [ref=e172] [cursor=pointer]:
+                - /url: https://www.youtube.com/channel/UCWeaJ3mkpBY_Jnj1oXDncYA/
+              - link "View LinkedIn" [ref=e174] [cursor=pointer]:
+                - /url: https://www.linkedin.com/company/nbs_3/
+        - paragraph [ref=e176]: © 2026 Hubexo North UK Ltd. All rights reserved.
+    - article [ref=e178]
+  - dialog [ref=e180]:
+    - generic [ref=e181]:
+      - generic [ref=e182]:
+        - heading "Cookies" [level=2] [ref=e183]
+        - paragraph [ref=e184]:
+          - text: We use cookies to optimize our website and our service.
+          - link "Learn more" [ref=e185] [cursor=pointer]:
+            - /url: /en/cookie-policy
+          - text: .
+      - generic [ref=e186]:
+        - generic [ref=e187]:
+          - button "Accept all" [ref=e188] [cursor=pointer]
+          - button "Reject all" [ref=e189] [cursor=pointer]
+        - button "Manage preferences" [ref=e191] [cursor=pointer]
