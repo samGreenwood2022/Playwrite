@@ -1,0 +1,327 @@
+<title>Test Automation — Interview Study Sheet</title>
+<style>
+  :root {
+    --ground:#f4f7f5;
+    --surface:#ffffff;
+    --surface-2:#eef2f0;
+    --ink:#132019;
+    --ink-2:#4c5d55;
+    --ink-3:#7c8b84;
+    --line:#dbe3df;
+    --accent:#0d7a5f;
+    --accent-ink:#ffffff;
+    --accent-soft:#e4f0eb;
+    --warn:#a9640a;
+    --warn-ink:#5c3600;
+    --warn-soft:#f6ecd9;
+    --warn-line:#e6d3ad;
+
+    --maxw:1120px;
+    --radius:9px;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,"Cascadia Code",Consolas,"Liberation Mono",monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground:#0d1411;
+      --surface:#131c18;
+      --surface-2:#182420;
+      --ink:#e7ede9;
+      --ink-2:#a7b6ae;
+      --ink-3:#79897f;
+      --line:#26332d;
+      --accent:#37b591;
+      --accent-ink:#06120d;
+      --accent-soft:#122420;
+      --warn:#e0a34a;
+      --warn-ink:#e8c88c;
+      --warn-soft:#20190e;
+      --warn-line:#3a2f17;
+    }
+  }
+  :root[data-theme="light"] {
+    --ground:#f4f7f5; --surface:#ffffff; --surface-2:#eef2f0; --ink:#132019;
+    --ink-2:#4c5d55; --ink-3:#7c8b84; --line:#dbe3df; --accent:#0d7a5f;
+    --accent-ink:#ffffff; --accent-soft:#e4f0eb; --warn:#a9640a; --warn-ink:#5c3600;
+    --warn-soft:#f6ecd9; --warn-line:#e6d3ad;
+  }
+  :root[data-theme="dark"] {
+    --ground:#0d1411; --surface:#131c18; --surface-2:#182420; --ink:#e7ede9;
+    --ink-2:#a7b6ae; --ink-3:#79897f; --line:#26332d; --accent:#37b591;
+    --accent-ink:#06120d; --accent-soft:#122420; --warn:#e0a34a; --warn-ink:#e8c88c;
+    --warn-soft:#20190e; --warn-line:#3a2f17;
+  }
+
+  * { box-sizing:border-box; }
+  body {
+    margin:0; background:var(--ground); color:var(--ink);
+    font-family:var(--sans);
+    -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+    line-height:1.5;
+  }
+  .wrap { max-width:var(--maxw); margin:0 auto; padding:32px 24px 56px; }
+
+  /* ---- Running header ---- */
+  .filepath {
+    font-family:var(--mono); font-size:11.5px; color:var(--ink-3);
+    letter-spacing:.02em; margin-bottom:18px; display:flex; gap:8px; align-items:center;
+  }
+  .filepath .dot { width:5px; height:5px; border-radius:50%; background:var(--accent); opacity:.8; }
+
+  /* ---- Masthead ---- */
+  header.mast { border-top:2px solid var(--accent); padding-top:20px; }
+  .mast h1 {
+    font-size:clamp(26px,4vw,40px); line-height:1.04; margin:0; letter-spacing:-.02em;
+    font-weight:800; text-wrap:balance; max-width:20ch;
+  }
+  .mast .lede {
+    margin:12px 0 0; color:var(--ink-2); font-size:15.5px; max-width:64ch;
+  }
+  .stack {
+    display:flex; flex-wrap:wrap; gap:7px; margin-top:18px;
+  }
+  .chip {
+    font-family:var(--mono); font-size:11.5px; color:var(--ink-2);
+    background:var(--surface); border:1px solid var(--line);
+    padding:4px 9px; border-radius:100px; letter-spacing:.01em;
+  }
+
+  /* ---- Section eyebrow ---- */
+  .band-label {
+    font-family:var(--mono); font-size:11px; font-weight:600; letter-spacing:.14em;
+    text-transform:uppercase; color:var(--accent); margin:38px 0 14px;
+    display:flex; align-items:center; gap:12px;
+  }
+  .band-label::after { content:""; flex:1; height:1px; background:var(--line); }
+
+  /* ---- Lead cards (the 3 to open with) ---- */
+  .lead-grid {
+    display:grid; grid-template-columns:repeat(3,1fr); gap:14px;
+  }
+  .lead {
+    background:var(--accent); color:var(--accent-ink);
+    border-radius:var(--radius); padding:16px 16px 17px;
+    display:flex; flex-direction:column; gap:7px;
+  }
+  .lead .n {
+    font-family:var(--mono); font-size:11px; letter-spacing:.1em; text-transform:uppercase;
+    opacity:.72;
+  }
+  .lead h3 { margin:0; font-size:16.5px; font-weight:700; letter-spacing:-.01em; }
+  .lead p { margin:0; font-size:13px; line-height:1.45; opacity:.92; }
+  .lead code {
+    font-family:var(--mono); font-size:11.5px; background:rgba(255,255,255,.16);
+    color:inherit; padding:2px 6px; border-radius:5px; align-self:flex-start;
+  }
+
+  /* ---- Practice columns (masonry) ---- */
+  .cols { columns:2; column-gap:14px; margin-top:4px; }
+  @media (max-width:720px){ .cols { columns:1; } .lead-grid { grid-template-columns:1fr; } }
+
+  .card {
+    break-inside:avoid; -webkit-column-break-inside:avoid;
+    background:var(--surface); border:1px solid var(--line);
+    border-radius:var(--radius); padding:15px 16px 6px; margin-bottom:14px;
+  }
+  .card > .cat {
+    font-family:var(--mono); font-size:10.5px; font-weight:600; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--ink-3);
+  }
+  .card > h2 {
+    margin:3px 0 12px; font-size:16px; font-weight:750; letter-spacing:-.01em; color:var(--ink);
+  }
+  ul.items { list-style:none; margin:0; padding:0; }
+  ul.items > li {
+    display:flex; gap:10px; padding:9px 0; border-top:1px solid var(--line);
+  }
+  ul.items > li:first-child { border-top:0; }
+  .mark {
+    flex:none; width:16px; height:16px; margin-top:2px; border-radius:50%;
+    background:var(--accent-soft); color:var(--accent);
+    display:grid; place-items:center; font-size:10px; font-weight:800;
+  }
+  .it b { font-weight:700; font-size:13.5px; color:var(--ink); }
+  .it .why { display:block; margin-top:2px; font-size:12.5px; color:var(--ink-2); line-height:1.4; }
+  code.loc {
+    font-family:var(--mono); font-size:11px; color:var(--ink-2);
+    background:var(--surface-2); border:1px solid var(--line);
+    padding:1px 6px; border-radius:5px; white-space:nowrap;
+  }
+
+  /* ---- Gaps band ---- */
+  .gaps {
+    margin-top:34px; background:var(--warn-soft); border:1px solid var(--warn-line);
+    border-radius:var(--radius); padding:20px 22px 8px;
+  }
+  .gaps .band-label { margin:0 0 4px; color:var(--warn); }
+  .gaps .band-label::after { background:var(--warn-line); }
+  .gaps .sub { margin:0 0 14px; font-size:13px; color:var(--ink-2); }
+  .gap-grid { columns:2; column-gap:22px; }
+  @media (max-width:720px){ .gap-grid { columns:1; } }
+  .gap {
+    break-inside:avoid; display:flex; gap:10px; padding:10px 0;
+    border-top:1px solid var(--warn-line);
+  }
+  .gap:first-child { border-top:0; }
+  .gap .tri { flex:none; color:var(--warn); font-size:12px; margin-top:2px; }
+  .gap b { font-weight:700; font-size:13.5px; }
+  .gap span.f { display:block; margin-top:2px; font-size:12.5px; color:var(--ink-2); line-height:1.4; }
+
+  /* ---- Closing tip ---- */
+  .tip {
+    margin-top:26px; border-left:3px solid var(--accent); padding:4px 0 4px 16px;
+  }
+  .tip .t-label {
+    font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase;
+    color:var(--accent); font-weight:600;
+  }
+  .tip p { margin:6px 0 0; font-size:14.5px; color:var(--ink); max-width:70ch; }
+  .tip .quote { color:var(--ink-2); font-style:italic; }
+
+  footer.foot {
+    margin-top:36px; padding-top:14px; border-top:1px solid var(--line);
+    font-family:var(--mono); font-size:11px; color:var(--ink-3);
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;
+  }
+
+  @media print {
+    body { background:#fff; color:#111; }
+    .wrap { padding:0; max-width:none; }
+    .card, .lead, .gaps { break-inside:avoid; }
+    .filepath, footer.foot { display:none; }
+  }
+</style>
+
+<div class="wrap">
+
+  <div class="filepath"><span class="dot"></span>~/playwright-framework · notes/interview-prep.md</div>
+
+  <header class="mast">
+    <h1>Test Automation — Interview Study Sheet</h1>
+    <p class="lede">Best practices implemented in a Playwright + TypeScript + Cucumber BDD framework — what to explain, where it lives in the code, and why it matters. Lead with the principle, point to the code, then say why.</p>
+    <div class="stack">
+      <span class="chip">Playwright</span>
+      <span class="chip">TypeScript · strict</span>
+      <span class="chip">Cucumber / Gherkin</span>
+      <span class="chip">Page Object Model</span>
+      <span class="chip">GitHub Actions CI</span>
+      <span class="chip">axe-core</span>
+      <span class="chip">pixelmatch</span>
+    </div>
+  </header>
+
+  <div class="band-label">Open with these three</div>
+  <div class="lead-grid">
+    <div class="lead">
+      <span class="n">Star talking point</span>
+      <h3>Independent, isolated tests</h3>
+      <code>Before hook → fresh context</code>
+      <p>A new browser context + page per scenario. No shared state, no order-dependency — the single biggest cause of flaky suites.</p>
+    </div>
+    <div class="lead">
+      <span class="n">Star talking point</span>
+      <h3>Auth via storage state</h3>
+      <code>BeforeAll → .auth/user.json</code>
+      <p>Sign in once, reuse everywhere. Atomic temp-file + rename write survives parallel workers; 1-hour TTL. Cookies never committed.</p>
+    </div>
+    <div class="lead">
+      <span class="n">Star talking point</span>
+      <h3>Network edge-case injection</h3>
+      <code>page.route()</code>
+      <p>Force states the live API won't give on demand — 500, empty, dropped, slow, malformed — to test resilience deterministically.</p>
+    </div>
+  </div>
+
+  <div class="band-label">The full toolkit</div>
+  <div class="cols">
+
+    <section class="card">
+      <div class="cat">Architecture &amp; patterns</div>
+      <h2>Structure &amp; separation</h2>
+      <ul class="items">
+        <li><span class="mark">✓</span><div class="it"><b>Page Object Model</b> <code class="loc">tests/pages/*</code><span class="why">Locators + actions live in the object; specs never touch selectors. One place to fix when the UI changes.</span></div></li>
+        <li><span class="mark">✓</span><div class="it"><b>Separation of concerns</b><span class="why">Site-wide bits (logo, a11y scan, visual-diff engine) in <code class="loc">BasePage</code>; header Sign-in there, sign-in <em>form</em> in <code class="loc">LoginPage</code>.</span></div></li>
+        <li><span class="mark">✓</span><div class="it"><b>BDD with Gherkin</b> <code class="loc">*.feature</code><span class="why">Given/When/Then read as living documentation a non-technical stakeholder can follow.</span></div></li>
+        <li><span class="mark">✓</span><div class="it"><b>Thin steps / SRP</b><span class="why">Steps delegate to page objects; network trickery isolated in <code class="loc">network-stubs.ts</code>, lifecycle in <code class="loc">world.ts</code>.</span></div></li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <div class="cat">Test design</div>
+      <h2>Data &amp; execution</h2>
+      <ul class="items">
+        <li><span class="mark">✓</span><div class="it"><b>Data-driven</b> <code class="loc">Scenario Outline</code><span class="why">Examples tables + DataTables — one outline covers many pages/rows.</span></div></li>
+        <li><span class="mark">✓</span><div class="it"><b>The spec owns expectations</b><span class="why">Nav labels/hrefs, phone numbers live in the feature table — not hardcoded in the page object.</span></div></li>
+        <li><span class="mark">✓</span><div class="it"><b>Tag-driven runs</b><span class="why"><code class="loc">@smoke @regression @accessibility @authenticated @stub-*</code> slice the suite for fast feedback.</span></div></li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <div class="cat">Reliability</div>
+      <h2>Anti-flakiness</h2>
+      <ul class="items">
+        <li><span class="mark">✓</span><div class="it"><b>Web-first assertions</b><span class="why"><code class="loc">expect(locator).toBeVisible({timeout})</code> auto-retries — no manual polling loops.</span></div></li>
+        <li><span class="mark">✓</span><div class="it"><b>Event-based waits, not sleeps</b><span class="why"><code class="loc">waitForResponse</code> / <code class="loc">requestfailed</code> / <code class="loc">networkidle</code>. The lone 500&nbsp;ms wait (paint settle) is deliberate and commented.</span></div></li>
+        <li><span class="mark">✓</span><div class="it"><b>Semantic, stable locators</b><span class="why"><code class="loc">getByRole</code>, <code class="loc">data-cy</code>, component tags over auto-generated IDs; phone link by its <code class="loc">action</code> attr.</span></div></li>
+        <li><span class="mark">✓</span><div class="it"><b>Live-site resilience</b><span class="why">Search retries/re-types before reloading; interstitial overlays dismissed in one central place.</span></div></li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <div class="cat">Coverage</div>
+      <h2>Types of testing</h2>
+      <ul class="items">
+        <li><span class="mark">✓</span><div class="it"><b>Functional UI regression</b><span class="why">Attributes, titles, links, nav order.</span></div></li>
+        <li><span class="mark">✓</span><div class="it"><b>API testing</b><span class="why">Live geolocation call — status + JSON validation (incl. JSONP parse), and API ⇆ UI agreement.</span></div></li>
+        <li><span class="mark">✓</span><div class="it"><b>Network mocking</b><span class="why">Forces 500 / empty / abort / slow / malformed — and tells two same-named GraphQL calls apart <em>by response shape</em>.</span></div></li>
+        <li><span class="mark">✓</span><div class="it"><b>Visual regression</b><span class="why">pixelmatch, per-OS baselines, masks rotating ads, lazy-load + fonts handled before capture.</span></div></li>
+        <li><span class="mark">✓</span><div class="it"><b>Accessibility</b><span class="why">axe-core scan → per-page HTML report.</span></div></li>
+        <li><span class="mark">✓</span><div class="it"><b>Resilience / negative</b><span class="why">Block every analytics/consent host — prove core content still renders.</span></div></li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <div class="cat">Auth &amp; performance</div>
+      <h2>State handling</h2>
+      <ul class="items">
+        <li><span class="mark">✓</span><div class="it"><b>Persisted storage state</b><span class="why">Sign in once in <code class="loc">BeforeAll</code>; <code class="loc">@authenticated</code> scenarios start already logged in.</span></div></li>
+        <li><span class="mark">✓</span><div class="it"><b>Atomic write + TTL</b><span class="why">Temp file + rename = parallel-safe; 1-hour reuse window. Session cookies git-ignored.</span></div></li>
+        <li><span class="mark">✓</span><div class="it"><b>Parallel execution</b><span class="why"><code class="loc">--parallel 2</code>; session reuse trims sign-in time every run.</span></div></li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <div class="cat">Engineering &amp; CI</div>
+      <h2>Pipeline &amp; tooling</h2>
+      <ul class="items">
+        <li><span class="mark">✓</span><div class="it"><b>TypeScript strict + linting</b><span class="why">ESLint flat config + Prettier; a considered <code class="loc">_</code>-prefix unused rule preserves API contracts.</span></div></li>
+        <li><span class="mark">✓</span><div class="it"><b>GitHub Actions</b><span class="why">Runs on push/PR, installs browsers, runs regression, uploads reports + snapshots; creds via Secrets.</span></div></li>
+        <li><span class="mark">✓</span><div class="it"><b>Reporting &amp; tracing</b><span class="why">Styled HTML report, screenshot-on-failure attached, per-scenario Playwright trace zips.</span></div></li>
+        <li><span class="mark">✓</span><div class="it"><b>Environment-aware</b><span class="why">Retries <em>on CI only</em> (don't mask local bugs), <code class="loc">forbidOnly</code> on CI, per-platform baselines.</span></div></li>
+      </ul>
+    </section>
+
+  </div>
+
+  <div class="gaps">
+    <div class="band-label">Know your gaps</div>
+    <p class="sub">Naming limitations reads as senior. Pre-empt these — each with an honest "next step".</p>
+    <div class="gap-grid">
+      <div class="gap"><span class="tri">▲</span><div><b>Cross-browser: configured, not exercised</b><span class="f">The Playwright config lists chromium/firefox/webkit, but the Cucumber runner always launches chromium. <em>Next: parameterise the browser.</em></span></div></div>
+      <div class="gap"><span class="tri">▲</span><div><b>A11y reports, doesn't assert</b><span class="f">Axe writes an HTML report but nothing fails on violations. <em>Next: assert violations against an agreed threshold.</em></span></div></div>
+      <div class="gap"><span class="tri">▲</span><div><b>Custom pixelmatch vs built-in</b><span class="f">Hand-rolled diffing instead of <code class="loc">toHaveScreenshot()</code>. Justify the control/runner reasons — and know the built-in is the standard choice.</span></div></div>
+      <div class="gap"><span class="tri">▲</span><div><b>Baselines auto-pass on first run</b><span class="f">A missing baseline is created and passes. Commit a Linux baseline so CI truly compares — the workflow already uploads snapshots for this.</span></div></div>
+    </div>
+  </div>
+
+  <div class="tip">
+    <span class="t-label">In the room</span>
+    <p><span class="quote">"Tests must be independent, so we build a fresh browser context per scenario in the Before hook — that removes order-dependency, the number-one cause of flaky suites."</span> &nbsp;Principle → code → why. Every time.</p>
+  </div>
+
+  <footer class="foot">
+    <span>Test Automation Analyst · interview prep</span>
+    <span>Print to PDF for a one-pager</span>
+  </footer>
+
+</div>

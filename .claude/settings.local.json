@@ -43,7 +43,8 @@
       "Read(//c/Users/615594345/**)",
       "PowerShell(node \"scripts/inspect-abloy.mjs\" 2>&1)",
       "PowerShell(npx eslint \"tests/pages/abloy-homepage.ts\" \"tests/step_definitions/abloy-steps.ts\" \"tests/features/support/world.ts\" 2>&1; Write-Output \"---tsc---\"; npx tsc --noEmit 2>&1 | Select-Object -First 20)",
-      "PowerShell(npx eslint \"tests/step_definitions/dyson-steps.ts\" 2>&1; Write-Output \"---tsc---\"; npx tsc --noEmit 2>&1 | Select-Object -First 20; Write-Output \"---done---\")"
+      "PowerShell(npx eslint \"tests/step_definitions/dyson-steps.ts\" 2>&1; Write-Output \"---tsc---\"; npx tsc --noEmit 2>&1 | Select-Object -First 20; Write-Output \"---done---\")",
+      "Artifact"
     ]
   },
   "enabledMcpjsonServers": [
