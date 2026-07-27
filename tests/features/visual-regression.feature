@@ -26,8 +26,9 @@
 # baseline. The shared step definitions, hooks and page objects are reused.
 #
 # Each page keeps its own baseline, per OS, at tests/snapshots/<baseline>-<platform>.png
-# (NBS -> nbs-homepage, Dyson -> dyson-homepage). The first run for a baseline
-# saves the current screenshot and passes; later runs compare against it.
+# (NBS -> nbs-homepage, Dyson -> dyson-homepage, Abloy UK -> abloy-homepage). The
+# first run for a baseline saves the current screenshot and passes; later runs
+# compare against it.
 
 Feature: NBS Source Visual Regression Tests
 
@@ -41,6 +42,7 @@ Feature: NBS Source Visual Regression Tests
     Then I take a screenshot of the "<page>" homepage and compare it to its baseline
 
     Examples:
-      | page               |
-      | NBS                |
-      | Dyson manufacturer |
+      | page                |
+      | NBS                 |
+      | Dyson manufacturer  |
+      | Abloy UK manufacturer |

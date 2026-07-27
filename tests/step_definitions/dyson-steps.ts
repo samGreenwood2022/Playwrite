@@ -39,8 +39,12 @@ Given("I navigate to the {string} homepage", async function (this: CustomWorld, 
   await this.basePage.verifyWebpageURL("https://source.thenbs.com/en/");
   if (page === "Dyson manufacturer") {
     await this.homePage.searchFor("Dyson");
+  } else if (page === "Abloy UK manufacturer") {
+    // Abloy has no search-through-the-dropdown helper (that one is Dyson-
+    // specific); its page object navigates straight to the manufacturer page.
+    await this.abloyPage.navigateToAbloyHomepage();
   } else if (page !== "NBS") {
-    throw new Error(`Unknown page "${page}" — expected "NBS" or "Dyson manufacturer".`);
+    throw new Error(`Unknown page "${page}" — expected "NBS", "Dyson manufacturer" or "Abloy UK manufacturer".`);
   }
 },
 );
@@ -93,6 +97,7 @@ Then("The accessibility checks on the {string} homepage are output to an HTML re
     const reportSlug: Record<string, string> = {
       NBS: "nbs",
       "Dyson manufacturer": "dyson",
+      "Abloy UK manufacturer": "abloy",
     };
     const slug = reportSlug[page];
     if (!slug) {
@@ -222,6 +227,10 @@ Then("I take a screenshot of the {string} homepage and compare it to its baselin
       "Dyson manufacturer": {
         baseline: "dyson-homepage",
         waitFor: [this.dysonPage.navigationTabs],
+      },
+      "Abloy UK manufacturer": {
+        baseline: "abloy-homepage",
+        waitFor: [this.abloyPage.navigationTabs],
       },
     };
     const pageConfig = config[page];

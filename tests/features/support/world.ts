@@ -27,6 +27,7 @@ import fs from "fs";
 import path from "path";
 import { HomePage } from "../../pages/home-page";
 import { DysonHomepage } from "../../pages/dyson-homepage";
+import { AbloyHomepage } from "../../pages/abloy-homepage";
 import { BasePage } from "../../pages/base-page";
 import { LoginPage } from "../../pages/login-page";
 import {
@@ -67,6 +68,7 @@ export class CustomWorld extends World {
   page!: Page;
   homePage!: HomePage;
   dysonPage!: DysonHomepage;
+  abloyPage!: AbloyHomepage;
   basePage!: BasePage;
   loginPage!: LoginPage;
   // Remembers the page URL from just before sign-in, so a later step can check
@@ -239,6 +241,7 @@ Before(async function (
   // they're defined now but only actually look at the page when a step uses them.
   this.homePage = new HomePage(this.page);
   this.dysonPage = new DysonHomepage(this.page);
+  this.abloyPage = new AbloyHomepage(this.page);
   this.basePage = new BasePage(this.page);
   this.loginPage = new LoginPage(this.page);
 });
