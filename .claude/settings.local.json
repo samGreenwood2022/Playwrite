@@ -59,7 +59,8 @@
       "PowerShell(npx cucumber-js --require-module ts-node/register --require \"tests/features/support/*.ts\" --require \"tests/step_definitions/*.ts\" \"tests/features/visual-regression.feature\" 2>&1 | Select-Object -Last 20; Write-Output \"--- mask check on latest actual ---\"; node \"C:\\\\Users\\\\615594~1\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--Users-615594345-Downloads-Playwright-My-Playwright-Playwrite\\\\539126f7-eff1-4209-ae11-7c745f93c293\\\\scratchpad\\\\inspect-snapshots.mjs\" 2>&1 | Select-Object -Last 6)",
       "PowerShell(node \"C:\\\\Users\\\\615594~1\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--Users-615594345-Downloads-Playwright-My-Playwright-Playwrite\\\\539126f7-eff1-4209-ae11-7c791c293\\\\scratchpad\\\\inspect-snapshots.mjs\" 2>&1 | Select-Object -Last 6)",
       "PowerShell(node \"C:\\\\Users\\\\615594~1\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--Users-615594345-Downloads-Playwright-My-Playwright-Playwrite\\\\539126f7-eff1-4209-ae11-7c75fc91c293\\\\scratchpad\\\\inspect-snapshots.mjs\" 2>&1 | Select-Object -Last 6)",
-      "PowerShell(git reset *)"
+      "PowerShell(git reset *)",
+      "Bash(echo \"TSC_EXIT=$?\")"
     ]
   },
   "enabledMcpjsonServers": [

@@ -164,6 +164,10 @@ export class BasePage {
   //   <name>-actual.png  — what the page looked like on this run
   //   <name>-diff.png    — an image highlighting where the two differ (in pink)
   //
+  // The actual and diff images are written on every comparison run, pass or
+  // fail, and always before this method throws — CI uploads tests/snapshots/ as
+  // an artefact, and a failure with no diff image in it is close to useless.
+  //
   // First run: there's no baseline yet, so we save the current screenshot as the
   // baseline and stop. Run it again to actually compare against it.
   //
@@ -276,19 +280,56 @@ export class BasePage {
     // Decode both PNGs into raw pixel buffers for pixelmatch to compare.
     const baseline = PNG.sync.read(fs.readFileSync(baselinePath));
     const actual = PNG.sync.read(screenshotBuffer);
-    const { width, height } = baseline;
+
+    // The two images very often differ in size. These are full-page screenshots
+    // of a live site, so anything that changes the total height of the document
+    // — an extra news tile, a taller cookie banner, a wrapped heading — changes
+    // the image height too.
+    //
+    // pixelmatch refuses to compare buffers of different lengths: it throws
+    // "Image sizes do not match." straight away. Left unhandled that throw
+    // escapes *before* the diff image is written, so the one artefact you
+    // actually want after a CI failure is the one thing you don't get. Instead
+    // we pad both images onto a common canvas so the comparison always runs and
+    // a diff is always produced; the size change itself is then reported below.
+    const sizeMismatch =
+      baseline.width !== actual.width || baseline.height !== actual.height;
+    const width = Math.max(baseline.width, actual.width);
+    const height = Math.max(baseline.height, actual.height);
+    const baselineCanvas = padToCanvas(baseline, width, height);
+    const actualCanvas = padToCanvas(actual, width, height);
     const diff = new PNG({ width, height });
 
     // threshold: 0.2 = how different two pixels must be to count as "different".
     // Higher = more tolerant of minor colour shifts (anti-aliasing, subpixel
     // rendering); lower = stricter. 0.2 is a sensible default.
     const diffPixels = pixelmatch(
-      baseline.data, actual.data, diff.data,
+      baselineCanvas.data, actualCanvas.data, diff.data,
       width, height,
       { threshold: 0.2 },
     );
 
+    // Write the diff before deciding whether to fail, so it exists no matter
+    // which branch below throws. CI uploads tests/snapshots/ as an artefact and
+    // this is the file a human opens first.
     fs.writeFileSync(diffPath, PNG.sync.write(diff));
+
+    // A size change is always a real failure, never renderer noise, so it's
+    // checked before the pixel tolerance — a page that grew by a few hundred
+    // pixels of new content can still come in under the 2% threshold once the
+    // padding is spread over the whole canvas.
+    if (sizeMismatch) {
+      const error = new Error(
+        `Visual regression detected: image size changed. Baseline is ` +
+          `${baseline.width}x${baseline.height}, this run is ` +
+          `${actual.width}x${actual.height}. The page height usually changes ` +
+          `because content was added or removed above the fold. Compare ` +
+          `${actualPath} against ${baselinePath}; the padded area shows red in ` +
+          `${diffPath}.`,
+      );
+      (error as Error & { diffPath?: string }).diffPath = diffPath;
+      throw error;
+    }
 
     // Allow up to 2% of pixels to differ before failing — small enough to
     // catch real regressions, big enough to forgive minor renderer noise.
@@ -305,4 +346,29 @@ export class BasePage {
     }
   }
 
+}
+
+// Copies `src` into the top-left corner of a new `width` x `height` image,
+// leaving the rest opaque black. Used to give the baseline and the current
+// screenshot identical dimensions so pixelmatch will compare them at all.
+//
+// Padding both images with the *same* colour means the region where neither has
+// content compares as identical, while the region where only one has content
+// registers as a difference — which is what we want, since that region is
+// precisely the part of the page that appeared or disappeared.
+function padToCanvas(src: PNG, width: number, height: number): PNG {
+  if (src.width === width && src.height === height) {
+    return src;
+  }
+  const padded = new PNG({ width, height });
+  // Fill opaque black first: a fresh PNG buffer is transparent black, and
+  // transparent pixels make pixelmatch's output harder to read.
+  for (let i = 0; i < padded.data.length; i += 4) {
+    padded.data[i] = 0;
+    padded.data[i + 1] = 0;
+    padded.data[i + 2] = 0;
+    padded.data[i + 3] = 255;
+  }
+  PNG.bitblt(src, padded, 0, 0, src.width, src.height, 0, 0);
+  return padded;
 }
