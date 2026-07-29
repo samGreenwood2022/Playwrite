@@ -44,7 +44,22 @@
       "PowerShell(node \"scripts/inspect-abloy.mjs\" 2>&1)",
       "PowerShell(npx eslint \"tests/pages/abloy-homepage.ts\" \"tests/step_definitions/abloy-steps.ts\" \"tests/features/support/world.ts\" 2>&1; Write-Output \"---tsc---\"; npx tsc --noEmit 2>&1 | Select-Object -First 20)",
       "PowerShell(npx eslint \"tests/step_definitions/dyson-steps.ts\" 2>&1; Write-Output \"---tsc---\"; npx tsc --noEmit 2>&1 | Select-Object -First 20; Write-Output \"---done---\")",
-      "Artifact"
+      "Artifact",
+      "PowerShell(npx tsc --noEmit 2>&1 | Select-Object -First 30)",
+      "PowerShell(npx eslint tests/pages/login-page.ts \"tests/features/support/world.ts\" 2>&1 | Select-Object -First 30)",
+      "PowerShell(npx ts-node --compiler-options '{\\\\\"module\\\\\":\\\\\"commonjs\\\\\",\\\\\"esModuleInterop\\\\\":true,\\\\\"strict\\\\\":false,\\\\\"skipLibCheck\\\\\":true}' \"C:\\\\Users\\\\615594~1\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--Users-615594345-Downloads-Playwright-My-Playwright-Playwrite\\\\539126f7-eff1-4209-ae11-7c75fc91c293\\\\scratchpad\\\\verify-signin.ts\" 2>&1 | Select-Object -Last 25)",
+      "Bash(export TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\",\"esModuleInterop\":true,\"strict\":false,\"skipLibCheck\":true}')",
+      "PowerShell(Remove-Item *)",
+      "PowerShell(node \"C:\\\\Users\\\\615594~1\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--Users-615594345-Downloads-Playwright-My-Playwright-Playwrite\\\\539126f7-eff1-4209-ae11-7c75fc91c293\\\\scratchpad\\\\inspect-snapshots.mjs\")",
+      "PowerShell(node \"C:\\\\Users\\\\615594~1\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--Users-615594345-Downloads-Playwright-My-Playwright-Playwrite\\\\539126f7-eff1-4209-ae11-7c75fc91c293\\\\scratchpad\\\\probe-nbs-dom.mjs\" 2>&1 | Select-Object -First 80)",
+      "PowerShell(node \"C:\\\\Users\\\\615594~1\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--Users-615594345-Downloads-Playwright-My-Playwright-Playwrite\\\\539126f7-eff1-4209-ae11-7c75fc91c293\\\\scratchpad\\\\probe-nbs-dom.mjs\" 2>&1 | Select-Object -First 90)",
+      "PowerShell(npx tsc --noEmit 2>&1 | Select-Object -First 20; Write-Output \"--- gitignore ---\"; Get-Content \".gitignore\" -ErrorAction SilentlyContinue; Write-Output \"--- tracked snapshots ---\"; git ls-files tests/snapshots)",
+      "PowerShell(git rm *)",
+      "PowerShell(node \"C:\\\\Users\\\\615594~1\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--Users-615594345-Downloads-Playwright-My-Playwright-Playwrite\\\\539126f7-eff1-4209-ae11-7c75fc91c293\\\\scratchpad\\\\inspect-snapshots.mjs\" 2>&1 | Select-Object -First 12)",
+      "PowerShell(npx cucumber-js --require-module ts-node/register --require \"tests/features/support/*.ts\" --require \"tests/step_definitions/*.ts\" \"tests/features/visual-regression.feature\" 2>&1 | Select-Object -Last 20; Write-Output \"--- mask check on latest actual ---\"; node \"C:\\\\Users\\\\615594~1\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--Users-615594345-Downloads-Playwright-My-Playwright-Playwrite\\\\539126f7-eff1-4209-ae11-7c745f93c293\\\\scratchpad\\\\inspect-snapshots.mjs\" 2>&1 | Select-Object -Last 6)",
+      "PowerShell(node \"C:\\\\Users\\\\615594~1\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--Users-615594345-Downloads-Playwright-My-Playwright-Playwrite\\\\539126f7-eff1-4209-ae11-7c791c293\\\\scratchpad\\\\inspect-snapshots.mjs\" 2>&1 | Select-Object -Last 6)",
+      "PowerShell(node \"C:\\\\Users\\\\615594~1\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--Users-615594345-Downloads-Playwright-My-Playwright-Playwrite\\\\539126f7-eff1-4209-ae11-7c75fc91c293\\\\scratchpad\\\\inspect-snapshots.mjs\" 2>&1 | Select-Object -Last 6)",
+      "PowerShell(git reset *)"
     ]
   },
   "enabledMcpjsonServers": [

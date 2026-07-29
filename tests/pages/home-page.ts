@@ -14,14 +14,20 @@ export class HomePage {
   readonly searchButton: Locator;
   readonly searchAutocomplete: Locator;
   readonly dysonManufacturerOption: Locator;
-  // The "Sponsored products" and "Sponsored CPD Materials" carousels. Both are
-  // ad slots that rotate their tiles on every page load, so a full-page visual
-  // screenshot never matches a fixed baseline there. They share this component
-  // and class regardless of which sponsored slot they render, so one locator
-  // catches both. Passed as a mask to verifyVisualRegression so that area is
-  // blanked out (painted a flat colour) before comparing, instead of being
-  // compared pixel-for-pixel.
-  readonly sponsoredCarousels: Locator;
+  // The four areas of the homepage whose content changes on every load: three
+  // sponsored ad slots and the "Find some inspiration" grid. A full-page visual
+  // screenshot can never match a fixed baseline across these, so they're passed
+  // to verifyVisualRegression as masks — Playwright paints each one a flat
+  // colour before capturing, so the comparison ignores what's inside them while
+  // still checking that the box is the same size and in the same place.
+  //
+  // Each is the section-level component rather than the individual tiles inside
+  // it: fewer boxes to line up, and it also covers the rotating "Sponsored by
+  // <brand>" heading that sits above the tiles.
+  readonly sponsoredBrands: Locator;
+  readonly sponsoredProducts: Locator;
+  readonly sponsoredCpd: Locator;
+  readonly inspirationGrid: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -48,9 +54,26 @@ export class HomePage {
     this.dysonManufacturerOption = page.locator(
       'app-autocomplete article.manufacturers a[href*="/manufacturer/dyson/"]',
     );
-    this.sponsoredCarousels = page.locator(
-      "app-skeleton-tiles-carousel.sponsored",
-    );
+    // Angular component tags, which are far more stable than the generated
+    // class names alongside them (.ng-star-inserted, .ng-tns-c2177291178-0 —
+    // those change whenever the app is rebuilt).
+    this.sponsoredBrands = page.locator("app-sponsored-brands");
+    this.sponsoredProducts = page.locator("app-sponsored-products");
+    this.sponsoredCpd = page.locator("app-sponsored-cpd");
+    this.inspirationGrid = page.locator("app-inspiration-grid");
+  }
+
+  // All the dynamic regions in one list, ready to hand to
+  // verifyVisualRegression. Kept here next to the locators so the visual test's
+  // step definition doesn't have to know which sections of this page happen to
+  // be ad slots — if the site adds another one, it's a one-line change here.
+  get dynamicRegions(): Locator[] {
+    return [
+      this.sponsoredBrands,
+      this.sponsoredProducts,
+      this.sponsoredCpd,
+      this.inspirationGrid,
+    ];
   }
 
   // Types the given term and clicks the matching Dyson entry in the dropdown.

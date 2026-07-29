@@ -220,9 +220,10 @@ Then("I take a screenshot of the {string} homepage and compare it to its baselin
       NBS: {
         baseline: "nbs-homepage",
         waitFor: [this.homePage.searchField],
-        // The sponsored carousels rotate their ad content on every load, so
-        // they're masked out rather than compared pixel-for-pixel.
-        mask: [this.homePage.sponsoredCarousels],
+        // The sponsored ad slots and the inspiration grid change their content
+        // on every load, so they're masked out rather than compared
+        // pixel-for-pixel. See HomePage.dynamicRegions for the full list.
+        mask: this.homePage.dynamicRegions,
       },
       "Dyson manufacturer": {
         baseline: "dyson-homepage",

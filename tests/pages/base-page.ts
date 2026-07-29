@@ -213,6 +213,32 @@ export class BasePage {
     //    justified for smoothing out paint timing right before a screenshot.
     await new Promise((resolve) => setTimeout(resolve, 500));
 
+    // 6a. Check every mask locator actually matches something, now that the
+    // page is fully rendered.
+    //
+    // Playwright silently ignores a mask whose locator matches nothing — no
+    // error, no warning. So if the site renames a component, the mask quietly
+    // stops working and that dynamic area goes back to being compared
+    // pixel-for-pixel. You then get a confusing "visual regression" failure
+    // pointing at ad content that was never meant to be tested, while the real
+    // cause (a dead selector) stays invisible. Failing here instead names the
+    // broken selector outright.
+    //
+    // This has to run here rather than up with the step 1 waits: the sponsored
+    // and inspiration sections are below the fold and only get added to the DOM
+    // once the step 2 scroll brings them into view. Checking earlier reports
+    // every one of them as missing. Screenshot time is also simply the honest
+    // place to check, since that's when the masks are actually applied.
+    for (const loc of mask) {
+      if ((await loc.count()) === 0) {
+        throw new Error(
+          `Visual mask matched no elements: ${loc}. The page structure has ` +
+            `probably changed — update the locator, then regenerate the ` +
+            `"${name}" baseline.`,
+        );
+      }
+    }
+
     // --- Work out the file paths ---
     // We keep a separate baseline per operating system because Windows and Linux
     // render text slightly differently, which changes wrapping and overall page

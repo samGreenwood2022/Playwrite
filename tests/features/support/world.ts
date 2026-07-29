@@ -131,39 +131,57 @@ BeforeAll(async function () {
   // path a real user would. If sign-in ever breaks, this setup breaks too —
   // a clear, early signal rather than a confusing failure later on.
   const browser = await chromium.launch();
-  const context = await browser.newContext({
-    viewport: { width: 1280, height: 800 },
-    deviceScaleFactor: 1,
-  });
-  const page = await context.newPage();
-  const homePage = new HomePage(page);
-  const basePage = new BasePage(page);
-  const loginPage = new LoginPage(page);
 
-  await homePage.navigateToNBSHomepage();
-  await basePage.signInButton.click();
-  await loginPage.signIn(email, password);
+  // Everything below is wrapped so a sign-in problem can't take down the whole
+  // run. Cucumber treats a thrown error in BeforeAll as fatal: it kills the
+  // worker process outright ("Unexpected error on worker.receiveMessage") and no
+  // scenario gets to run or report. By catching here we degrade gracefully to
+  // the same behaviour as missing credentials above — @authenticated scenarios
+  // fail with a clear message, everything else still runs.
+  try {
+    const context = await browser.newContext({
+      viewport: { width: 1280, height: 800 },
+      deviceScaleFactor: 1,
+    });
+    const page = await context.newPage();
+    const homePage = new HomePage(page);
+    const basePage = new BasePage(page);
+    const loginPage = new LoginPage(page);
 
-  // Save the logged-in session (cookies etc.) to a file so other tests can
-  // reuse it instead of signing in again.
-  //
-  // The catch: when we run tests in parallel, two workers can try to write
-  // this same file at the same moment. If they both wrote to it directly, one
-  // could overwrite the other halfway through and leave a corrupt, unreadable
-  // file. To avoid that, each worker writes to its own temporary file first,
-  // then renames it into place. Renaming is instant and all-or-nothing, so
-  // anyone reading the file always sees a complete version — never a
-  // half-written one.
+    await homePage.navigateToNBSHomepage();
+    await basePage.signInButton.click();
+    await loginPage.signIn(email, password);
 
-  // 1. Grab the current session data from the browser.
-  const state = await context.storageState();
-  // 2. Build a temp filename unique to this process (process.pid = its ID).
-  const tmpPath = `${STORAGE_STATE_PATH}.${process.pid}.tmp`;
-  // 3. Write the session to the temp file.
-  fs.writeFileSync(tmpPath, JSON.stringify(state));
-  // 4. Rename the temp file to the real name in one atomic step.
-  fs.renameSync(tmpPath, STORAGE_STATE_PATH);
-  await browser.close();
+    // Save the logged-in session (cookies etc.) to a file so other tests can
+    // reuse it instead of signing in again.
+    //
+    // The catch: when we run tests in parallel, two workers can try to write
+    // this same file at the same moment. If they both wrote to it directly, one
+    // could overwrite the other halfway through and leave a corrupt, unreadable
+    // file. To avoid that, each worker writes to its own temporary file first,
+    // then renames it into place. Renaming is instant and all-or-nothing, so
+    // anyone reading the file always sees a complete version — never a
+    // half-written one.
+
+    // 1. Grab the current session data from the browser.
+    const state = await context.storageState();
+    // 2. Build a temp filename unique to this process (process.pid = its ID).
+    const tmpPath = `${STORAGE_STATE_PATH}.${process.pid}.tmp`;
+    // 3. Write the session to the temp file.
+    fs.writeFileSync(tmpPath, JSON.stringify(state));
+    // 4. Rename the temp file to the real name in one atomic step.
+    fs.renameSync(tmpPath, STORAGE_STATE_PATH);
+  } catch (error) {
+    console.warn(
+      "Sign-in during BeforeAll failed — continuing without a saved session. " +
+        "@authenticated scenarios will fail until this is fixed.\n" +
+        (error instanceof Error ? error.stack ?? error.message : String(error)),
+    );
+  } finally {
+    // Always close the temporary browser, success or failure, so a failed
+    // sign-in doesn't leave a Chromium process running for the whole suite.
+    await browser.close();
+  }
 });
 
 // Runs before every scenario. It starts a fresh browser, opens a clean,
