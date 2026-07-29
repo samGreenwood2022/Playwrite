@@ -46,6 +46,28 @@ const STORAGE_STATE_PATH = path.resolve(".auth/user.json");
 // enough to recover if the real session expires partway through a dev session.
 const STORAGE_STATE_TTL_MS = 60 * 60 * 1000;
 
+// How much Playwright tracing to do, read from PW_TRACE (set per suite by
+// scripts/run-cucumber-suite.mjs, and overridable on the command line):
+//
+//   "retain-on-failure" — trace every scenario but only keep the traces of ones
+//                         that failed. This is the default for every suite, and
+//                         it's what makes a failed local run debuggable without
+//                         having to reproduce the failure a second time (which,
+//                         against a live site, you often can't).
+//   "on" / "1"          — keep every trace, pass or fail (npm run cucumber:trace).
+//   anything else       — don't trace at all.
+//
+// "retain-on-failure" still records continuously; the recording is simply
+// thrown away when the scenario passes. That's how Playwright's own option of
+// the same name behaves, and it's the reason a trace can exist for a failure
+// nobody predicted.
+const TRACE_MODE: "off" | "on" | "retain-on-failure" = (() => {
+  const raw = (process.env.PW_TRACE ?? "").toLowerCase();
+  if (raw === "on" || raw === "1") return "on";
+  if (raw === "retain-on-failure") return "retain-on-failure";
+  return "off";
+})();
+
 // Maps a scenario tag to the Certifications-tab outcome it wants the stub to
 // force. The Before hook looks up the scenario's tag here and calls
 // stubCertifications with the matching mode — keeping the network trickery in
@@ -218,11 +240,11 @@ Before(async function (
     ...(useStoredAuth ? { storageState: STORAGE_STATE_PATH } : {}),
   });
 
-  // If PW_TRACE=1 is set (used by the cucumber-trace suite in
-  // scripts/run-cucumber-suite.mjs), record a Playwright "trace" of the
-  // scenario. Including sources lets the trace viewer show which step caused
-  // each action — really helpful when figuring out why a test failed.
-  if (process.env.PW_TRACE === "1") {
+  // Record a Playwright "trace" of the scenario. Including sources lets the
+  // trace viewer show which step caused each action — really helpful when
+  // figuring out why a test failed. Whether the recording is kept is decided in
+  // the After hook; see TRACE_MODE above.
+  if (TRACE_MODE !== "off") {
     await this.context.tracing.start({
       screenshots: true,
       snapshots: true,
@@ -298,21 +320,36 @@ After(async function (this: CustomWorld, scenario: ITestCaseHookParameter) {
   }
 
   // Stop the trace before closing the tab — once the tab is closed there's
-  // nothing left to save. We write one .zip per scenario, named after the
-  // scenario plus a timestamp so two parallel runs of the same scenario don't
-  // overwrite each other's file.
-  if (process.env.PW_TRACE === "1" && this.context) {
+  // nothing left to save.
+  //
+  // Calling stop() WITH a path writes the .zip; calling it WITHOUT one stops
+  // recording and discards what was collected. That difference is the whole of
+  // "retain-on-failure": every scenario is recorded, and only the failures are
+  // written out, so a passing suite doesn't leave hundreds of megabytes of
+  // traces behind. Stopping either way also matters — a trace left running
+  // holds on to its buffers until the context closes.
+  //
+  // Files are named after the scenario plus a timestamp so two parallel workers
+  // running the same scenario don't overwrite each other's file.
+  if (TRACE_MODE !== "off" && this.context) {
     try {
-      const traceDir = process.env.PW_TRACE_DIR || "reports/traces";
-      fs.mkdirSync(traceDir, { recursive: true });
-      const safeName = scenario.pickle.name
-        .replace(/[^a-z0-9]+/gi, "_")
-        .toLowerCase();
-      const tracePath = path.join(
-        traceDir,
-        `${safeName}-${Date.now()}.zip`,
-      );
-      await this.context.tracing.stop({ path: tracePath });
+      const keepTrace =
+        TRACE_MODE === "on" || scenario.result?.status === "FAILED";
+      if (keepTrace) {
+        const traceDir = process.env.PW_TRACE_DIR || "reports/traces";
+        fs.mkdirSync(traceDir, { recursive: true });
+        const safeName = scenario.pickle.name
+          .replace(/[^a-z0-9]+/gi, "_")
+          .toLowerCase();
+        const tracePath = path.join(
+          traceDir,
+          `${safeName}-${Date.now()}.zip`,
+        );
+        await this.context.tracing.stop({ path: tracePath });
+        console.log(`Trace written to ${tracePath}`);
+      } else {
+        await this.context.tracing.stop();
+      }
     } catch {
       // Tracing may already have been stopped or the context torn down;
       // don't mask the real scenario result with a teardown error.

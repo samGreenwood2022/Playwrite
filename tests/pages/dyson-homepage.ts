@@ -53,6 +53,35 @@ export class DysonHomepage {
     this.certificationBodiesSection = page.getByText("Certification bodies");
   }
 
+  // Blocks until the manufacturer page has actually rendered, rather than
+  // merely been routed to.
+  //
+  // Those are two different moments, and the gap between them is where flaky
+  // tests come from. HomePage.searchFor already waits for the URL to become the
+  // manufacturer one, but Angular's router updates the address bar as soon as
+  // it starts the transition — the destination component renders afterwards. So
+  // a step that acts the instant the URL is right can still be looking at the
+  // outgoing page.
+  //
+  // Two elements are checked, deliberately:
+  //   - navigationTabs proves the manufacturer page's own shell exists. The
+  //     search-results page has no tab strip, so this can't pass on the page
+  //     we're navigating away from.
+  //   - externalManufacturerLink ("Contact manufacturer") proves the page's
+  //     content rendered, not just its frame.
+  //
+  // Both are ordinary web-first assertions, so each retries until it holds or
+  // times out. That's the right tool here: no fixed sleep to tune, and no
+  // waitForLoadState("networkidle"), which never settles on this site (see
+  // CLAUDE.md) and means nothing for a client-side route anyway — there's no
+  // document load involved.
+  async waitForLoaded(): Promise<void> {
+    await playwrightExpect(this.navigationTabs).toBeVisible({ timeout: 15000 });
+    await playwrightExpect(this.externalManufacturerLink).toBeVisible({
+      timeout: 15000,
+    });
+  }
+
   // Makes a real request to the OneTrust geolocation API and checks the API
   // response and the UI's locale label agree. The response comes wrapped in a
   // JSONP callback (jsonFeed({...})), so we use a regex to pull out the JSON

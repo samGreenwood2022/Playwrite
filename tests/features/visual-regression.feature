@@ -42,7 +42,6 @@ Feature: NBS Source Visual Regression Tests
     Then I take a screenshot of the "<page>" homepage and compare it to its baseline
 
     Examples:
-      | page                |
-      | NBS                 |
-      | Dyson manufacturer  |
+      | page                  |
+      | Dyson manufacturer    |
       | Abloy UK manufacturer |

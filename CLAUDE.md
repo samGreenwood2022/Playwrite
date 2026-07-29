@@ -76,15 +76,17 @@ reading the code.
 - The NBS homepage currently masks ~35% of the page (three ad slots plus the
   inspiration grid). Before widening masks further, prefer stubbing the data via
   `network-stubs.ts` or moving to component-scoped `locator.screenshot()`.
-- **A baseline and a screenshot of different sizes used to produce no diff
-  image at all.** pixelmatch throws `Image sizes do not match.` on mismatched
-  buffers, and that throw escaped before the `-diff.png` was written — so a CI
-  failure uploaded an actual image and nothing to compare it against.
-  `verifyVisualRegression` now pads both images onto a shared canvas, writes the
-  diff, *then* fails with the two sets of dimensions in the message. Keep the
-  write before the throws.
+- **`-diff.png` is written before `verifyVisualRegression` throws, not after.**
+  It used to be written after the pixelmatch call, so any throw from there left
+  a CI artefact with an actual image and nothing to compare it against. Keep the
+  write above the failure branches.
+- **A size mismatch is checked before pixelmatch and produces no diff image.**
+  pixelmatch throws a bare `Image sizes do not match.` on mismatched buffers,
+  which names neither dimension. The explicit check reports both sizes instead.
+  There's deliberately no attempt to pad the images to a common canvas — for a
+  size change you compare `-actual.png` against the baseline by eye.
 - A failure *before* the comparison (a dead mask locator, a `waitFor` timeout)
-  still produces no diff — there's nothing to diff yet. The `After` hook falls
+  also produces no diff — there's nothing to diff yet. The `After` hook falls
   back to a plain full-page screenshot in that case, which is the right
   artefact.
 - Masking only survives while the masked box keeps its size and position. The

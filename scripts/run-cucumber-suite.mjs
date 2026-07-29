@@ -10,10 +10,19 @@
 
 import { spawnSync } from "node:child_process";
 import fs from "node:fs";
+import path from "node:path";
 
 // Each suite writes its JSON into its own directory because
 // multiple-cucumber-html-reporter aggregates *every* JSON file in the dir
 // it's pointed at — sharing one dir would mix suite results together.
+// Every suite traces. traceMode is passed through to world.ts as PW_TRACE:
+// "retain-on-failure" records each scenario and keeps the recording only when
+// the scenario fails, so a failing run is debuggable straight away without
+// having to reproduce it — which against a live site is exactly the thing you
+// can't rely on doing. Only the dedicated cucumber-trace suite keeps every
+// trace. Each suite gets its own trace dir because the dir is wiped at the
+// start of a run; sharing one would mean running smoke deleted the traces
+// regression just produced.
 const suites = {
   cucumber: {
     tags: null,
@@ -22,6 +31,8 @@ const suites = {
     json: "reports/json/cucumber/cucumber.json",
     out: "reports/cucumber-report",
     name: "Cucumber Tests",
+    traceMode: "retain-on-failure",
+    traceDir: "reports/traces/cucumber",
   },
   "cucumber-trace": {
     tags: null,
@@ -30,7 +41,8 @@ const suites = {
     json: "reports/json/cucumber-trace/cucumber-trace.json",
     out: "reports/cucumber-trace-report",
     name: "Cucumber Tests (with Traces)",
-    traceDir: "reports/traces/cucumber",
+    traceMode: "on",
+    traceDir: "reports/traces/cucumber-trace",
   },
   regression: {
     tags: "@regression",
@@ -39,6 +51,8 @@ const suites = {
     json: "reports/json/regression/regression.json",
     out: "reports/cucumber-regression-report",
     name: "Regression Tests",
+    traceMode: "retain-on-failure",
+    traceDir: "reports/traces/regression",
   },
   smoke: {
     tags: "@smoke",
@@ -47,6 +61,8 @@ const suites = {
     json: "reports/json/smoke/smoke.json",
     out: "reports/cucumber-smoke-report",
     name: "Smoke Tests",
+    traceMode: "retain-on-failure",
+    traceDir: "reports/traces/smoke",
   },
   accessibility: {
     tags: "@accessibility",
@@ -55,6 +71,8 @@ const suites = {
     json: "reports/json/accessibility/accessibility.json",
     out: "reports/cucumber-accessibility-report",
     name: "Accessibility Tests",
+    traceMode: "retain-on-failure",
+    traceDir: "reports/traces/accessibility",
   },
 };
 
@@ -74,13 +92,18 @@ if (!suite) {
 fs.rmSync(suite.jsonDir, { recursive: true, force: true });
 fs.mkdirSync(suite.jsonDir, { recursive: true });
 
-// When the suite opts into tracing, wipe and recreate the trace dir so
-// the run starts with a clean slate. world.ts reads PW_TRACE_DIR and
-// emits a .zip per scenario into it.
-if (suite.traceDir) {
-  fs.rmSync(suite.traceDir, { recursive: true, force: true });
-  fs.mkdirSync(suite.traceDir, { recursive: true });
-}
+// Wipe and recreate the trace dir so the run starts with a clean slate —
+// otherwise traces from a previous failure hang around after you've fixed it
+// and it's no longer obvious which run they came from. world.ts reads
+// PW_TRACE_DIR and writes a .zip per retained scenario into it.
+//
+// PW_TRACE can be overridden on the command line to change this per run:
+//   PW_TRACE=on npm run smoke   — keep every trace, not just failures
+//   PW_TRACE=off npm run smoke  — no tracing at all
+const traceMode = process.env.PW_TRACE ?? suite.traceMode;
+const traceDir = process.env.PW_TRACE_DIR ?? suite.traceDir;
+fs.rmSync(traceDir, { recursive: true, force: true });
+fs.mkdirSync(traceDir, { recursive: true });
 
 // Retry flaky scenarios up to twice on CI only. process.env.CI is set by
 // GitHub Actions (and most CI providers); locally it's undefined, so a
@@ -117,11 +140,23 @@ const cucumberResult = spawnSync("npx", cucumberArgs, {
   shell: true,
   env: {
     ...process.env,
-    ...(suite.traceDir
-      ? { PW_TRACE: "1", PW_TRACE_DIR: suite.traceDir }
-      : {}),
+    PW_TRACE: traceMode,
+    PW_TRACE_DIR: traceDir,
   },
 });
+
+// Surface any traces the run left behind. Under retain-on-failure a trace only
+// exists when a scenario failed, so this printing anything at all is itself the
+// signal — and it saves hunting for the path in a wall of cucumber output.
+const traceFiles = fs.existsSync(traceDir)
+  ? fs.readdirSync(traceDir).filter((f) => f.endsWith(".zip"))
+  : [];
+if (traceFiles.length > 0) {
+  console.log(`\n${traceFiles.length} trace(s) written to ${traceDir}/`);
+  console.log(
+    `View one with: npm run show-trace "${path.join(traceDir, traceFiles[0])}"`,
+  );
+}
 
 // Generate the report regardless of cucumber's exit code, but only if a
 // JSON file was actually written — otherwise the generator throws on a

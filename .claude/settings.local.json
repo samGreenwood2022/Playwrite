@@ -60,7 +60,15 @@
       "PowerShell(node \"C:\\\\Users\\\\615594~1\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--Users-615594345-Downloads-Playwright-My-Playwright-Playwrite\\\\539126f7-eff1-4209-ae11-7c791c293\\\\scratchpad\\\\inspect-snapshots.mjs\" 2>&1 | Select-Object -Last 6)",
       "PowerShell(node \"C:\\\\Users\\\\615594~1\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--Users-615594345-Downloads-Playwright-My-Playwright-Playwrite\\\\539126f7-eff1-4209-ae11-7c75fc91c293\\\\scratchpad\\\\inspect-snapshots.mjs\" 2>&1 | Select-Object -Last 6)",
       "PowerShell(git reset *)",
-      "Bash(echo \"TSC_EXIT=$?\")"
+      "Bash(echo \"TSC_EXIT=$?\")",
+      "Bash(PW_TRACE=1 PW_TRACE_DIR=reports/traces/signin npx cucumber-js --require-module ts-node/register --require \"tests/features/support/*.ts\" --require \"tests/step_definitions/*.ts\" \"tests/features/functional-regression.feature\" --name \"Clicking sign in from any webpage logs the user in and returns them to the previous page\")",
+      "Bash(npx playwright *)",
+      "Bash(rm -f tests/features/tmp-trace-check.feature)",
+      "Bash(rm -rf reports/traces/signin-verify reports/traces/tmpcheck)",
+      "Bash(PW_TRACE=retain-on-failure PW_TRACE_DIR=reports/traces/signin npx cucumber-js --require-module ts-node/register --require \"tests/features/support/*.ts\" --require \"tests/step_definitions/*.ts\" \"tests/features/functional-regression.feature\" --name \"Clicking sign in from any webpage logs the user in and returns them to the previous page\")",
+      "Bash(PW_TRACE=retain-on-failure PW_TRACE_DIR=reports/traces/signin npx cucumber-js --require-module ts-node/register --require \"tests/features/support/*.ts\" --require \"tests/step_definitions/*.ts\" \"tests/features/functional-regression.feature\")",
+      "Bash(rm -rf reports/traces/signin-diag)",
+      "Bash(PW_TRACE=on PW_TRACE_DIR=reports/traces/signin-diag npx cucumber-js --require-module ts-node/register --require \"tests/features/support/*.ts\" --require \"tests/step_definitions/*.ts\" \"tests/features/functional-regression.feature\" --name \"Clicking sign in from any webpage logs the user in and returns them to the previous page\")"
     ]
   },
   "enabledMcpjsonServers": [

@@ -76,23 +76,37 @@ export class HomePage {
     ];
   }
 
-  // Types the given term and clicks the matching Dyson entry in the dropdown.
-  // This copies what a real user does (type, then click a result) instead of
-  // jumping straight to the URL.
+  // Types the given term, presses Enter, opens the Manufacturers tab and clicks
+  // the Dyson result. This copies what a real user does rather than jumping
+  // straight to the manufacturer URL.
   //
-  // Because the live site's dropdown is flaky, each attempt (up to 3) does this:
-  //   1. Click the field and clear it with fill("") — more reliable than
-  //      selecting all + typing, which can leave stray characters behind.
-  //   2. Type the term one character at a time so the site's search reacts.
-  //   3. Wait for the dropdown to appear, but only for a set time. Giving up
-  //      rather than waiting forever leaves us time to recover before
-  //      Cucumber's step timeout.
-  //   4. If the dropdown didn't open, just clear and retype, then wait again.
-  //      Often it failed only because the very first keystroke was missed, and
-  //      a clean retype fixes it without reloading.
-  //   5. Click the result while also waiting for the URL to change, so a click
-  //      that does nothing (dropdown closed without navigating) fails loudly
-  //      instead of passing silently. Reloading the page is the last resort.
+  // The wait after the final click is the important part, and it is not
+  // optional. Playwright's auto-waiting covers the *click* — is the element
+  // present, stable, enabled — and stops the instant the click lands. It knows
+  // nothing about the navigation that click sets off. This site makes that gap
+  // unusually wide and unusually misleading: clicking the tile first rewrites
+  // the URL you're already on with a relevance score
+  //
+  //   .../search-results/manufacturers?search=Dyson&score=44.29
+  //
+  // and only routes on to
+  //
+  //   .../manufacturer/dyson/<id>/overview
+  //
+  // a few hundred milliseconds later. So for that window the page has a URL
+  // that has visibly changed — it just hasn't changed to the destination.
+  //
+  // Without this wait the method returns mid-route, and anything reading
+  // page.url() immediately afterwards records the search-results URL instead of
+  // the manufacturer one. page.url() is a plain synchronous snapshot with no
+  // retry, so it takes whatever is there at that microsecond. That is what made
+  // the sign-in scenario flaky: it captures the URL before signing in to check
+  // the user is returned to the page they started on, and was sometimes
+  // capturing a page they were never really on.
+  //
+  // Waiting on the URL rather than a load state is deliberate. This is an
+  // Angular client-side route, so there is no document load to wait for, and
+  // "networkidle" never settles on this site (see CLAUDE.md).
   async searchFor(term: string) {
     await this.navigateToNBSHomepage();
     await this.page.getByRole('textbox', { name: 'Search' }).click();
@@ -100,6 +114,13 @@ export class HomePage {
     await this.page.getByRole('textbox', { name: 'Search' }).press('Enter');
     await this.page.getByRole('tab', { name: 'Manufacturers' }).click();
     await this.page.getByRole('link', { name: 'Dyson Dyson Technology for' }).click();
+    // Deliberately loose about the locale segment (/en/gb/) and the id in the
+    // path, both of which are free to change; strict about the bit that proves
+    // we've left the search results behind. Note it's "/manufacturer/" singular
+    // here — the plural "/manufacturers" belongs to the search-results route,
+    // so a regex using the plural would match the very page we're waiting to
+    // leave.
+    await this.page.waitForURL(/\/manufacturer\/dyson\//, { timeout: 30000 });
   }
 
   // Navigates directly to the NBS Source homepage, waits for the DOM to be

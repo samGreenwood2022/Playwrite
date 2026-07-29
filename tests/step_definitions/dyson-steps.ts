@@ -18,13 +18,19 @@ import { CustomWorld } from "../features/support/world";
 // Extends the default Cucumber step timeout to 60 seconds to allow for slow page loads.
 setDefaultTimeout(60 * 1000);
 
-// Navigates to the NBS Source homepage, verifies the URL, then searches for Dyson.
-// This runs as the Background step before every scenario in the feature file.
+// Navigates to the NBS Source homepage, verifies the URL, then searches through
+// to the Dyson manufacturer page. This runs as the Background step before every
+// scenario in the feature file.
+//
+// The step only returns once that page has rendered, not merely once the URL
+// says we're on it — searchFor waits for the URL, waitForLoaded waits for the
+// page itself. Scenarios are then free to read page.url() or assert on content
+// immediately, which is what the step promises by its name.
 Given("I navigate to the Dyson manufacturer homepage", async function (this: CustomWorld) {
   await this.homePage.navigateToNBSHomepage();
   await this.basePage.verifyWebpageURL("https://source.thenbs.com/en/gb");
   await this.homePage.searchFor("Dyson");
-  // await this.basePage.verifyWebpageURL("/en/manufacturers/dyson/");
+  await this.dysonPage.waitForLoaded();
 },
 );
 
@@ -39,6 +45,7 @@ Given("I navigate to the {string} homepage", async function (this: CustomWorld, 
   await this.basePage.verifyWebpageURL("https://source.thenbs.com/en/");
   if (page === "Dyson manufacturer") {
     await this.homePage.searchFor("Dyson");
+    await this.dysonPage.waitForLoaded();
   } else if (page === "Abloy UK manufacturer") {
     // Abloy has no search-through-the-dropdown helper (that one is Dyson-
     // specific); its page object navigates straight to the manufacturer page.
@@ -194,11 +201,40 @@ When("I sign in with valid credentials", async function (this: CustomWorld) {
   await this.loginPage.signIn(email, password);
 });
 
-// Checks the URL exactly matches the one we saved before sign-in. We use toBe
-// (an exact match) instead of the verifyWebpageURL helper, which only checks
-// "contains" and would let a redirect to a different page slip through.
-Then("The user is then logged in and returned to their previous page", function (this: CustomWorld) {
-  expect(this.page.url()).toBe(this.capturedUrl);
+// Checks we ended up back on the exact URL captured before sign-in.
+//
+// This has to be a *retrying* assertion rather than a one-off read of
+// page.url(), because signing in doesn't end where it looks like it ends. The
+// journey back is a redirect chain:
+//
+//   login.thenbs.com/auth/login...        the identity provider's form
+//   source.thenbs.com/en/authorize?code=  the OAuth callback, exchanging the code
+//   <the page you started on>             where the app finally puts you
+//
+// LoginPage.signIn returns as soon as the "Open user menu" button appears — and
+// that header renders while the middle URL is still in the address bar, because
+// by then the app knows who you are. So the moment sign-in "finishes" is *not*
+// the moment the redirect finishes, and a plain page.url() here reads the
+// callback URL instead of the destination. Only sometimes, depending on how
+// fast the last hop is, which is what made this scenario flaky.
+//
+// expect(page).toHaveURL polls until the URL matches or it times out, so the
+// remaining redirect simply resolves while it waits. Passing a string keeps it
+// an exact match, so landing on a *different* page still fails — that's why
+// this uses toHaveURL rather than the verifyWebpageURL helper, which only
+// checks "contains". The timeout is generous because this is a full round trip
+// through an external identity provider.
+//
+// Nothing here is specific to the Dyson page: the sign-in step captures
+// whatever URL it was on, so this same pair of steps proves "sign in from any
+// page, come back to that page, signed in" wherever it's used.
+Then("The user is then logged in and returned to their previous page", async function (this: CustomWorld) {
+  if (!this.capturedUrl) {
+    throw new Error(
+      "No URL was captured before sign-in — the 'I sign in with valid credentials' step must run first.",
+    );
+  }
+  await expect(this.page).toHaveURL(this.capturedUrl, { timeout: 20000 });
 });
 
 // Delegates to BasePage which encapsulates all three header checks
