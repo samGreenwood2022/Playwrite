@@ -74,6 +74,19 @@ const suites = {
     traceMode: "retain-on-failure",
     traceDir: "reports/traces/accessibility",
   },
+  // Tag a single scenario with @trace-this and run this suite to get its trace
+  // regardless of pass/fail (traceMode "on"), without tracing the whole regression
+  // suite. If nothing is tagged, cucumber-js just runs zero scenarios and exits 0.
+  "trace-scenario": {
+    tags: "@trace-this",
+    parallel: null,
+    jsonDir: "reports/json/trace-scenario",
+    json: "reports/json/trace-scenario/trace-scenario.json",
+    out: "reports/cucumber-trace-scenario-report",
+    name: "Traced Scenario",
+    traceMode: "on",
+    traceDir: "reports/traces/trace-scenario",
+  },
 };
 
 const suiteName = process.argv[2];

@@ -14,6 +14,7 @@
     "regression": "node scripts/run-cucumber-suite.mjs regression",
     "smoke": "node scripts/run-cucumber-suite.mjs smoke",
     "accessibility": "node scripts/run-cucumber-suite.mjs accessibility",
+    "trace-scenario": "node scripts/run-cucumber-suite.mjs trace-scenario",
     "cucumberx10": "node scripts/run-cucumber-times.mjs 10",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix"

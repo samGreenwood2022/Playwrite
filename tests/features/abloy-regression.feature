@@ -62,7 +62,7 @@ Feature: Abloy UK Homepage Functional Regression Tests
       | About us       | /en/gb/manufacturer/abloy-uk/nbAnmJUFmBRb9A2M4g4Gpz/about        |
 
   # Checks the API response and the UI locale label agree (geolocation → "UK").
-  @regression @abloy
+  @regression @abloy @trace-this
   Scenario: Geolocation API response and the UI locale label are as expected
     Then The Abloy API response and the UI locale label are as expected
 
