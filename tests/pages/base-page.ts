@@ -93,7 +93,7 @@ export class BasePage {
       page: this.page,
     }).analyze();
     // doNotCreateReportFile stops the reporter writing its own copy and logging
-    // a generic message — we save the file and log a clearer one ourselves.
+    // a message about it — we save the file ourselves, silently.
     const html = createHtmlReport({
       results: accessibilityScanResults,
       options: { doNotCreateReportFile: true },
@@ -104,9 +104,6 @@ export class BasePage {
       : "reports/accessibility-report.html";
     const reportPath = path.resolve(reportFile);
     fs.writeFileSync(reportPath, html);
-    console.info(
-      `Accessibility report was saved into the following directory ${reportPath}`,
-    );
   }
 
   // Forces "lazy-loaded" images to start loading by scrolling down the page a
@@ -167,9 +164,27 @@ export class BasePage {
   //   <name>-actual.png  — what the page looked like on this run
   //   <name>-diff.png    — an image highlighting where the two differ (in pink)
   //
+  // The actual and diff images are written on every comparison run, pass or
+  // fail, and before this method throws — CI uploads tests/snapshots/ as an
+  // artefact, and a failure with no diff image in it is close to useless. The
+  // exception is a baseline and screenshot of different sizes: there is no
+  // pixel comparison to make, so that case fails with both sets of dimensions
+  // in the message and no diff image.
+  //
   // First run: there's no baseline yet, so we save the current screenshot as the
   // baseline and stop. Run it again to actually compare against it.
-  async verifyVisualRegression(name: string = "baseline", waitFor: Locator[] = []) {
+  //
+  // `mask` covers elements whose content changes on every load through no fault
+  // of the app (rotating ad carousels, "recently viewed" widgets, etc.) — the
+  // kind of difference a baseline can never stay in sync with. Playwright paints
+  // each masked element's box a flat colour before the screenshot is taken, so
+  // as long as its position on the page doesn't move, the baseline and the
+  // current run get an identical box there and pixelmatch sees no difference.
+  async verifyVisualRegression(
+    name: string = "baseline",
+    waitFor: Locator[] = [],
+    mask: Locator[] = [],
+  ) {
     // 1. Wait for page-specific elements the caller said must be on screen.
     for (const loc of waitFor) {
       await loc.waitFor({ state: "visible", timeout: 15000 });
@@ -185,20 +200,13 @@ export class BasePage {
 
     // 4. Extra check that every <img> reports as loaded. This is "soft" — on
     //    pages that keep adding new <img> tags (carousels, ads, trackers) it may
-    //    never settle, so if it times out we just log the stragglers and carry
-    //    on. Step 3 (network idle) is the real safety net for image downloads.
+    //    never settle, so if it times out we just carry on quietly. Step 3
+    //    (network idle) is the real safety net for image downloads.
     try {
       await this.waitForImagesLoaded();
     } catch {
-      const pending = await this.page.evaluate(() =>
-        Array.from(document.images)
-          .filter((img) => !img.complete)
-          .map((img) => img.currentSrc || img.src || "<no src>"),
-      );
-      console.warn(
-        `waitForImagesLoaded timed out — ${pending.length} image(s) still loading. ` +
-          `Continuing with screenshot. Pending:\n  ${pending.join("\n  ")}`,
-      );
+      // Some images are still loading — proceed with the screenshot anyway.
+      // Step 3 (network idle) is the real safety net; this is a soft check.
     }
 
     // 5. Wait for web fonts. document.fonts.ready finishes once the fonts the
@@ -211,6 +219,32 @@ export class BasePage {
     //    Playwright discourages fixed waits in normal tests, but a small one is
     //    justified for smoothing out paint timing right before a screenshot.
     await new Promise((resolve) => setTimeout(resolve, 500));
+
+    // 6a. Check every mask locator actually matches something, now that the
+    // page is fully rendered.
+    //
+    // Playwright silently ignores a mask whose locator matches nothing — no
+    // error, no warning. So if the site renames a component, the mask quietly
+    // stops working and that dynamic area goes back to being compared
+    // pixel-for-pixel. You then get a confusing "visual regression" failure
+    // pointing at ad content that was never meant to be tested, while the real
+    // cause (a dead selector) stays invisible. Failing here instead names the
+    // broken selector outright.
+    //
+    // This has to run here rather than up with the step 1 waits: the sponsored
+    // and inspiration sections are below the fold and only get added to the DOM
+    // once the step 2 scroll brings them into view. Checking earlier reports
+    // every one of them as missing. Screenshot time is also simply the honest
+    // place to check, since that's when the masks are actually applied.
+    for (const loc of mask) {
+      if ((await loc.count()) === 0) {
+        throw new Error(
+          `Visual mask matched no elements: ${loc}. The page structure has ` +
+            `probably changed — update the locator, then regenerate the ` +
+            `"${name}" baseline.`,
+        );
+      }
+    }
 
     // --- Work out the file paths ---
     // We keep a separate baseline per operating system because Windows and Linux
@@ -227,8 +261,14 @@ export class BasePage {
     fs.mkdirSync(snapshotDir, { recursive: true });
 
     // 7. Capture the screenshot. fullPage: true stitches the entire scrollable
-    //    document together, not just the current viewport.
-    const screenshotBuffer = await this.page.screenshot({ fullPage: true });
+    //    document together, not just the current viewport. Any masked elements
+    //    get painted over with maskColor first, hiding their ever-changing
+    //    content from the comparison.
+    const screenshotBuffer = await this.page.screenshot({
+      fullPage: true,
+      mask,
+      maskColor: "#FF00FF",
+    });
 
     // First run for this `name`: save as baseline and exit. Re-run to compare.
     if (!fs.existsSync(baselinePath)) {
@@ -243,6 +283,28 @@ export class BasePage {
     // Decode both PNGs into raw pixel buffers for pixelmatch to compare.
     const baseline = PNG.sync.read(fs.readFileSync(baselinePath));
     const actual = PNG.sync.read(screenshotBuffer);
+
+    // The two images often differ in size. These are full-page screenshots of a
+    // live site, so anything that changes the total height of the document — an
+    // extra news tile, a taller cookie banner, a wrapped heading — changes the
+    // image height too.
+    //
+    // pixelmatch cannot compare buffers of different lengths; it throws
+    // "Image sizes do not match." and that tells you nothing about which image
+    // changed or by how much. So catch the mismatch here and report both sets of
+    // dimensions instead. There's no pixel comparison to make in this case and
+    // therefore no diff image — the two files named in the message are what you
+    // compare by eye.
+    if (baseline.width !== actual.width || baseline.height !== actual.height) {
+      throw new Error(
+        `Visual regression detected: image size changed. Baseline is ` +
+          `${baseline.width}x${baseline.height}, this run is ` +
+          `${actual.width}x${actual.height}. The page height usually changes ` +
+          `because content was added or removed. No diff image can be produced ` +
+          `for a size change — compare ${actualPath} against ${baselinePath}.`,
+      );
+    }
+
     const { width, height } = baseline;
     const diff = new PNG({ width, height });
 
@@ -255,6 +317,9 @@ export class BasePage {
       { threshold: 0.2 },
     );
 
+    // Write the diff before deciding whether to fail, so it exists whether the
+    // check passes or throws below. CI uploads tests/snapshots/ as an artefact
+    // and this is the file a human opens first.
     fs.writeFileSync(diffPath, PNG.sync.write(diff));
 
     // Allow up to 2% of pixels to differ before failing — small enough to

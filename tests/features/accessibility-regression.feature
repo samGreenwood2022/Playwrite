@@ -36,6 +36,7 @@ Feature: NBS Source Accessibility Regression Tests
     Then The accessibility checks on the "<page>" homepage are output to an HTML report
 
     Examples:
-      | page               |
-      | NBS                |
-      | Dyson manufacturer |
+      | page                |
+      | NBS                 |
+      | Dyson manufacturer  |
+      | Abloy UK manufacturer |

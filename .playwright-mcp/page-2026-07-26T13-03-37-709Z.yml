@@ -1,0 +1,355 @@
+- generic [ref=f2e3]:
+  - banner [ref=f2e7]:
+    - generic [ref=f2e8]:
+      - link "NBS Source" [ref=f2e10] [cursor=pointer]:
+        - /url: /en/gb
+      - button "Choose location and language" [ref=f2e16]:
+        - generic [ref=f2e17]: UK
+    - generic [ref=f2e21]:
+      - generic [ref=f2e620]:
+        - textbox "Search" [ref=f2e625]:
+          - /placeholder: Search NBS Source...
+          - text: Dyson
+        - combobox "All" [ref=f2e632] [cursor=pointer]
+        - button "Search" [ref=f2e640] [cursor=pointer]
+      - button "Sign in" [ref=f2e23]
+  - banner [ref=f2e30]:
+    - navigation "Main navigation links" [ref=f2e32]:
+      - link "Home" [ref=f2e33] [cursor=pointer]:
+        - /url: /en/gb
+      - link "What's new" [ref=f2e37] [cursor=pointer]:
+        - /url: /en/gb/whats-new
+      - article [ref=f2e41]:
+        - button "Browse" [ref=f2e42]
+        - menu "Browse menu":
+          - article:
+            - generic:
+              - heading "Categories" [level=2]
+            - generic:
+              - link "Communications, security and safety":
+                - /url: /en/gb/category/communications-security-and-safety/nuJ7UsKqsfmwphEUxxWeuT
+              - link "Coverings, coatings and finishes":
+                - /url: /en/gb/category/coverings-coatings-and-finishes/oqp3eL65AahZGgtqA5rMPh
+              - link "Doors, windows and hatches":
+                - /url: /en/gb/category/doors-windows-and-hatches/ndwwX39PgbyjJGbveGwpLu
+              - link "Electrical power and lighting":
+                - /url: /en/gb/category/electrical-power-and-lighting/bswgU4ortiBZi5YLuVoQSf
+              - link "Fittings, furnishings and equipment":
+                - /url: /en/gb/category/fittings-furnishings-and-equipment/uybG3djVP8AgJk2Fu6rgAJ
+              - link "General building products":
+                - /url: /en/gb/category/general-building-products/b6hgxiLbwdDFC4F4xjYXmL
+              - link "Lifts, elevators and escalators":
+                - /url: /en/gb/category/lifts-elevators-and-escalators/jRQcGPB9ToSXkv23L4f2XZ
+              - link "Plants and animals":
+                - /url: /en/gb/category/plants-and-animals/rb4dZEYYditbrB44aY5FxV
+              - link "Plumbing and waste disposal":
+                - /url: /en/gb/category/plumbing-and-waste-disposal/r64a5TSeKyLAFuXKMMuqHN
+              - link "Plumbing fixtures and accessories":
+                - /url: /en/gb/category/plumbing-fixtures-and-accessories/dChJUFZUmyV8tgKBRPk5ui
+              - link "Ponds, swimming pools, bunds and tanks":
+                - /url: /en/gb/category/ponds-swimming-pools-bunds-and-tanks/sP5sBNrU6ZMnUeHKng6m7H
+              - link "Roofs, ceilings and soffits":
+                - /url: /en/gb/category/roofs-ceilings-and-soffits/t1Nd7ayjeVyYfZ7YgMRAAm
+              - link "Signage and signalling":
+                - /url: /en/gb/category/signage-and-signalling/6cn4oWrA7SgQw4yiFq14Mr
+              - link "Stairs and ramps":
+                - /url: /en/gb/category/stairs-and-ramps/pWwBs9DpRrrp4fCk5MhuPn
+              - link "Structure":
+                - /url: /en/gb/category/structure/8PY9JCZZjQuUsTS8X1rsYY
+              - link "Ventilation, air conditioning and space heating":
+                - /url: /en/gb/category/ventilation-air-conditioning-and-space-heating/5TuADwMz9LKpvdc8wKdiF5
+              - link "Walls and barriers":
+                - /url: /en/gb/category/walls-and-barriers/qpNRgYeM3pQWsnzXYyf5Xr
+            - generic:
+              - link "View all categories":
+                - /url: /en/gb/categories
+          - article:
+            - generic:
+              - heading "Other" [level=2]
+            - generic:
+              - link "BIM object categories":
+                - /url: /en/gb/categories/bim
+              - link "Manufacturers":
+                - /url: /en/gb/manufacturers
+              - link "Our partners":
+                - /url: /en/gb/partners
+      - button "BIM Library" [ref=f2e47]
+      - link "Inspiration" [ref=f2e52] [cursor=pointer]:
+        - /url: /en/gb/inspiration
+      - link "Collections" [ref=f2e56] [cursor=pointer]:
+        - /url: /en/gb/collections
+      - link "CPD" [ref=f2e60] [cursor=pointer]:
+        - /url: /en/gb/cpd
+    - link "I'm a manufacturer" [ref=f2e66] [cursor=pointer]:
+      - /url: https://manufacturers.thenbs.com/nbs-source
+  - generic [ref=f2e73]:
+    - generic [ref=f2e1663]:
+      - generic [ref=f2e1666]:
+        - generic [ref=f2e1667]:
+          - heading "Dyson" [level=1] [ref=f2e1668]
+          - checkbox [ref=f2e1674] [cursor=pointer]
+          - button "Copy permalink to clipboard" [ref=f2e1679] [cursor=pointer]
+        - paragraph [ref=f2e1682]: Technology for business
+        - paragraph [ref=f2e1683]:
+          - link "08003457788" [ref=f2e1684] [cursor=pointer]:
+            - /url: tel:08003457788
+          - link "Website" [ref=f2e1685] [cursor=pointer]:
+            - /url: https://www.dyson.co.uk/commercial/overview
+          - button "Contact manufacturer" [ref=f2e1687]
+        - list [ref=f2e1692]:
+          - listitem [ref=f2e1693]:
+            - link "Visit LinkedIn" [ref=f2e1694] [cursor=pointer]:
+              - /url: https://www.linkedin.com/company/dyson/
+          - listitem
+          - listitem
+          - listitem
+          - listitem
+      - generic [ref=f2e1697]:
+        - generic [ref=f2e1699]:
+          - img "Dyson" [ref=f2e1702]
+          - tablist [ref=f2e1703]:
+            - generic [ref=f2e1706]:
+              - tab "Overview tab for brand information" [selected] [ref=f2e1707] [cursor=pointer]:
+                - generic [ref=f2e1708]: Overview
+              - tab "Products tab showing all brand products" [ref=f2e1710] [cursor=pointer]:
+                - generic [ref=f2e1711]: Products
+              - tab "Certifications tab showing brand certifications" [ref=f2e1713] [cursor=pointer]:
+                - generic [ref=f2e1714]: Certifications
+              - tab "Literature tab showing brand documentation" [ref=f2e1716] [cursor=pointer]:
+                - generic [ref=f2e1717]: Literature
+              - tab "Case studies tab showing project examples" [ref=f2e1719] [cursor=pointer]:
+                - generic [ref=f2e1720]: Case studies
+              - tab "About us tab with company information" [ref=f2e1722] [cursor=pointer]:
+                - generic [ref=f2e1723]: About us
+        - tabpanel "Overview tab for brand information" [ref=f2e1725]:
+          - generic [ref=f2e1726]:
+            - generic [ref=f2e1729]:
+              - generic [ref=f2e1731]:
+                - heading "Certification bodies" [level=3] [ref=f2e1733]
+                - article [ref=f2e1734]:
+                  - link [ref=f2e1736] [cursor=pointer]:
+                    - /url: /en/gb/manufacturer/quiet-mark-certification/qCbcAHWmwruKxgpzF1jkPm/overview
+                    - generic [ref=f2e1737]:
+                      - img "Quiet Mark Certification" [ref=f2e1740]
+                      - paragraph [ref=f2e1742]: Quiet Mark Certification
+              - article [ref=f2e1744]:
+                - paragraph [ref=f2e1745]: For technology to have a positive effect, it must work properly. By solving problems and relentlessly innovating, Dyson strive to set new standards for performance and wellbeing in business and leisure environments.
+            - generic [ref=f2e1747]:
+              - generic [ref=f2e1748]:
+                - heading "Products" [level=3] [ref=f2e1749]
+                - link "View all products" [ref=f2e1750] [cursor=pointer]:
+                  - /url: /en/gb/manufacturer/dyson/nakAxHWxDZprdqkBaCdn4U/products
+              - generic [ref=f2e1753]:
+                - article [ref=f2e1754]:
+                  - link [ref=f2e1755] [cursor=pointer]:
+                    - /url: /en/gb/product/dyson-airblade-9kj-hand-dryer-hu03/fmdLoC3ZGuYUyy8pKSG7Au/jmJPorRKb1DV8KXyP2uCS3
+                    - img "Dyson Airblade™ 9kJ Hand Dryer (HU03)" [ref=f2e1757]
+                  - generic [ref=f2e1758]:
+                    - paragraph [ref=f2e1759]: Dyson Airblade™ 9kJ Hand Dryer (HU03)
+                    - generic [ref=f2e1760]:
+                      - generic "Compare product" [ref=f2e1762]:
+                        - checkbox [ref=f2e1767] [cursor=pointer]
+                      - checkbox [ref=f2e1774] [cursor=pointer]
+                - article [ref=f2e1778]:
+                  - link [ref=f2e1779] [cursor=pointer]:
+                    - /url: /en/gb/product/dyson-airblade-washdry-tap-hand-dryer-short-wd04/4u2VDvyao8CjWeL3CX7i12/2re8bfdhMHKyfJy3xArnUZ
+                    - img "Dyson Airblade™ Wash+Dry Tap Hand Dryer - Short (WD04)" [ref=f2e1781]
+                  - generic [ref=f2e1782]:
+                    - paragraph [ref=f2e1783]: Dyson Airblade™ Wash+Dry Tap Hand Dryer - Short (WD04)
+                    - generic [ref=f2e1784]:
+                      - generic "Compare product" [ref=f2e1786]:
+                        - checkbox [ref=f2e1791] [cursor=pointer]
+                      - checkbox [ref=f2e1798] [cursor=pointer]
+                - article [ref=f2e1802]:
+                  - link [ref=f2e1803] [cursor=pointer]:
+                    - /url: /en/gb/product/dyson-airblade-v-hand-dryer-hu02/bzLzYhZcAjz4YH1yjF8PHM/6YkdMqGGu4Zh8YuqoT566v
+                    - img "Dyson Airblade™ V Hand Dryer (HU02)" [ref=f2e1805]
+                  - generic [ref=f2e1806]:
+                    - paragraph [ref=f2e1807]: Dyson Airblade™ V Hand Dryer (HU02)
+                    - generic [ref=f2e1808]:
+                      - generic "Compare product" [ref=f2e1810]:
+                        - checkbox [ref=f2e1815] [cursor=pointer]
+                      - checkbox [ref=f2e1822] [cursor=pointer]
+                - article [ref=f2e1826]:
+                  - link [ref=f2e1827] [cursor=pointer]:
+                    - /url: /en/gb/product/dyson-solarcycle-floor-light/fm6xiwmaunBCUdMovxxGtV/sQG2Ng3z9JeqLoBm6TByb5
+                    - img "Dyson Solarcycle™ Floor Light" [ref=f2e1829]
+                  - generic [ref=f2e1830]:
+                    - paragraph [ref=f2e1831]: Dyson Solarcycle™ Floor Light
+                    - generic [ref=f2e1832]:
+                      - generic "Compare product" [ref=f2e1834]:
+                        - checkbox [ref=f2e1839] [cursor=pointer]
+                      - checkbox [ref=f2e1846] [cursor=pointer]
+            - generic [ref=f2e1851]:
+              - generic [ref=f2e1852]:
+                - heading "Case studies" [level=3] [ref=f2e1853]
+                - link "View all case studies" [ref=f2e1854] [cursor=pointer]:
+                  - /url: /en/gb/manufacturer/dyson/nakAxHWxDZprdqkBaCdn4U/case-studies
+              - generic [ref=f2e1856]:
+                - article [ref=f2e1857]:
+                  - link [ref=f2e1858] [cursor=pointer]:
+                    - /url: /en/gb/case-study/dyson-and-welcome-break-partner-to-boost-sustainability-and-hygiene-in-motorway-service-washrooms/xocvPs8oeEUmiE43i84P8a/aasYUQJSzbA8dxgVqaBpSd
+                    - img "Dyson and Welcome Break partner to boost sustainability and hygiene in motorway service washrooms" [ref=f2e1860]
+                  - generic [ref=f2e1861]:
+                    - paragraph [ref=f2e1862]: Dyson and Welcome Break partner to boost sustainability and hygiene in motorway service washrooms
+                    - checkbox [ref=f2e1870] [cursor=pointer]
+                - article [ref=f2e1874]:
+                  - link [ref=f2e1875] [cursor=pointer]:
+                    - /url: /en/gb/case-study/the-london-eye/8QgREXP8d6V8Lh8pfg32Hr/wwUFDVjULSkwrhrpcHhbgG
+                    - img "The London Eye" [ref=f2e1877]
+                  - generic [ref=f2e1878]:
+                    - paragraph [ref=f2e1879]: The London Eye
+                    - checkbox [ref=f2e1887] [cursor=pointer]
+                - article [ref=f2e1891]:
+                  - link [ref=f2e1892] [cursor=pointer]:
+                    - /url: /en/gb/case-study/queen-mary-university-of-london/46WAR2Unz3LMv61gw7cWRf/8ZNbSB5t11hUNCNKqySxmd
+                    - img "Queen Mary, University of London" [ref=f2e1894]
+                  - generic [ref=f2e1895]:
+                    - paragraph [ref=f2e1896]: Queen Mary, University of London
+                    - checkbox [ref=f2e1904] [cursor=pointer]
+            - generic [ref=f2e1909]:
+              - generic [ref=f2e1910]:
+                - heading "Literature" [level=3] [ref=f2e1911]
+                - link "View all literature" [ref=f2e1912] [cursor=pointer]:
+                  - /url: /en/gb/manufacturer/dyson/nakAxHWxDZprdqkBaCdn4U/literature
+              - generic [ref=f2e1914]:
+                - article [ref=f2e1915]:
+                  - link [ref=f2e1916] [cursor=pointer]:
+                    - /url: /en/gb/literature/dyson-airblade-9kj-technical-specification/3PeJ5iorw1kuMeoK71oFsa/3PeJ5iorw1kuMeoK71oFsa
+                    - img "Dyson Airblade 9kJ - Technical Specification" [ref=f2e1918]
+                  - generic [ref=f2e1919]:
+                    - paragraph [ref=f2e1920]: Dyson Airblade 9kJ - Technical Specification
+                    - generic [ref=f2e1921]:
+                      - button "Download button" [ref=f2e1923]
+                      - checkbox [ref=f2e1932] [cursor=pointer]
+                - article [ref=f2e1936]:
+                  - link [ref=f2e1937] [cursor=pointer]:
+                    - /url: /en/gb/literature/dyson-airblade-9kj-operations-manual/899MocPs4En96zM7cDZuG/899MocPs4En96zM7cDZuG
+                    - img "Dyson Airblade 9kJ - Operations Manual" [ref=f2e1939]
+                  - generic [ref=f2e1940]:
+                    - paragraph [ref=f2e1941]: Dyson Airblade 9kJ - Operations Manual
+                    - generic [ref=f2e1942]:
+                      - button "Download button" [ref=f2e1944]
+                      - checkbox [ref=f2e1953] [cursor=pointer]
+                - article [ref=f2e1957]:
+                  - link [ref=f2e1958] [cursor=pointer]:
+                    - /url: /en/gb/literature/dyson-technology-for-business-brochure-dyson-technology-for-commercial-spaces/j2ZR9Ztazrn1SgAPYfBiqS/j2ZR9Ztazrn1SgAPYfBiqS
+                    - img "Dyson Technology for Business Brochure - Dyson Technology for commercial spaces" [ref=f2e1960]
+                  - generic [ref=f2e1961]:
+                    - paragraph [ref=f2e1962]: Dyson Technology for Business Brochure - Dyson Technology for commercial spaces
+                    - generic [ref=f2e1963]:
+                      - button "Download button" [ref=f2e1965]
+                      - checkbox [ref=f2e1974] [cursor=pointer]
+                - article [ref=f2e1978]:
+                  - link [ref=f2e1979] [cursor=pointer]:
+                    - /url: /en/gb/literature/case-study-rosewood-hotel-dyson-for-hospitality/cgKkU5mWoohDWEfvZEpxDi/cgKkU5mWoohDWEfvZEpxDi
+                    - img "Case Study - Rosewood Hotel, Dyson for Hospitality" [ref=f2e1981]
+                  - generic [ref=f2e1982]:
+                    - paragraph [ref=f2e1983]: Case Study - Rosewood Hotel, Dyson for Hospitality
+                    - generic [ref=f2e1984]:
+                      - button "Download button" [ref=f2e1986]
+                      - checkbox [ref=f2e1995] [cursor=pointer]
+            - generic [ref=f2e2000]:
+              - heading "Trade names" [level=3] [ref=f2e2001]
+              - list [ref=f2e2003]:
+                - listitem [ref=f2e2004]: Dyson Airblade
+                - listitem [ref=f2e2005]: Dyson Lighting
+                - listitem [ref=f2e2006]: Dyson Professional
+                - listitem [ref=f2e2007]: Hand dryers
+                - listitem [ref=f2e2008]: Sustainable hand dryers
+                - listitem [ref=f2e2009]: HEPA
+                - listitem [ref=f2e2010]: Dyson
+                - listitem [ref=f2e2011]: Tap hand dryer
+    - generic [ref=f2e530]:
+      - contentinfo [ref=f2e531]:
+        - generic [ref=f2e532]:
+          - paragraph [ref=f2e533]: Help
+          - list [ref=f2e534]:
+            - listitem [ref=f2e535]:
+              - link "Support articles" [ref=f2e536] [cursor=pointer]:
+                - /url: https://support.thenbs.com/support/solutions/7000038276
+            - listitem [ref=f2e537]:
+              - link "Submit a support ticket" [ref=f2e538] [cursor=pointer]:
+                - /url: https://support.thenbs.com/support/tickets/new
+            - listitem [ref=f2e539]:
+              - link "Feedback" [ref=f2e540] [cursor=pointer]:
+                - /url: https://support.thenbs.com/support/discussions/forums/7000015078
+        - generic [ref=f2e541]:
+          - paragraph [ref=f2e542]: Quick links
+          - list [ref=f2e543]:
+            - listitem [ref=f2e544]:
+              - link "NBS Events and webinars" [ref=f2e545] [cursor=pointer]:
+                - /url: https://www.thenbs.com/events
+        - generic [ref=f2e546]:
+          - paragraph [ref=f2e547]: Corporate information
+          - list [ref=f2e548]:
+            - listitem [ref=f2e549]:
+              - link "About us" [ref=f2e550] [cursor=pointer]:
+                - /url: https://www.thenbs.com/about-nbs
+            - listitem [ref=f2e551]:
+              - link "Terms and conditions" [ref=f2e552] [cursor=pointer]:
+                - /url: https://www.thenbs.com/terms-and-conditions
+            - listitem [ref=f2e553]:
+              - link "Privacy policy" [ref=f2e554] [cursor=pointer]:
+                - /url: https://www.thenbs.com/privacy-policy
+            - listitem [ref=f2e555]:
+              - link "Cookies" [ref=f2e556] [cursor=pointer]:
+                - /url: /en/gb/cookie-policy
+            - listitem [ref=f2e557]:
+              - link "Careers" [ref=f2e558] [cursor=pointer]:
+                - /url: https://www.thenbs.com/careers
+            - listitem [ref=f2e559]:
+              - link "Legal" [ref=f2e560] [cursor=pointer]:
+                - /url: https://www.thenbs.com/legal
+        - generic [ref=f2e561]:
+          - paragraph [ref=f2e562]: Contact us
+          - list [ref=f2e563]:
+            - listitem [ref=f2e564]: "General enquiries:"
+            - listitem [ref=f2e565]:
+              - link "0345 456 9594" [ref=f2e566] [cursor=pointer]:
+                - /url: "tel: 0345 456 9594"
+            - listitem [ref=f2e567]:
+              - link "info@theNBS.com" [ref=f2e568] [cursor=pointer]:
+                - /url: mailto:info@theNBS.com?subject=Customer enquiry from NBS Source
+          - list [ref=f2e569]:
+            - listitem [ref=f2e570]: "Manufacturer enquiries:"
+            - listitem [ref=f2e571]:
+              - link "0345 200 1056" [ref=f2e572] [cursor=pointer]:
+                - /url: "tel: 0345 200 1056"
+            - listitem [ref=f2e573]:
+              - link "salessupport@theNBS.com" [ref=f2e574] [cursor=pointer]:
+                - /url: mailto:salessupport@theNBS.com?subject=Customer enquiry from NBS Source
+        - generic [ref=f2e575]:
+          - paragraph [ref=f2e576]: Change region
+          - list [ref=f2e577]:
+            - listitem [ref=f2e578]:
+              - link "Canada" [ref=f2e579] [cursor=pointer]:
+                - /url: https://source.thenbs.com/en/ca
+            - listitem [ref=f2e580]:
+              - link "Finland" [ref=f2e581] [cursor=pointer]:
+                - /url: https://source.thenbs.com/en/fi
+            - listitem [ref=f2e582]:
+              - link "Norway" [ref=f2e583] [cursor=pointer]:
+                - /url: https://source.thenbs.com/en/no
+            - listitem [ref=f2e584]:
+              - link "Sweden" [ref=f2e585] [cursor=pointer]:
+                - /url: https://source.thenbs.com/en/se
+            - listitem [ref=f2e586]:
+              - link "United Kingdom" [ref=f2e587] [cursor=pointer]:
+                - /url: https://source.thenbs.com/en/gb
+            - listitem [ref=f2e588]:
+              - link "United States" [ref=f2e589] [cursor=pointer]:
+                - /url: https://source.thenbs.com/en/us
+        - generic [ref=f2e590]:
+          - paragraph [ref=f2e591]: Social
+          - article [ref=f2e592]:
+            - link "View Facebook" [ref=f2e593] [cursor=pointer]:
+              - /url: https://www.facebook.com/thenbscom/
+            - link "View Twitter" [ref=f2e595] [cursor=pointer]:
+              - /url: https://twitter.com/theNBS/
+            - link "View Youtube" [ref=f2e597] [cursor=pointer]:
+              - /url: https://www.youtube.com/channel/UCWeaJ3mkpBY_Jnj1oXDncYA/
+            - link "View LinkedIn" [ref=f2e599] [cursor=pointer]:
+              - /url: https://www.linkedin.com/company/nbs_3/
+      - paragraph [ref=f2e601]: © 2026 Hubexo North UK Ltd. All rights reserved.
+  - article [ref=f2e603]

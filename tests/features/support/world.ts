@@ -27,6 +27,7 @@ import fs from "fs";
 import path from "path";
 import { HomePage } from "../../pages/home-page";
 import { DysonHomepage } from "../../pages/dyson-homepage";
+import { AbloyHomepage } from "../../pages/abloy-homepage";
 import { BasePage } from "../../pages/base-page";
 import { LoginPage } from "../../pages/login-page";
 import {
@@ -44,6 +45,28 @@ const STORAGE_STATE_PATH = path.resolve(".auth/user.json");
 // good middle ground: long enough to skip sign-in on back-to-back runs, short
 // enough to recover if the real session expires partway through a dev session.
 const STORAGE_STATE_TTL_MS = 60 * 60 * 1000;
+
+// How much Playwright tracing to do, read from PW_TRACE (set per suite by
+// scripts/run-cucumber-suite.mjs, and overridable on the command line):
+//
+//   "retain-on-failure" — trace every scenario but only keep the traces of ones
+//                         that failed. This is the default for every suite, and
+//                         it's what makes a failed local run debuggable without
+//                         having to reproduce the failure a second time (which,
+//                         against a live site, you often can't).
+//   "on" / "1"          — keep every trace, pass or fail (npm run cucumber:trace).
+//   anything else       — don't trace at all.
+//
+// "retain-on-failure" still records continuously; the recording is simply
+// thrown away when the scenario passes. That's how Playwright's own option of
+// the same name behaves, and it's the reason a trace can exist for a failure
+// nobody predicted.
+const TRACE_MODE: "off" | "on" | "retain-on-failure" = (() => {
+  const raw = (process.env.PW_TRACE ?? "").toLowerCase();
+  if (raw === "on" || raw === "1") return "on";
+  if (raw === "retain-on-failure") return "retain-on-failure";
+  return "off";
+})();
 
 // Maps a scenario tag to the Certifications-tab outcome it wants the stub to
 // force. The Before hook looks up the scenario's tag here and calls
@@ -67,6 +90,7 @@ export class CustomWorld extends World {
   page!: Page;
   homePage!: HomePage;
   dysonPage!: DysonHomepage;
+  abloyPage!: AbloyHomepage;
   basePage!: BasePage;
   loginPage!: LoginPage;
   // Remembers the page URL from just before sign-in, so a later step can check
@@ -129,39 +153,57 @@ BeforeAll(async function () {
   // path a real user would. If sign-in ever breaks, this setup breaks too —
   // a clear, early signal rather than a confusing failure later on.
   const browser = await chromium.launch();
-  const context = await browser.newContext({
-    viewport: { width: 1280, height: 800 },
-    deviceScaleFactor: 1,
-  });
-  const page = await context.newPage();
-  const homePage = new HomePage(page);
-  const basePage = new BasePage(page);
-  const loginPage = new LoginPage(page);
 
-  await homePage.navigateToNBSHomepage();
-  await basePage.signInButton.click();
-  await loginPage.signIn(email, password);
+  // Everything below is wrapped so a sign-in problem can't take down the whole
+  // run. Cucumber treats a thrown error in BeforeAll as fatal: it kills the
+  // worker process outright ("Unexpected error on worker.receiveMessage") and no
+  // scenario gets to run or report. By catching here we degrade gracefully to
+  // the same behaviour as missing credentials above — @authenticated scenarios
+  // fail with a clear message, everything else still runs.
+  try {
+    const context = await browser.newContext({
+      viewport: { width: 1280, height: 800 },
+      deviceScaleFactor: 1,
+    });
+    const page = await context.newPage();
+    const homePage = new HomePage(page);
+    const basePage = new BasePage(page);
+    const loginPage = new LoginPage(page);
 
-  // Save the logged-in session (cookies etc.) to a file so other tests can
-  // reuse it instead of signing in again.
-  //
-  // The catch: when we run tests in parallel, two workers can try to write
-  // this same file at the same moment. If they both wrote to it directly, one
-  // could overwrite the other halfway through and leave a corrupt, unreadable
-  // file. To avoid that, each worker writes to its own temporary file first,
-  // then renames it into place. Renaming is instant and all-or-nothing, so
-  // anyone reading the file always sees a complete version — never a
-  // half-written one.
+    await homePage.navigateToNBSHomepage();
+    await basePage.signInButton.click();
+    await loginPage.signIn(email, password);
 
-  // 1. Grab the current session data from the browser.
-  const state = await context.storageState();
-  // 2. Build a temp filename unique to this process (process.pid = its ID).
-  const tmpPath = `${STORAGE_STATE_PATH}.${process.pid}.tmp`;
-  // 3. Write the session to the temp file.
-  fs.writeFileSync(tmpPath, JSON.stringify(state));
-  // 4. Rename the temp file to the real name in one atomic step.
-  fs.renameSync(tmpPath, STORAGE_STATE_PATH);
-  await browser.close();
+    // Save the logged-in session (cookies etc.) to a file so other tests can
+    // reuse it instead of signing in again.
+    //
+    // The catch: when we run tests in parallel, two workers can try to write
+    // this same file at the same moment. If they both wrote to it directly, one
+    // could overwrite the other halfway through and leave a corrupt, unreadable
+    // file. To avoid that, each worker writes to its own temporary file first,
+    // then renames it into place. Renaming is instant and all-or-nothing, so
+    // anyone reading the file always sees a complete version — never a
+    // half-written one.
+
+    // 1. Grab the current session data from the browser.
+    const state = await context.storageState();
+    // 2. Build a temp filename unique to this process (process.pid = its ID).
+    const tmpPath = `${STORAGE_STATE_PATH}.${process.pid}.tmp`;
+    // 3. Write the session to the temp file.
+    fs.writeFileSync(tmpPath, JSON.stringify(state));
+    // 4. Rename the temp file to the real name in one atomic step.
+    fs.renameSync(tmpPath, STORAGE_STATE_PATH);
+  } catch (error) {
+    console.warn(
+      "Sign-in during BeforeAll failed — continuing without a saved session. " +
+        "@authenticated scenarios will fail until this is fixed.\n" +
+        (error instanceof Error ? error.stack ?? error.message : String(error)),
+    );
+  } finally {
+    // Always close the temporary browser, success or failure, so a failed
+    // sign-in doesn't leave a Chromium process running for the whole suite.
+    await browser.close();
+  }
 });
 
 // Runs before every scenario. It starts a fresh browser, opens a clean,
@@ -198,11 +240,11 @@ Before(async function (
     ...(useStoredAuth ? { storageState: STORAGE_STATE_PATH } : {}),
   });
 
-  // If PW_TRACE=1 is set (used by the cucumber-trace suite in
-  // scripts/run-cucumber-suite.mjs), record a Playwright "trace" of the
-  // scenario. Including sources lets the trace viewer show which step caused
-  // each action — really helpful when figuring out why a test failed.
-  if (process.env.PW_TRACE === "1") {
+  // Record a Playwright "trace" of the scenario. Including sources lets the
+  // trace viewer show which step caused each action — really helpful when
+  // figuring out why a test failed. Whether the recording is kept is decided in
+  // the After hook; see TRACE_MODE above.
+  if (TRACE_MODE !== "off") {
     await this.context.tracing.start({
       screenshots: true,
       snapshots: true,
@@ -239,6 +281,7 @@ Before(async function (
   // they're defined now but only actually look at the page when a step uses them.
   this.homePage = new HomePage(this.page);
   this.dysonPage = new DysonHomepage(this.page);
+  this.abloyPage = new AbloyHomepage(this.page);
   this.basePage = new BasePage(this.page);
   this.loginPage = new LoginPage(this.page);
 });
@@ -277,26 +320,46 @@ After(async function (this: CustomWorld, scenario: ITestCaseHookParameter) {
   }
 
   // Stop the trace before closing the tab — once the tab is closed there's
-  // nothing left to save. We write one .zip per scenario, named after the
-  // scenario plus a timestamp so two parallel runs of the same scenario don't
-  // overwrite each other's file.
-  if (process.env.PW_TRACE === "1" && this.context) {
+  // nothing left to save.
+  //
+  // Calling stop() WITH a path writes the .zip; calling it WITHOUT one stops
+  // recording and discards what was collected. That difference is the whole of
+  // "retain-on-failure": every scenario is recorded, and only the failures are
+  // written out, so a passing suite doesn't leave hundreds of megabytes of
+  // traces behind. Stopping either way also matters — a trace left running
+  // holds on to its buffers until the context closes.
+  //
+  // Files are named after the scenario plus a timestamp so two parallel workers
+  // running the same scenario don't overwrite each other's file.
+  if (TRACE_MODE !== "off" && this.context) {
     try {
-      const traceDir = process.env.PW_TRACE_DIR || "reports/traces";
-      fs.mkdirSync(traceDir, { recursive: true });
-      const safeName = scenario.pickle.name
-        .replace(/[^a-z0-9]+/gi, "_")
-        .toLowerCase();
-      const tracePath = path.join(
-        traceDir,
-        `${safeName}-${Date.now()}.zip`,
-      );
-      await this.context.tracing.stop({ path: tracePath });
+      const keepTrace =
+        TRACE_MODE === "on" || scenario.result?.status === "FAILED";
+      if (keepTrace) {
+        const traceDir = process.env.PW_TRACE_DIR || "reports/traces";
+        fs.mkdirSync(traceDir, { recursive: true });
+        const safeName = scenario.pickle.name
+          .replace(/[^a-z0-9]+/gi, "_")
+          .toLowerCase();
+        const tracePath = path.join(
+          traceDir,
+          `${safeName}-${Date.now()}.zip`,
+        );
+        await this.context.tracing.stop({ path: tracePath });
+        console.log(`Trace written to ${tracePath}`);
+      } else {
+        await this.context.tracing.stop();
+      }
     } catch {
       // Tracing may already have been stopped or the context torn down;
       // don't mask the real scenario result with a teardown error.
     }
   }
+
+  // Drop any route callbacks still in flight (e.g. the "slow" cert stub's
+  // deliberate delay) so their promises don't reject with "Target page,
+  // context or browser has been closed" once we tear down below.
+  await this.page?.unrouteAll({ behavior: "ignoreErrors" });
 
   await this.context?.close();
   await this.browser?.close();

@@ -1,0 +1,325 @@
+- generic [ref=f2e3]:
+  - banner [ref=f2e7]:
+    - generic [ref=f2e8]:
+      - link "NBS Source" [ref=f2e10] [cursor=pointer]:
+        - /url: /en/gb
+      - button "Choose location and language" [ref=f2e16]:
+        - generic [ref=f2e17]: UK
+    - generic [ref=f2e21]:
+      - generic [ref=f2e620]:
+        - textbox "Search" [ref=f2e625]:
+          - /placeholder: Search NBS Source...
+          - text: Dyson
+        - combobox "All" [ref=f2e632] [cursor=pointer]
+        - button "Search" [ref=f2e640] [cursor=pointer]
+      - button "Sign in" [ref=f2e23]
+  - banner [ref=f2e30]:
+    - navigation "Main navigation links" [ref=f2e32]:
+      - link "Home" [ref=f2e33] [cursor=pointer]:
+        - /url: /en/gb
+      - link "What's new" [ref=f2e37] [cursor=pointer]:
+        - /url: /en/gb/whats-new
+      - article [ref=f2e41]:
+        - button "Browse" [ref=f2e42]
+        - menu "Browse menu":
+          - article:
+            - generic:
+              - heading "Categories" [level=2]
+            - generic:
+              - link "Communications, security and safety":
+                - /url: /en/gb/category/communications-security-and-safety/nuJ7UsKqsfmwphEUxxWeuT
+              - link "Coverings, coatings and finishes":
+                - /url: /en/gb/category/coverings-coatings-and-finishes/oqp3eL65AahZGgtqA5rMPh
+              - link "Doors, windows and hatches":
+                - /url: /en/gb/category/doors-windows-and-hatches/ndwwX39PgbyjJGbveGwpLu
+              - link "Electrical power and lighting":
+                - /url: /en/gb/category/electrical-power-and-lighting/bswgU4ortiBZi5YLuVoQSf
+              - link "Fittings, furnishings and equipment":
+                - /url: /en/gb/category/fittings-furnishings-and-equipment/uybG3djVP8AgJk2Fu6rgAJ
+              - link "General building products":
+                - /url: /en/gb/category/general-building-products/b6hgxiLbwdDFC4F4xjYXmL
+              - link "Lifts, elevators and escalators":
+                - /url: /en/gb/category/lifts-elevators-and-escalators/jRQcGPB9ToSXkv23L4f2XZ
+              - link "Plants and animals":
+                - /url: /en/gb/category/plants-and-animals/rb4dZEYYditbrB44aY5FxV
+              - link "Plumbing and waste disposal":
+                - /url: /en/gb/category/plumbing-and-waste-disposal/r64a5TSeKyLAFuXKMMuqHN
+              - link "Plumbing fixtures and accessories":
+                - /url: /en/gb/category/plumbing-fixtures-and-accessories/dChJUFZUmyV8tgKBRPk5ui
+              - link "Ponds, swimming pools, bunds and tanks":
+                - /url: /en/gb/category/ponds-swimming-pools-bunds-and-tanks/sP5sBNrU6ZMnUeHKng6m7H
+              - link "Roofs, ceilings and soffits":
+                - /url: /en/gb/category/roofs-ceilings-and-soffits/t1Nd7ayjeVyYfZ7YgMRAAm
+              - link "Signage and signalling":
+                - /url: /en/gb/category/signage-and-signalling/6cn4oWrA7SgQw4yiFq14Mr
+              - link "Stairs and ramps":
+                - /url: /en/gb/category/stairs-and-ramps/pWwBs9DpRrrp4fCk5MhuPn
+              - link "Structure":
+                - /url: /en/gb/category/structure/8PY9JCZZjQuUsTS8X1rsYY
+              - link "Ventilation, air conditioning and space heating":
+                - /url: /en/gb/category/ventilation-air-conditioning-and-space-heating/5TuADwMz9LKpvdc8wKdiF5
+              - link "Walls and barriers":
+                - /url: /en/gb/category/walls-and-barriers/qpNRgYeM3pQWsnzXYyf5Xr
+            - generic:
+              - link "View all categories":
+                - /url: /en/gb/categories
+          - article:
+            - generic:
+              - heading "Other" [level=2]
+            - generic:
+              - link "BIM object categories":
+                - /url: /en/gb/categories/bim
+              - link "Manufacturers":
+                - /url: /en/gb/manufacturers
+              - link "Our partners":
+                - /url: /en/gb/partners
+      - button "BIM Library" [ref=f2e47]
+      - link "Inspiration" [ref=f2e52] [cursor=pointer]:
+        - /url: /en/gb/inspiration
+      - link "Collections" [ref=f2e56] [cursor=pointer]:
+        - /url: /en/gb/collections
+      - link "CPD" [ref=f2e60] [cursor=pointer]:
+        - /url: /en/gb/cpd
+    - link "I'm a manufacturer" [ref=f2e66] [cursor=pointer]:
+      - /url: https://manufacturers.thenbs.com/nbs-source
+  - generic [ref=f2e73]:
+    - generic [ref=f2e644]:
+      - generic [ref=f2e646]:
+        - heading "\"Dyson\"" [level=1] [ref=f2e647]
+        - paragraph [ref=f2e648]: 57 results found
+        - generic [ref=f2e649]:
+          - paragraph [ref=f2e650]: Can't find what you're looking for?
+          - button "Suggest a manufacturer ." [ref=f2e1407]
+      - tablist [ref=f2e655]:
+        - generic [ref=f2e658]:
+          - tab "Products" [ref=f2e659] [cursor=pointer]
+          - tab "Manufacturers" [active] [selected] [ref=f2e662] [cursor=pointer]
+          - tab "CPD" [ref=f2e665] [cursor=pointer]
+          - tab "Literature" [ref=f2e668] [cursor=pointer]
+          - tab "Case studies" [ref=f2e671] [cursor=pointer]
+      - tabpanel "Manufacturers" [ref=f2e1408]:
+        - generic [ref=f2e1413]:
+          - complementary [ref=f2e1415]:
+            - generic [ref=f2e1416]:
+              - heading "Applied filters" [level=2] [ref=f2e1417]
+              - generic [ref=f2e1418]: No filters selected
+            - generic [ref=f2e1419]:
+              - generic "NBS Chorus User" [ref=f2e1422]:
+                - generic [ref=f2e1423]:
+                  - switch "NBS Chorus User (1)" [ref=f2e1424] [cursor=pointer]
+                  - generic [ref=f2e1430] [cursor=pointer]:
+                    - paragraph [ref=f2e1431]: NBS Chorus User
+                    - generic [ref=f2e1432]: (1)
+              - generic "Is CPD Provider" [ref=f2e1436]:
+                - generic [ref=f2e1437]:
+                  - switch "Is CPD Provider (5)" [ref=f2e1438] [cursor=pointer]
+                  - generic [ref=f2e1444] [cursor=pointer]:
+                    - paragraph [ref=f2e1445]: Is CPD Provider
+                    - generic [ref=f2e1446]: (5)
+          - generic [ref=f2e1448]:
+            - generic [ref=f2e1449]:
+              - generic [ref=f2e1450]:
+                - generic [ref=f2e1451]:
+                  - text: "Sort by:"
+                  - combobox "Sort by dropdown" [ref=f2e1456] [cursor=pointer]:
+                    - generic [ref=f2e1457]: Relevance
+                - radiogroup [ref=f2e1463]:
+                  - radio "Switch search results to grid view" [checked] [ref=f2e1464] [cursor=pointer]
+                  - radio "Switch search results to list view" [ref=f2e1467] [cursor=pointer]
+              - paragraph [ref=f2e1471]: Showing 1-11 of 11
+            - generic [ref=f2e1472]:
+              - generic [ref=f2e1473]:
+                - link [ref=f2e1474] [cursor=pointer]:
+                  - /url: /en/gb/manufacturer/dyson/nakAxHWxDZprdqkBaCdn4U/overview
+                  - generic [ref=f2e1475]:
+                    - img "Dyson" [ref=f2e1478]
+                    - generic [ref=f2e1479]:
+                      - paragraph [ref=f2e1480]: Dyson
+                      - paragraph [ref=f2e1481]: Technology for business
+                - checkbox [ref=f2e1486] [cursor=pointer]
+              - generic [ref=f2e1490]:
+                - link [ref=f2e1491] [cursor=pointer]:
+                  - /url: /en/gb/manufacturer/ehanddryers/qsytpa2URUiEo5XfeX9reM/overview
+                  - generic [ref=f2e1492]:
+                    - img "ehanddryers" [ref=f2e1495]
+                    - generic [ref=f2e1496]:
+                      - paragraph [ref=f2e1497]: ehanddryers
+                      - paragraph [ref=f2e1498]: ehanddryers are leading hand dryer manufacturers and distributors for UK & Ireland hand dryers
+                - checkbox [ref=f2e1503] [cursor=pointer]
+              - generic [ref=f2e1507]:
+                - link [ref=f2e1508] [cursor=pointer]:
+                  - /url: /en/gb/manufacturer/tarmac/gKimTr9jRgb5XrsgcXN6z8/overview
+                  - generic [ref=f2e1509]:
+                    - img "Tarmac" [ref=f2e1512]
+                    - generic [ref=f2e1513]:
+                      - paragraph [ref=f2e1514]: Tarmac
+                      - paragraph [ref=f2e1515]: Asphalt - Readymix Concrete - Screed - Mortar - Blocks - Cement - Lime - Limelite - Grouts - Highway
+                - checkbox [ref=f2e1520] [cursor=pointer]
+              - generic [ref=f2e1524]:
+                - link [ref=f2e1525] [cursor=pointer]:
+                  - /url: /en/gb/manufacturer/rockfon/vCSMA7AsRphSAo7cnDya2h/overview
+                  - generic [ref=f2e1526]:
+                    - img "Rockfon" [ref=f2e1529]
+                    - generic [ref=f2e1530]:
+                      - paragraph [ref=f2e1531]: Rockfon
+                      - paragraph [ref=f2e1532]: Acoustic solutions - baffles, islands, suspended ceiling tile and grid, seamless, wall panels
+                - checkbox [ref=f2e1537] [cursor=pointer]
+              - generic [ref=f2e1541]:
+                - link [ref=f2e1542] [cursor=pointer]:
+                  - /url: /en/gb/manufacturer/accoya/3odvTVouecm7RpgySNGsGk/overview
+                  - generic [ref=f2e1543]:
+                    - img "Accoya" [ref=f2e1546]
+                    - generic [ref=f2e1547]:
+                      - paragraph [ref=f2e1548]: Accoya
+                      - paragraph [ref=f2e1549]: Ultra-high Performance Sustainable Wood | Tried and Tested in the UK
+                - checkbox [ref=f2e1554] [cursor=pointer]
+              - generic [ref=f2e1558]:
+                - link [ref=f2e1559] [cursor=pointer]:
+                  - /url: /en/gb/manufacturer/valcan-fairview-europe-ltd/jxXr1mWhhpHh3A22NpwFRT/overview
+                  - generic [ref=f2e1560]:
+                    - img "Valcan (Fairview Europe Ltd)" [ref=f2e1563]
+                    - generic [ref=f2e1564]:
+                      - paragraph [ref=f2e1565]: Valcan (Fairview Europe Ltd)
+                      - paragraph [ref=f2e1566]: The Defining Standard in A1 Rainscreen Cladding Systems
+                - checkbox [ref=f2e1571] [cursor=pointer]
+              - generic [ref=f2e1575]:
+                - link [ref=f2e1576] [cursor=pointer]:
+                  - /url: /en/gb/manufacturer/clement-windows-group/f8Yur7cW9Q4K824vd76qWR/overview
+                  - generic [ref=f2e1577]:
+                    - img "Clement Windows Group" [ref=f2e1580]
+                    - generic [ref=f2e1581]:
+                      - paragraph [ref=f2e1582]: Clement Windows Group
+                      - paragraph [ref=f2e1583]: Superb steel windows, doors, screens and conservation rooflights
+                - checkbox [ref=f2e1588] [cursor=pointer]
+              - generic [ref=f2e1592]:
+                - link [ref=f2e1593] [cursor=pointer]:
+                  - /url: /en/gb/manufacturer/victoria-albert-baths/gJ1Mo7SkRxgeqAvo9ECkKc/overview
+                  - generic [ref=f2e1594]:
+                    - img "Victoria + Albert Baths" [ref=f2e1597]
+                    - generic [ref=f2e1598]:
+                      - paragraph [ref=f2e1599]: Victoria + Albert Baths
+                      - paragraph [ref=f2e1600]: A British brand with a worldwide reputation for creating beautiful freestanding baths and basins.
+                - checkbox [ref=f2e1605] [cursor=pointer]
+              - generic [ref=f2e1609]:
+                - link [ref=f2e1610] [cursor=pointer]:
+                  - /url: /en/gb/manufacturer/zip-water/GmCj4nh5iGjfWCShZdcDp/overview
+                  - generic [ref=f2e1611]:
+                    - img "Zip Water" [ref=f2e1614]
+                    - generic [ref=f2e1615]:
+                      - paragraph [ref=f2e1616]: Zip Water
+                      - paragraph [ref=f2e1617]: Water at its best
+                - checkbox [ref=f2e1622] [cursor=pointer]
+              - generic [ref=f2e1626]:
+                - link [ref=f2e1627] [cursor=pointer]:
+                  - /url: /en/gb/manufacturer/telling-rainscreens-ltd/tqB6jY4gYwGrEyvAtDuuh/overview
+                  - generic [ref=f2e1628]:
+                    - img "Telling Rainscreens Ltd" [ref=f2e1631]
+                    - generic [ref=f2e1632]:
+                      - paragraph [ref=f2e1633]: Telling Rainscreens Ltd
+                      - paragraph [ref=f2e1634]: The Difference is Telling
+                - checkbox [ref=f2e1639] [cursor=pointer]
+              - generic [ref=f2e1643]:
+                - link [ref=f2e1644] [cursor=pointer]:
+                  - /url: /en/gb/manufacturer/glazing-vision-ltd/pHPfrjaxxVaiYja4VUvvpu/overview
+                  - generic [ref=f2e1645]:
+                    - img "Glazing Vision Ltd" [ref=f2e1648]
+                    - generic [ref=f2e1649]:
+                      - paragraph [ref=f2e1650]: Glazing Vision Ltd
+                      - paragraph [ref=f2e1651]: Minimise Framework, Maximise Daylight.
+                - checkbox [ref=f2e1656] [cursor=pointer]
+            - paragraph [ref=f2e1662]: Showing 1-11 of 11
+      - link "Feedback" [ref=f2e1406] [cursor=pointer]:
+        - /url: https://support.thenbs.com/support/discussions/topics/7000040634
+    - generic [ref=f2e530]:
+      - contentinfo [ref=f2e531]:
+        - generic [ref=f2e532]:
+          - paragraph [ref=f2e533]: Help
+          - list [ref=f2e534]:
+            - listitem [ref=f2e535]:
+              - link "Support articles" [ref=f2e536] [cursor=pointer]:
+                - /url: https://support.thenbs.com/support/solutions/7000038276
+            - listitem [ref=f2e537]:
+              - link "Submit a support ticket" [ref=f2e538] [cursor=pointer]:
+                - /url: https://support.thenbs.com/support/tickets/new
+            - listitem [ref=f2e539]:
+              - link "Feedback" [ref=f2e540] [cursor=pointer]:
+                - /url: https://support.thenbs.com/support/discussions/forums/7000015078
+        - generic [ref=f2e541]:
+          - paragraph [ref=f2e542]: Quick links
+          - list [ref=f2e543]:
+            - listitem [ref=f2e544]:
+              - link "NBS Events and webinars" [ref=f2e545] [cursor=pointer]:
+                - /url: https://www.thenbs.com/events
+        - generic [ref=f2e546]:
+          - paragraph [ref=f2e547]: Corporate information
+          - list [ref=f2e548]:
+            - listitem [ref=f2e549]:
+              - link "About us" [ref=f2e550] [cursor=pointer]:
+                - /url: https://www.thenbs.com/about-nbs
+            - listitem [ref=f2e551]:
+              - link "Terms and conditions" [ref=f2e552] [cursor=pointer]:
+                - /url: https://www.thenbs.com/terms-and-conditions
+            - listitem [ref=f2e553]:
+              - link "Privacy policy" [ref=f2e554] [cursor=pointer]:
+                - /url: https://www.thenbs.com/privacy-policy
+            - listitem [ref=f2e555]:
+              - link "Cookies" [ref=f2e556] [cursor=pointer]:
+                - /url: /en/gb/cookie-policy
+            - listitem [ref=f2e557]:
+              - link "Careers" [ref=f2e558] [cursor=pointer]:
+                - /url: https://www.thenbs.com/careers
+            - listitem [ref=f2e559]:
+              - link "Legal" [ref=f2e560] [cursor=pointer]:
+                - /url: https://www.thenbs.com/legal
+        - generic [ref=f2e561]:
+          - paragraph [ref=f2e562]: Contact us
+          - list [ref=f2e563]:
+            - listitem [ref=f2e564]: "General enquiries:"
+            - listitem [ref=f2e565]:
+              - link "0345 456 9594" [ref=f2e566] [cursor=pointer]:
+                - /url: "tel: 0345 456 9594"
+            - listitem [ref=f2e567]:
+              - link "info@theNBS.com" [ref=f2e568] [cursor=pointer]:
+                - /url: mailto:info@theNBS.com?subject=Customer enquiry from NBS Source
+          - list [ref=f2e569]:
+            - listitem [ref=f2e570]: "Manufacturer enquiries:"
+            - listitem [ref=f2e571]:
+              - link "0345 200 1056" [ref=f2e572] [cursor=pointer]:
+                - /url: "tel: 0345 200 1056"
+            - listitem [ref=f2e573]:
+              - link "salessupport@theNBS.com" [ref=f2e574] [cursor=pointer]:
+                - /url: mailto:salessupport@theNBS.com?subject=Customer enquiry from NBS Source
+        - generic [ref=f2e575]:
+          - paragraph [ref=f2e576]: Change region
+          - list [ref=f2e577]:
+            - listitem [ref=f2e578]:
+              - link "Canada" [ref=f2e579] [cursor=pointer]:
+                - /url: https://source.thenbs.com/en/ca
+            - listitem [ref=f2e580]:
+              - link "Finland" [ref=f2e581] [cursor=pointer]:
+                - /url: https://source.thenbs.com/en/fi
+            - listitem [ref=f2e582]:
+              - link "Norway" [ref=f2e583] [cursor=pointer]:
+                - /url: https://source.thenbs.com/en/no
+            - listitem [ref=f2e584]:
+              - link "Sweden" [ref=f2e585] [cursor=pointer]:
+                - /url: https://source.thenbs.com/en/se
+            - listitem [ref=f2e586]:
+              - link "United Kingdom" [ref=f2e587] [cursor=pointer]:
+                - /url: https://source.thenbs.com/en/gb
+            - listitem [ref=f2e588]:
+              - link "United States" [ref=f2e589] [cursor=pointer]:
+                - /url: https://source.thenbs.com/en/us
+        - generic [ref=f2e590]:
+          - paragraph [ref=f2e591]: Social
+          - article [ref=f2e592]:
+            - link "View Facebook" [ref=f2e593] [cursor=pointer]:
+              - /url: https://www.facebook.com/thenbscom/
+            - link "View Twitter" [ref=f2e595] [cursor=pointer]:
+              - /url: https://twitter.com/theNBS/
+            - link "View Youtube" [ref=f2e597] [cursor=pointer]:
+              - /url: https://www.youtube.com/channel/UCWeaJ3mkpBY_Jnj1oXDncYA/
+            - link "View LinkedIn" [ref=f2e599] [cursor=pointer]:
+              - /url: https://www.linkedin.com/company/nbs_3/
+      - paragraph [ref=f2e601]: © 2026 Hubexo North UK Ltd. All rights reserved.
+  - article [ref=f2e603]

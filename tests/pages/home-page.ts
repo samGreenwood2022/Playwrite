@@ -14,6 +14,20 @@ export class HomePage {
   readonly searchButton: Locator;
   readonly searchAutocomplete: Locator;
   readonly dysonManufacturerOption: Locator;
+  // The four areas of the homepage whose content changes on every load: three
+  // sponsored ad slots and the "Find some inspiration" grid. A full-page visual
+  // screenshot can never match a fixed baseline across these, so they're passed
+  // to verifyVisualRegression as masks — Playwright paints each one a flat
+  // colour before capturing, so the comparison ignores what's inside them while
+  // still checking that the box is the same size and in the same place.
+  //
+  // Each is the section-level component rather than the individual tiles inside
+  // it: fewer boxes to line up, and it also covers the rotating "Sponsored by
+  // <brand>" heading that sits above the tiles.
+  readonly sponsoredBrands: Locator;
+  readonly sponsoredProducts: Locator;
+  readonly sponsoredCpd: Locator;
+  readonly inspirationGrid: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -40,106 +54,94 @@ export class HomePage {
     this.dysonManufacturerOption = page.locator(
       'app-autocomplete article.manufacturers a[href*="/manufacturer/dyson/"]',
     );
+    // Angular component tags, which are far more stable than the generated
+    // class names alongside them (.ng-star-inserted, .ng-tns-c2177291178-0 —
+    // those change whenever the app is rebuilt).
+    this.sponsoredBrands = page.locator("app-sponsored-brands");
+    this.sponsoredProducts = page.locator("app-sponsored-products");
+    this.sponsoredCpd = page.locator("app-sponsored-cpd");
+    this.inspirationGrid = page.locator("app-inspiration-grid");
   }
 
-  // Types the given term and clicks the matching Dyson entry in the dropdown.
-  // This copies what a real user does (type, then click a result) instead of
-  // jumping straight to the URL.
+  // All the dynamic regions in one list, ready to hand to
+  // verifyVisualRegression. Kept here next to the locators so the visual test's
+  // step definition doesn't have to know which sections of this page happen to
+  // be ad slots — if the site adds another one, it's a one-line change here.
+  get dynamicRegions(): Locator[] {
+    return [
+      this.sponsoredBrands,
+      this.sponsoredProducts,
+      this.sponsoredCpd,
+      this.inspirationGrid,
+    ];
+  }
+
+  // Types the given term, presses Enter, opens the Manufacturers tab and clicks
+  // the Dyson result. This copies what a real user does rather than jumping
+  // straight to the manufacturer URL.
   //
-  // Because the live site's dropdown is flaky, each attempt (up to 3) does this:
-  //   1. Click the field and clear it with fill("") — more reliable than
-  //      selecting all + typing, which can leave stray characters behind.
-  //   2. Type the term one character at a time so the site's search reacts.
-  //   3. Wait for the dropdown to appear, but only for a set time. Giving up
-  //      rather than waiting forever leaves us time to recover before
-  //      Cucumber's step timeout.
-  //   4. If the dropdown didn't open, just clear and retype, then wait again.
-  //      Often it failed only because the very first keystroke was missed, and
-  //      a clean retype fixes it without reloading.
-  //   5. Click the result while also waiting for the URL to change, so a click
-  //      that does nothing (dropdown closed without navigating) fails loudly
-  //      instead of passing silently. Reloading the page is the last resort.
+  // The wait after the final click is the important part, and it is not
+  // optional. Playwright's auto-waiting covers the *click* — is the element
+  // present, stable, enabled — and stops the instant the click lands. It knows
+  // nothing about the navigation that click sets off. This site makes that gap
+  // unusually wide and unusually misleading: clicking the tile first rewrites
+  // the URL you're already on with a relevance score
+  //
+  //   .../search-results/manufacturers?search=Dyson&score=44.29
+  //
+  // and only routes on to
+  //
+  //   .../manufacturer/dyson/<id>/overview
+  //
+  // a few hundred milliseconds later. So for that window the page has a URL
+  // that has visibly changed — it just hasn't changed to the destination.
+  //
+  // Without this wait the method returns mid-route, and anything reading
+  // page.url() immediately afterwards records the search-results URL instead of
+  // the manufacturer one. page.url() is a plain synchronous snapshot with no
+  // retry, so it takes whatever is there at that microsecond. That is what made
+  // the sign-in scenario flaky: it captures the URL before signing in to check
+  // the user is returned to the page they started on, and was sometimes
+  // capturing a page they were never really on.
+  //
+  // Waiting on the URL rather than a load state is deliberate. This is an
+  // Angular client-side route, so there is no document load to wait for, and
+  // "networkidle" never settles on this site (see CLAUDE.md).
   async searchFor(term: string) {
-    // Try the whole thing up to 3 times, each time waiting a set period for the
-    // dropdown to appear. If an attempt fully succeeds, we return straight away.
-    const maxAttempts = 3;
-    const dropdownTimeout = 30000;
-
-    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-      try {
-        // Wait until the page's HTML has loaded before typing — otherwise the
-        // search box may not be ready for input yet and our keystrokes get lost.
-        await this.page.waitForLoadState("domcontentloaded", {
-          timeout: 15000,
-        });
-
-        // Click the field, clear anything left from a previous attempt, then
-        // type slowly (100ms per character) so the site's search has time to
-        // react. pressSequentially types one real key press at a time.
-        await this.searchField.click();
-        await this.searchField.fill("");
-        await this.searchField.pressSequentially(term, { delay: 100 });
-
-        // Did the dropdown actually open? We wait for the dropdown container to
-        // appear. Giving up reasonably quickly here (rather than waiting on the
-        // result item itself) leaves time to recover within Cucumber's timeout.
-        try {
-          await this.searchAutocomplete.waitFor({
-            state: "visible",
-            timeout: dropdownTimeout,
-          });
-        } catch {
-          // Quick recovery: clear and retype before resorting to a reload.
-          // Often the dropdown only failed because the first keystroke was
-          // missed, and retyping fixes it without reloading the page.
-          await this.searchField.fill("");
-          await this.searchField.pressSequentially(term, { delay: 100 });
-          await this.searchAutocomplete.waitFor({
-            state: "visible",
-            timeout: dropdownTimeout,
-          });
-        }
-
-        // Click the result while also waiting for the URL to change. If the
-        // click does nothing (the dropdown just closes), the URL wait fails
-        // instead of the test passing by mistake. Both must start together
-        // (Promise.all) so the URL wait is already listening before the click.
-        await Promise.all([
-          this.page.waitForURL(/\/manufacturer\/dyson\//, { timeout: 30000 }),
-          this.dysonManufacturerOption.click({ timeout: 10000 }),
-        ]);
-        return;
-      } catch (error) {
-        // Don't fail yet — log a warning and let the loop try again (after a
-        // reload). The warning keeps flaky-but-eventually-passing runs visible
-        // in the logs so they can still be looked into.
-        console.warn(`Attempt ${attempt} to search for "${term}" failed:`, error);
-      }
-
-      // Last resort between attempts: reload the page to reset whatever made
-      // the dropdown misbehave. Skipped on the final attempt (nothing left to
-      // retry) and if the page is already closed.
-      if (attempt < maxAttempts && !this.page.isClosed()) {
-        await this.page.reload({
-          waitUntil: "domcontentloaded",
-          timeout: 20000,
-        });
-      }
-    }
-
-    // Every attempt (typing, retyping, and reloading) has been used up without
-    // ever reaching the Dyson manufacturer page.
-    throw new Error(
-      `Failed to find and click the "${term}" search result after ${maxAttempts} attempts (with page reloads).`,
-    );
+    await this.navigateToNBSHomepage();
+    await this.page.getByRole('textbox', { name: 'Search' }).click();
+    await this.page.getByRole('textbox', { name: 'Search' }).fill(term);
+    await this.page.getByRole('textbox', { name: 'Search' }).press('Enter');
+    await this.page.getByRole('tab', { name: 'Manufacturers' }).click();
+    await this.page.getByRole('link', { name: 'Dyson Dyson Technology for' }).click();
+    // Deliberately loose about the locale segment (/en/gb/) and the id in the
+    // path, both of which are free to change; strict about the bit that proves
+    // we've left the search results behind. Note it's "/manufacturer/" singular
+    // here — the plural "/manufacturers" belongs to the search-results route,
+    // so a regex using the plural would match the very page we're waiting to
+    // leave.
+    await this.page.waitForURL(/\/manufacturer\/dyson\//, { timeout: 30000 });
   }
 
-  // Navigates directly to the NBS Source homepage and waits for the DOM to be ready.
+  // Navigates directly to the NBS Source homepage, waits for the DOM to be
+  // ready, then clears the "new feature" popup if the site shows it. Every route
+  // onto the homepage goes through here, so the popup is handled in one place.
   async navigateToNBSHomepage() {
-    await this.page.goto("https://source.thenbs.com/en/", {
+    await this.page.goto("https://source.thenbs.com/en/gb", {
       timeout: 60000,
       waitUntil: "domcontentloaded",
     });
+    const overlayCloseButtons = [
+      this.page.getByRole("button", { name: "Accept all" }),
+      this.page.getByRole("button", { name: "Close dialog" }),
+    ];
+    for (const closeButton of overlayCloseButtons) {
+      try {
+        await closeButton.click({ timeout: 2000 });
+      } catch {
+        // Overlay wasn't shown this run — nothing to dismiss.
+      }
+    }
   }
 
 }

@@ -63,15 +63,15 @@ Feature: Dyson Homepage Functional Regression Tests
   Scenario: Webpage title is as expected
     Then The webpage title will be as expected "Dyson | Overview | BIM Library"
 
-  # Checks the NBS Source logo links back to the homepage (its href is "/en/").
+  # Checks the NBS Source logo links back to the homepage (its href is "/en/gb").
   @smoke @regression @authenticated
   Scenario: Href attribute of the Source logo is as expected
-    Then The href attribute of the Source logo will be as expected "/en/"
+    Then The href attribute of the Source logo will be as expected "/en/gb"
 
   # Checks the "Contact manufacturer" link points to Dyson's own external website.
   @smoke @regression @authenticated
   Scenario: External manufacturer link attribute contains the correct URL
-    Then The manufacturer website link is correct "https://www.dyson.co.uk/commercial/overview/architects-designers"
+    Then The manufacturer website link is correct "https://www.dyson.co.uk/commercial/overview"
 
   # Checks the "Contact manufacturer" button shows the expected visible text.
   @smoke @regression @authenticated
@@ -85,13 +85,13 @@ Feature: Dyson Homepage Functional Regression Tests
   @smoke @regression @authenticated
   Scenario: Tabs on the Dyson navigation bar are visible, in the correct order and have the correct href links
     Then The Dyson navigation bar displays the following tabs in order
-      | label          | href                                                                     |
-      | Overview       | /en/manufacturer/dyson/nakAxHWxDZprdqkBaCdn4U/overview                   |
-      | Products       | /en/manufacturer/dyson/nakAxHWxDZprdqkBaCdn4U/products                   |
-      | Certifications | /en/manufacturer/dyson/nakAxHWxDZprdqkBaCdn4U/third-party-certifications |
-      | Literature     | /en/manufacturer/dyson/nakAxHWxDZprdqkBaCdn4U/literature                 |
-      | Case studies   | /en/manufacturer/dyson/nakAxHWxDZprdqkBaCdn4U/case-studies               |
-      | About us       | /en/manufacturer/dyson/nakAxHWxDZprdqkBaCdn4U/about                      |
+      | label          | href                                                                        |
+      | Overview       | /en/gb/manufacturer/dyson/nakAxHWxDZprdqkBaCdn4U/overview                   |
+      | Products       | /en/gb/manufacturer/dyson/nakAxHWxDZprdqkBaCdn4U/products                   |
+      | Certifications | /en/gb/manufacturer/dyson/nakAxHWxDZprdqkBaCdn4U/third-party-certifications |
+      | Literature     | /en/gb/manufacturer/dyson/nakAxHWxDZprdqkBaCdn4U/literature                 |
+      | Case studies   | /en/gb/manufacturer/dyson/nakAxHWxDZprdqkBaCdn4U/case-studies               |
+      | About us       | /en/gb/manufacturer/dyson/nakAxHWxDZprdqkBaCdn4U/about                      |
 
   # The counterpart to the first scenario: this one is @authenticated, so it
   # starts from the saved session and never runs the sign-in steps. It proves the
