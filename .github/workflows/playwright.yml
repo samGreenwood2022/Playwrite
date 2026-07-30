@@ -13,10 +13,42 @@ jobs:
     - uses: actions/setup-node@v6
       with:
         node-version: lts/*
+        # Caches npm's own download cache (~/.npm), keyed on package-lock.json,
+        # so `npm ci` unpacks packages from disk instead of re-downloading them
+        # from the registry on every run.
+        cache: npm
     - name: Install dependencies
       run: npm ci
-    - name: Install Playwright Browsers
-      run: npx playwright install --with-deps
+    # Cache the downloaded browser binaries so a run whose dependencies haven't
+    # changed skips the download entirely. The key is a hash of
+    # package-lock.json, so any dependency change — including a Playwright
+    # upgrade, which needs a different browser build — misses the cache and
+    # re-downloads. That's the safe direction to fail in: a needless download
+    # costs a minute, whereas reusing a browser that doesn't match the installed
+    # Playwright version fails in confusing ways at run time.
+    - name: Cache Playwright browsers
+      id: playwright-cache
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/ms-playwright
+        key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+    # Only chromium is installed. world.ts launches chromium and nothing else, so
+    # a bare `playwright install` would also download firefox and webkit — roughly
+    # triple the bytes for browsers no test ever opens. (playwright.config.ts does
+    # list firefox and webkit projects, but that file is leftover `npm init
+    # playwright` scaffold and CI never runs it.)
+    #
+    # The two steps below differ only in what they install. On a cache miss we
+    # need the browser *and* the OS libraries it links against. On a cache hit the
+    # browser has been restored from the cache but the libraries have not, because
+    # those are apt packages installed system-wide rather than files under
+    # ~/.cache — so they have to be installed again either way.
+    - name: Install Playwright browser and OS dependencies
+      if: steps.playwright-cache.outputs.cache-hit != 'true'
+      run: npx playwright install --with-deps chromium
+    - name: Install Playwright OS dependencies (browser restored from cache)
+      if: steps.playwright-cache.outputs.cache-hit == 'true'
+      run: npx playwright install-deps chromium
     - name: Run Cucumber feature tests
       run: npm run regression
       env:

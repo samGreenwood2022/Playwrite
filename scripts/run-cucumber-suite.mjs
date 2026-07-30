@@ -44,9 +44,25 @@ const suites = {
     traceMode: "on",
     traceDir: "reports/traces/cucumber-trace",
   },
+  // The regression suite is the one CI runs, and it's the biggest, so it gets
+  // four workers rather than two. The scenarios spend nearly all their time
+  // waiting on the live site rather than using CPU, so workers can outnumber
+  // cores without them slowing each other down; the GitHub-hosted Linux runner
+  // this repo uses (public repo, so 4 vCPU / 16GB) has ample room for four
+  // Chromium instances. Raising this is the cheap alternative to sharding the
+  // suite across several CI machines: sharding would make every machine repeat
+  // the ~2-3 minutes of checkout, npm ci and browser install, which is most of
+  // the job. Worth revisiting only once the suite takes appreciably longer than
+  // that setup cost.
+  //
+  // Note the ceiling on this: world.ts runs BeforeAll once per worker, so four
+  // workers means four sign-ins against the live auth endpoint at roughly the
+  // same moment. That's the thing that will break first if this number grows,
+  // and it breaks quietly — a rate-limited sign-in degrades to "@authenticated
+  // scenarios fail", which reads like a product bug rather than a CI setting.
   regression: {
     tags: "@regression",
-    parallel: 2,
+    parallel: 4,
     jsonDir: "reports/json/regression",
     json: "reports/json/regression/regression.json",
     out: "reports/cucumber-regression-report",
