@@ -252,11 +252,30 @@ export class BasePage {
     // height. process.platform is "win32" locally and "linux" on GitHub Actions,
     // so each environment compares against its own baseline. Commit both
     // baselines; CI will fail if its baseline is missing on the second run.
+    //
+    // The baseline is per browser engine as well, for the same reason it's per
+    // OS but more so: chromium, firefox and webkit each rasterise text
+    // differently and disagree about scrollbars and sub-pixel layout, so a
+    // firefox screenshot compared against a chromium baseline fails on
+    // essentially every pixel and tells you nothing. The name is only suffixed
+    // for non-chromium engines, which keeps the existing committed baselines
+    // (dyson-homepage-win32.png and friends) valid rather than orphaning them
+    // behind a rename.
+    //
+    // The engine is read from the live browser rather than from the BROWSER
+    // environment variable, so the filename always reflects what actually took
+    // the screenshot even if something launched a browser directly. The fallback
+    // only applies if there's no browser behind the context at all, which for
+    // this suite can't happen.
     const snapshotDir = path.resolve("tests/snapshots");
     const platformSuffix = process.platform;
-    const baselinePath = path.join(snapshotDir, `${name}-${platformSuffix}.png`);
-    const actualPath = path.join(snapshotDir, `${name}-${platformSuffix}-actual.png`);
-    const diffPath = path.join(snapshotDir, `${name}-${platformSuffix}-diff.png`);
+    const browserName =
+      this.page.context().browser()?.browserType().name() ?? "chromium";
+    const browserSuffix = browserName === "chromium" ? "" : `-${browserName}`;
+    const baseName = `${name}${browserSuffix}-${platformSuffix}`;
+    const baselinePath = path.join(snapshotDir, `${baseName}.png`);
+    const actualPath = path.join(snapshotDir, `${baseName}-actual.png`);
+    const diffPath = path.join(snapshotDir, `${baseName}-diff.png`);
 
     fs.mkdirSync(snapshotDir, { recursive: true });
 

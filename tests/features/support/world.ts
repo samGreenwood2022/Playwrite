@@ -20,8 +20,11 @@ import {
 import {
   Browser,
   BrowserContext,
+  BrowserType,
   Page,
   chromium,
+  firefox,
+  webkit,
 } from "playwright";
 import fs from "fs";
 import path from "path";
@@ -67,6 +70,45 @@ const TRACE_MODE: "off" | "on" | "retain-on-failure" = (() => {
   if (raw === "retain-on-failure") return "retain-on-failure";
   return "off";
 })();
+
+// Which browser engine to run in, read from the BROWSER environment variable.
+// Defaults to chromium so nothing has to change for a normal local run; CI sets
+// it per matrix job so the same suite runs against all three engines:
+//
+//   BROWSER=chromium npm run regression   (the default)
+//   BROWSER=firefox  npm run regression
+//   BROWSER=webkit   npm run regression
+//
+// Playwright bundles its own build of each engine, so "webkit" here means
+// Playwright's WebKit — close to Safari's rendering, but not literally Safari,
+// and likewise Firefox rather than a shipped Firefox release. That's the usual
+// trade: real engine differences get caught, vendor-specific browser UI does
+// not.
+//
+// An unrecognised value falls back to chromium with a warning rather than
+// throwing. A typo in a CI matrix would otherwise take out the whole worker
+// (see the note on BeforeAll below), and a suite that quietly ran the wrong
+// engine is easier to spot in the report — which names the browser — than a run
+// that produced nothing at all.
+const BROWSER_TYPES: Record<string, BrowserType> = {
+  chromium,
+  firefox,
+  webkit,
+};
+
+const BROWSER_NAME: string = (() => {
+  const raw = (process.env.BROWSER ?? "chromium").toLowerCase();
+  if (raw in BROWSER_TYPES) return raw;
+  console.warn(
+    `Unknown BROWSER "${raw}" — falling back to chromium. ` +
+      `Valid values: ${Object.keys(BROWSER_TYPES).join(", ")}.`,
+  );
+  return "chromium";
+})();
+
+// The engine itself. Both launch sites below go through this, so switching
+// browsers is a single environment variable rather than an edit here.
+const browserType: BrowserType = BROWSER_TYPES[BROWSER_NAME];
 
 // Maps a scenario tag to the Certifications-tab outcome it wants the stub to
 // force. The Before hook looks up the scenario's tag here and calls
@@ -152,7 +194,13 @@ BeforeAll(async function () {
   // (HomePage / LoginPage) that the real tests use, so this follows the exact
   // path a real user would. If sign-in ever breaks, this setup breaks too —
   // a clear, early signal rather than a confusing failure later on.
-  const browser = await chromium.launch();
+  //
+  // This signs in using whichever engine the run is using, not always chromium.
+  // The saved file is only cookies and localStorage, so a session captured in
+  // one engine would in principle load into another — but signing in with the
+  // engine under test is what proves the sign-in flow itself works there, which
+  // is a large part of the point of running cross-browser at all.
+  const browser = await browserType.launch();
 
   // Everything below is wrapped so a sign-in problem can't take down the whole
   // run. Cucumber treats a thrown error in BeforeAll as fatal: it kills the
@@ -221,7 +269,7 @@ Before(async function (
   const tags = scenario.pickle.tags.map((t) => t.name);
   const isAuthenticated = tags.includes("@authenticated");
 
-  this.browser = await chromium.launch();
+  this.browser = await browserType.launch();
 
   // Fix the window size and scale so screenshots are always the same size on
   // local Windows and on CI Linux — our visual comparisons rely on that. (Font

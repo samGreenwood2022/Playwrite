@@ -8,6 +8,23 @@ jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    # Run the whole suite once per browser engine, each on its own runner.
+    # world.ts reads BROWSER to decide which engine to launch.
+    strategy:
+      # Without fail-fast: false, the first engine to fail cancels the other
+      # jobs — and since a cancelled job uploads no report, a failure in one
+      # engine would destroy the evidence for the other two. Cross-browser runs
+      # are exactly the case where you want all three results even when one is
+      # red, because "webkit only" and "all three" mean very different things.
+      fail-fast: false
+      # Three concurrent jobs at --parallel 4 means up to twelve browsers on the
+      # live site at once, and twelve sign-ins in the same few seconds. If the
+      # site starts rate-limiting (which shows up as @authenticated scenarios
+      # failing, not as an obvious infrastructure error), add max-parallel: 1
+      # here to run the engines one after another instead.
+      matrix:
+        browser: [chromium, firefox, webkit]
+    name: test (${{ matrix.browser }})
     steps:
     - uses: actions/checkout@v6
     - uses: actions/setup-node@v6
@@ -31,27 +48,36 @@ jobs:
       uses: actions/cache@v4
       with:
         path: ~/.cache/ms-playwright
-        key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
-    # Only chromium is installed. world.ts launches chromium and nothing else, so
-    # a bare `playwright install` would also download firefox and webkit — roughly
-    # triple the bytes for browsers no test ever opens. (playwright.config.ts does
-    # list firefox and webkit projects, but that file is leftover `npm init
-    # playwright` scaffold and CI never runs it.)
+        key: playwright-${{ runner.os }}-${{ matrix.browser }}-${{ hashFiles('package-lock.json') }}
+    # Each job installs only the engine it's going to run. Installing all three
+    # everywhere would triple the download on every runner to no purpose, since a
+    # job only ever launches its own matrix browser. The cache key above includes
+    # the browser for the same reason — each engine gets its own cache entry
+    # holding just that engine.
     #
     # The two steps below differ only in what they install. On a cache miss we
     # need the browser *and* the OS libraries it links against. On a cache hit the
     # browser has been restored from the cache but the libraries have not, because
     # those are apt packages installed system-wide rather than files under
-    # ~/.cache — so they have to be installed again either way.
+    # ~/.cache — so they have to be installed again either way. This matters most
+    # for webkit, which needs a long list of system libraries that aren't on the
+    # runner image by default.
     - name: Install Playwright browser and OS dependencies
       if: steps.playwright-cache.outputs.cache-hit != 'true'
-      run: npx playwright install --with-deps chromium
+      run: npx playwright install --with-deps ${{ matrix.browser }}
     - name: Install Playwright OS dependencies (browser restored from cache)
       if: steps.playwright-cache.outputs.cache-hit == 'true'
-      run: npx playwright install-deps chromium
+      run: npx playwright install-deps ${{ matrix.browser }}
+    # BROWSER is what world.ts reads to pick the engine. The runner script also
+    # reads it, to suffix this run's report and trace directories so one engine's
+    # output can't be mistaken for another's.
+    #
+    # On firefox and webkit the runner script also appends "and not @visual" to
+    # the tag expression, so the pixel-comparison scenarios only run on chromium.
     - name: Run Cucumber feature tests
       run: npm run regression
       env:
+        BROWSER: ${{ matrix.browser }}
         TEST_EMAIL: ${{ secrets.TEST_EMAIL }}
         TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
     # Tag one scenario with @trace-this to get its trace.zip from this run,
@@ -60,25 +86,38 @@ jobs:
     - name: Run single traced scenario (tag it @trace-this)
       run: npm run trace-scenario
       env:
+        BROWSER: ${{ matrix.browser }}
         TEST_EMAIL: ${{ secrets.TEST_EMAIL }}
         TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
+    # Every artifact name below carries the browser. upload-artifact v4 and later
+    # reject a name that another job in the same run has already uploaded, so
+    # without this the three matrix jobs would collide and two of them would fail
+    # at the upload step — after the tests had already passed.
+    #
+    # The trace path is a glob because the runner script suffixes the directory
+    # on non-chromium runs (reports/traces/trace-scenario-firefox); each job only
+    # ever produces one of them.
     - uses: actions/upload-artifact@v6
       if: ${{ !cancelled() }}
       with:
-        name: trace-scenario
-        path: reports/traces/trace-scenario/
+        name: trace-scenario-${{ matrix.browser }}
+        path: reports/traces/trace-scenario*/
         retention-days: 7
         if-no-files-found: ignore
     - uses: actions/upload-artifact@v6
       if: ${{ !cancelled() }}
       with:
-        name: cucumber-report
+        name: cucumber-report-${{ matrix.browser }}
         path: reports/
         retention-days: 7
     # Uploads visual regression snapshots so the Linux baseline generated
     # on a first CI run can be downloaded and committed to the repo.
+    #
+    # chromium only, because that's the only engine the @visual scenarios run on
+    # — the other two jobs would upload nothing but the baselines already in the
+    # checkout, which is just noise on the run summary.
     - uses: actions/upload-artifact@v6
-      if: ${{ !cancelled() }}
+      if: ${{ !cancelled() && matrix.browser == 'chromium' }}
       with:
         name: visual-regression-snapshots
         path: tests/snapshots/
