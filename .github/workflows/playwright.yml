@@ -22,6 +22,21 @@ jobs:
       env:
         TEST_EMAIL: ${{ secrets.TEST_EMAIL }}
         TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
+    # Tag one scenario with @trace-this to get its trace.zip from this run,
+    # pass or fail, without tracing the whole suite. No-op (0 scenarios) if
+    # nothing is tagged, so this step is safe to leave in permanently.
+    - name: Run single traced scenario (tag it @trace-this)
+      run: npm run trace-scenario
+      env:
+        TEST_EMAIL: ${{ secrets.TEST_EMAIL }}
+        TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
+    - uses: actions/upload-artifact@v6
+      if: ${{ !cancelled() }}
+      with:
+        name: trace-scenario
+        path: reports/traces/trace-scenario/
+        retention-days: 7
+        if-no-files-found: ignore
     - uses: actions/upload-artifact@v6
       if: ${{ !cancelled() }}
       with:

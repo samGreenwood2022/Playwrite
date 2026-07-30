@@ -15,7 +15,6 @@ test("Go to NBS Homepage and verify url", async ({ page }) => {
   await expect(page).toHaveURL(/\/manufacturer\/dyson\/.*\/overview/);
   // exact: true makes this case-sensitive and full-string, so it matches the
   // overview <h1>Dyson</h1> but NOT the search page's <h1>"dyson"</h1>.
-  await expect(
-    page.getByRole("heading", { name: "Dyson", exact: true, level: 1 })
+  await expect(page.getByRole("heading", { name: "Dyson", exact: true, level: 1 })
   ).toBeVisible();
 });
