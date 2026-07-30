@@ -68,6 +68,28 @@ jobs:
     - name: Install Playwright OS dependencies (browser restored from cache)
       if: steps.playwright-cache.outputs.cache-hit == 'true'
       run: npx playwright install-deps ${{ matrix.browser }}
+    # Sign in once, here, before cucumber starts — not from the test workers.
+    #
+    # Cucumber runs BeforeAll once per worker rather than once per run, so at
+    # --parallel 4 the workers used to perform four simultaneous sign-ins, each
+    # launching its own extra browser on top of the four scenario browsers. On a
+    # 4-vCPU runner that contention is what made the webkit job's sign-in time out
+    # on every worker, leaving no session and running the whole suite signed out.
+    # This step does it once, with the machine otherwise idle, and world.ts then
+    # picks up the saved session and skips signing in.
+    #
+    # continue-on-error so a sign-in problem shows as a red step without losing
+    # the rest of this engine's results: the suite still runs, and the
+    # @authenticated scenarios fail and say why. A screenshot and the page HTML
+    # from a failed sign-in are written to reports/auth-failure/, which the
+    # cucumber-report artifact below already picks up.
+    - name: Create signed-in session
+      continue-on-error: true
+      run: npm run setup-auth
+      env:
+        BROWSER: ${{ matrix.browser }}
+        TEST_EMAIL: ${{ secrets.TEST_EMAIL }}
+        TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
     # BROWSER is what world.ts reads to pick the engine. The runner script also
     # reads it, to suffix this run's report and trace directories so one engine's
     # output can't be mistaken for another's.
