@@ -77,7 +77,14 @@
       "Bash(BROWSER=webkit npm run trace-scenario)",
       "Bash(git check-ignore *)",
       "Bash(git branch *)",
-      "Bash(git commit -m ' *)"
+      "Bash(git commit -m ' *)",
+      "Bash(git ls-remote *)",
+      "Bash(curl -s -m 10 \"https://api.github.com/repos/samGreenwood2022/Playwright/pulls?state=open\")",
+      "Bash(BROWSER=webkit npm run setup-auth)",
+      "Bash(grep -v \"^$\")",
+      "Bash(rm -f .auth/user.json.claude-bak)",
+      "Bash(CI=1 BROWSER=webkit npm run regression)",
+      "Bash(CI=1 BROWSER=chromium npm run regression)"
     ]
   },
   "enabledMcpjsonServers": [
