@@ -68,7 +68,9 @@
       "Bash(PW_TRACE=retain-on-failure PW_TRACE_DIR=reports/traces/signin npx cucumber-js --require-module ts-node/register --require \"tests/features/support/*.ts\" --require \"tests/step_definitions/*.ts\" \"tests/features/functional-regression.feature\" --name \"Clicking sign in from any webpage logs the user in and returns them to the previous page\")",
       "Bash(PW_TRACE=retain-on-failure PW_TRACE_DIR=reports/traces/signin npx cucumber-js --require-module ts-node/register --require \"tests/features/support/*.ts\" --require \"tests/step_definitions/*.ts\" \"tests/features/functional-regression.feature\")",
       "Bash(rm -rf reports/traces/signin-diag)",
-      "Bash(PW_TRACE=on PW_TRACE_DIR=reports/traces/signin-diag npx cucumber-js --require-module ts-node/register --require \"tests/features/support/*.ts\" --require \"tests/step_definitions/*.ts\" \"tests/features/functional-regression.feature\" --name \"Clicking sign in from any webpage logs the user in and returns them to the previous page\")"
+      "Bash(PW_TRACE=on PW_TRACE_DIR=reports/traces/signin-diag npx cucumber-js --require-module ts-node/register --require \"tests/features/support/*.ts\" --require \"tests/step_definitions/*.ts\" \"tests/features/functional-regression.feature\" --name \"Clicking sign in from any webpage logs the user in and returns them to the previous page\")",
+      "Bash(python -c ' *)",
+      "Bash(unzip -l trace-scenario.zip)"
     ]
   },
   "enabledMcpjsonServers": [
