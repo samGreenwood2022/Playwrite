@@ -28,6 +28,20 @@ export class BasePage {
   // after a successful login.
   readonly openUserMenuButton: Locator;
   readonly userInitials: Locator;
+  // The breadcrumb trail shown above a product or category page.
+  //
+  // Located by the Angular component tag. The classes sitting beside it in the
+  // markup — ng-star-inserted, _ngcontent-ng-c3954438324 — are generated at
+  // build time and change whenever the app is rebuilt, so they're never safe to
+  // select on.
+  //
+  // Normally the better locator for a breadcrumb bar would be
+  // getByRole("navigation", { name: "Breadcrumb" }), but this <nav> carries no
+  // aria-label, so it has no accessible name to match on. The component tag is
+  // the stable alternative. (That missing label is worth raising separately —
+  // a screen reader announces this as an unnamed navigation landmark.)
+  readonly breadcrumbs: Locator;
+  readonly breadcrumbLinks: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -40,6 +54,12 @@ export class BasePage {
       name: "Open user menu",
     });
     this.userInitials = page.getByRole("figure");
+    this.breadcrumbs = page.locator("app-breadcrumbs");
+    // Scoped to the component so it can't pick up links from elsewhere on the
+    // page. Playwright returns matches in DOM order, and that's what makes the
+    // order assertion in verifyBreadcrumbs possible rather than just a contents
+    // check.
+    this.breadcrumbLinks = this.breadcrumbs.getByRole("link");
   }
 
   // Checks the current URL contains the expected text, retrying for up to 10s.
@@ -81,6 +101,42 @@ export class BasePage {
     await playwrightExpect(this.signInButton).toBeHidden();
     await playwrightExpect(this.openUserMenuButton).toBeVisible();
     await playwrightExpect(this.userInitials).toContainText("TH");
+  }
+
+  // Checks the breadcrumb trail is on screen and shows exactly the expected
+  // crumbs, in order, each pointing at the expected path.
+  //
+  // `expected` is ordered left to right, so index 0 is "Home".
+  async verifyBreadcrumbs(expected: { text: string; href: string }[]) {
+    await playwrightExpect(this.breadcrumbs).toBeVisible();
+
+    // Passing an ARRAY to toHaveText is the important part — it covers three
+    // assertions at once: that there are exactly this many crumbs, that each
+    // one's text matches, and that they appear in this order. Asserting them one
+    // at a time would let a reordered trail through, and a "contains" style
+    // check wouldn't catch a trail with extra crumbs in it.
+    //
+    // Whitespace is normalised, so the markup's " Categories " (with the padding
+    // spaces the site renders) matches "Categories" without trimming here.
+    await playwrightExpect(this.breadcrumbLinks).toHaveText(
+      expected.map((crumb) => crumb.text),
+    );
+
+    // toHaveAttribute has no array form, so poll the whole list and compare in
+    // one go. expect.poll re-runs the function until it matches or times out,
+    // which keeps the auto-retrying behaviour we'd throw away by reading the
+    // attributes once into a plain array — this page renders progressively, so
+    // a single snapshot read would be a race.
+    //
+    // These are raw attribute values, so they're the site's relative paths
+    // ("/en/gb/categories"), not the absolute URLs page.url() would return.
+    await playwrightExpect
+      .poll(() =>
+        this.breadcrumbLinks.evaluateAll((links) =>
+          links.map((link) => link.getAttribute("href")),
+        ),
+      )
+      .toEqual(expected.map((crumb) => crumb.href));
   }
 
   // Runs an Axe accessibility scan against the current page and writes the

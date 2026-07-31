@@ -288,3 +288,36 @@ Then("I take a screenshot of the {string} homepage and compare it to its baselin
     }
 });
 
+// Navigates straight to a product page, named by the feature file. The URL for
+// each name lives in ProductPage, so the feature file stays readable and the ids
+// stay in one place.
+//
+// Unlike the manufacturer-homepage steps above, this doesn't go through the
+// site's search — see ProductPage.navigateToProduct for why.
+Given(
+  "I navigate to the {string} product page",
+  async function (this: CustomWorld, productName: string) {
+    await this.productPage.navigateToProduct(productName);
+  },
+);
+
+// Checks the breadcrumb trail: that it's visible, and that it contains exactly
+// the expected crumbs, in the expected order, each linking where it should.
+//
+// The expected trail comes from a data table so it reads as the trail itself in
+// the feature file, and so a category rename is a one-line edit by someone who
+// doesn't read TypeScript. hashes() uses the header row as keys, giving
+// { text, href } per row in the order they're written.
+//
+// Breadcrumbs are site-wide furniture rather than anything Dyson-specific, so
+// verifyBreadcrumbs lives on BasePage; this step is only here because that's
+// where the product scenarios currently sit.
+Then(
+  "The breadcrumbs show the following trail",
+  async function (this: CustomWorld, table: DataTable) {
+    await this.basePage.verifyBreadcrumbs(
+      table.hashes().map((row) => ({ text: row.text, href: row.href })),
+    );
+  },
+);
+
