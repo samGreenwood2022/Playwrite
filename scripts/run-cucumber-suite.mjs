@@ -44,9 +44,25 @@ const suites = {
     traceMode: "on",
     traceDir: "reports/traces/cucumber-trace",
   },
+  // The regression suite is the one CI runs, and it's the biggest, so it gets
+  // four workers rather than two. The scenarios spend nearly all their time
+  // waiting on the live site rather than using CPU, so workers can outnumber
+  // cores without them slowing each other down; the GitHub-hosted Linux runner
+  // this repo uses (public repo, so 4 vCPU / 16GB) has ample room for four
+  // Chromium instances. Raising this is the cheap alternative to sharding the
+  // suite across several CI machines: sharding would make every machine repeat
+  // the ~2-3 minutes of checkout, npm ci and browser install, which is most of
+  // the job. Worth revisiting only once the suite takes appreciably longer than
+  // that setup cost.
+  //
+  // Note the ceiling on this: world.ts runs BeforeAll once per worker, so four
+  // workers means four sign-ins against the live auth endpoint at roughly the
+  // same moment. That's the thing that will break first if this number grows,
+  // and it breaks quietly — a rate-limited sign-in degrades to "@authenticated
+  // scenarios fail", which reads like a product bug rather than a CI setting.
   regression: {
     tags: "@regression",
-    parallel: 2,
+    parallel: 4,
     jsonDir: "reports/json/regression",
     json: "reports/json/regression/regression.json",
     out: "reports/cucumber-regression-report",
@@ -98,6 +114,37 @@ if (!suite) {
   process.exit(2);
 }
 
+// Which browser engine this run uses. world.ts reads BROWSER itself to pick the
+// engine; this script only needs to know about it to keep one engine's output
+// from landing on top of another's, and to say which engine a report belongs to.
+//
+// chromium keeps the original, unsuffixed paths so a default run behaves exactly
+// as it always has and the existing report links still work. Only firefox and
+// webkit get a suffix. In CI each engine runs on its own matrix machine, so the
+// suffix matters less there than it does locally, where running two engines
+// back to back would otherwise leave you with one report and no way to tell
+// which engine produced it.
+const browser = (process.env.BROWSER ?? "chromium").toLowerCase();
+if (browser !== "chromium") {
+  const jsonFile = path.basename(suite.json);
+  suite.jsonDir = `${suite.jsonDir}-${browser}`;
+  // Built with a forward slash rather than path.join: this string is passed
+  // through to cucumber's --format argument, and on Windows path.join would
+  // produce backslashes that the shell then treats as escapes.
+  suite.json = `${suite.jsonDir}/${jsonFile}`;
+  suite.out = `${suite.out}-${browser}`;
+  suite.traceDir = `${suite.traceDir}-${browser}`;
+  suite.name = `${suite.name} (${browser})`;
+
+  // Skip the pixel-comparison scenarios on anything but chromium. Baselines are
+  // per engine (BasePage.verifyVisualRegression), and we deliberately only keep
+  // chromium ones — see the comment on the @visual tag in
+  // tests/features/visual-regression.feature for why. Without this filter the
+  // first firefox run would silently *create* firefox baselines and pass, then
+  // start failing on the second run, which is a confusing way to find out.
+  suite.tags = suite.tags ? `${suite.tags} and not @visual` : "not @visual";
+}
+
 // Make sure the JSON output directory exists — cucumber-js will crash
 // trying to write into a missing dir rather than create it itself.
 // Wipe any prior JSON so the reporter doesn't aggregate stale runs from
@@ -131,6 +178,12 @@ const retries = process.env.CI ? 2 : 0;
 // only the first is consumed by --require, and the rest are mis-read as
 // positional feature paths ("must end with .feature or .md"). Windows shells
 // don't expand globs for native commands, which is why this only bites on CI.
+//
+// The tag expression is quoted for a related reason. It used to be a single
+// token ("@regression"), but a non-chromium run appends "and not @visual" and
+// spawnSync with shell: true would hand those on as separate words — cucumber
+// would take "@regression" as the tag expression and then choke on "and" as a
+// stray feature path.
 const cucumberArgs = [
   "cucumber-js",
   "--require-module",
@@ -140,7 +193,7 @@ const cucumberArgs = [
   "--require",
   '"tests/step_definitions/*.ts"',
   '"tests/features/*.feature"',
-  ...(suite.tags ? ["--tags", suite.tags] : []),
+  ...(suite.tags ? ["--tags", `"${suite.tags}"`] : []),
   ...(suite.parallel ? ["--parallel", String(suite.parallel)] : []),
   ...(retries ? ["--retry", String(retries)] : []),
   "--format",

@@ -17,12 +17,7 @@ import {
   ITestCaseHookParameter,
   World,
 } from "@cucumber/cucumber";
-import {
-  Browser,
-  BrowserContext,
-  Page,
-  chromium,
-} from "playwright";
+import { Browser, BrowserContext, Page } from "playwright";
 import fs from "fs";
 import path from "path";
 import { HomePage } from "../../pages/home-page";
@@ -36,16 +31,13 @@ import {
   blockAnalytics,
   CertStubMode,
 } from "./network-stubs";
-
-// The file where we save the signed-in session. BeforeAll writes it once and
-// each scenario's Before hook reads it. We use a full (absolute) path so it
-// works no matter which folder the tests are run from.
-const STORAGE_STATE_PATH = path.resolve(".auth/user.json");
-
-// How long to reuse the saved session before signing in again. One hour is a
-// good middle ground: long enough to skip sign-in on back-to-back runs, short
-// enough to recover if the real session expires partway through a dev session.
-const STORAGE_STATE_TTL_MS = 60 * 60 * 1000;
+import { BROWSER_NAME, browserType } from "./browser";
+import { dismissOverlaysAutomatically } from "./overlays";
+import {
+  createStorageState,
+  hasFreshStorageState,
+  STORAGE_STATE_PATH,
+} from "./auth";
 
 // How much Playwright tracing to do, read from PW_TRACE (set per suite by
 // scripts/run-cucumber-suite.mjs, and overridable on the command line):
@@ -112,10 +104,22 @@ export class CustomWorld extends World {
 // Registers CustomWorld as the world constructor so Cucumber uses it for every scenario.
 setWorldConstructor(CustomWorld);
 
-// Runs once before the whole test run. It signs in with the test account a
-// single time and saves the resulting session (cookies + localStorage) to
-// .auth/user.json. Scenarios tagged @authenticated then load that file and
-// start already signed in, so they don't each have to sign in themselves.
+// Runs once before the test run — but once per *worker*, not once per run, which
+// is the whole reason this hook is now as small as it is.
+//
+// Scenarios tagged @authenticated load the session saved at .auth/user.json and
+// start already signed in. Creating that file is the job of
+// tests/features/support/auth.ts; this hook only decides whether it needs
+// creating, because "who signs in" turns out to matter a lot:
+//
+//   - On CI, nobody signs in here. A dedicated step (npm run setup-auth) does it
+//     once before cucumber starts. With --parallel 4 this hook would otherwise
+//     run four times at once, launching four extra browsers alongside the four
+//     scenario browsers; on a 4-vCPU runner that contention is what made the
+//     webkit job's sign-in time out on all four workers at once.
+//   - Locally, it still signs in on demand, so running a single @authenticated
+//     scenario needs no setup command. Local runs don't have the contention
+//     problem: there's no matrix, and the machine isn't a 4-vCPU runner.
 //
 // The saved session is reused for one hour. To force a fresh sign-in, delete
 // .auth/user.json or wait for the hour to pass (e.g. if the session expired).
@@ -135,76 +139,42 @@ BeforeAll(async function () {
     return;
   }
 
-  // If we already saved a session recently (newer than the one-hour limit),
-  // reuse it and skip signing in again. Saves about 5-10s per run locally.
-  if (fs.existsSync(STORAGE_STATE_PATH)) {
-    const ageMs = Date.now() - fs.statSync(STORAGE_STATE_PATH).mtimeMs;
-    if (ageMs < STORAGE_STATE_TTL_MS) {
-      return;
-    }
+  // A session saved within the last hour is good enough — on CI that's the one
+  // the setup-auth step just wrote, and locally it's whatever the last run left
+  // behind. Either way, don't sign in again.
+  if (hasFreshStorageState()) {
+    return;
   }
 
-  // Make sure the .auth/ folder exists before we try to save the file into it.
-  // Playwright won't create a missing folder for us — it would just error. With
-  // recursive: true this does nothing if the folder is already there, so it's
-  // safe to call every time.
-  fs.mkdirSync(path.dirname(STORAGE_STATE_PATH), { recursive: true });
+  // On CI the setup step owns sign-in, so if we get here it already ran and
+  // failed (or never ran). Signing in from the workers instead would recreate
+  // exactly the stampede that step exists to prevent, and would do it at the
+  // worst possible moment — while the suite is starting. Warn and let the
+  // @authenticated scenarios report the problem themselves.
+  if (process.env.CI) {
+    console.warn(
+      "No fresh session and running on CI — not signing in from a worker. " +
+        "The setup-auth step should have created one; check that step's log and " +
+        "the diagnostics in reports/auth-failure/. @authenticated scenarios " +
+        "will fail.",
+    );
+    return;
+  }
 
-  // Open a temporary browser just to sign in. We reuse the same page objects
-  // (HomePage / LoginPage) that the real tests use, so this follows the exact
-  // path a real user would. If sign-in ever breaks, this setup breaks too —
-  // a clear, early signal rather than a confusing failure later on.
-  const browser = await chromium.launch();
-
-  // Everything below is wrapped so a sign-in problem can't take down the whole
-  // run. Cucumber treats a thrown error in BeforeAll as fatal: it kills the
-  // worker process outright ("Unexpected error on worker.receiveMessage") and no
-  // scenario gets to run or report. By catching here we degrade gracefully to
-  // the same behaviour as missing credentials above — @authenticated scenarios
-  // fail with a clear message, everything else still runs.
+  // Local path. Wrapped so a sign-in problem can't take down the whole run:
+  // cucumber treats a thrown error in BeforeAll as fatal — it kills the worker
+  // process outright ("Unexpected error on worker.receiveMessage") and no
+  // scenario gets to run or report. Catching here degrades to the same behaviour
+  // as missing credentials above.
   try {
-    const context = await browser.newContext({
-      viewport: { width: 1280, height: 800 },
-      deviceScaleFactor: 1,
-    });
-    const page = await context.newPage();
-    const homePage = new HomePage(page);
-    const basePage = new BasePage(page);
-    const loginPage = new LoginPage(page);
-
-    await homePage.navigateToNBSHomepage();
-    await basePage.signInButton.click();
-    await loginPage.signIn(email, password);
-
-    // Save the logged-in session (cookies etc.) to a file so other tests can
-    // reuse it instead of signing in again.
-    //
-    // The catch: when we run tests in parallel, two workers can try to write
-    // this same file at the same moment. If they both wrote to it directly, one
-    // could overwrite the other halfway through and leave a corrupt, unreadable
-    // file. To avoid that, each worker writes to its own temporary file first,
-    // then renames it into place. Renaming is instant and all-or-nothing, so
-    // anyone reading the file always sees a complete version — never a
-    // half-written one.
-
-    // 1. Grab the current session data from the browser.
-    const state = await context.storageState();
-    // 2. Build a temp filename unique to this process (process.pid = its ID).
-    const tmpPath = `${STORAGE_STATE_PATH}.${process.pid}.tmp`;
-    // 3. Write the session to the temp file.
-    fs.writeFileSync(tmpPath, JSON.stringify(state));
-    // 4. Rename the temp file to the real name in one atomic step.
-    fs.renameSync(tmpPath, STORAGE_STATE_PATH);
+    await createStorageState(browserType, BROWSER_NAME, email, password);
   } catch (error) {
     console.warn(
       "Sign-in during BeforeAll failed — continuing without a saved session. " +
-        "@authenticated scenarios will fail until this is fixed.\n" +
+        "@authenticated scenarios will fail until this is fixed. A screenshot " +
+        "and the page HTML are in reports/auth-failure/.\n" +
         (error instanceof Error ? error.stack ?? error.message : String(error)),
     );
-  } finally {
-    // Always close the temporary browser, success or failure, so a failed
-    // sign-in doesn't leave a Chromium process running for the whole suite.
-    await browser.close();
   }
 });
 
@@ -223,7 +193,7 @@ Before(async function (
   const tags = scenario.pickle.tags.map((t) => t.name);
   const isAuthenticated = tags.includes("@authenticated");
 
-  this.browser = await chromium.launch();
+  this.browser = await browserType.launch();
 
   // Fix the window size and scale so screenshots are always the same size on
   // local Windows and on CI Linux — our visual comparisons rely on that. (Font
@@ -258,6 +228,14 @@ Before(async function (
   // tab, cookies, storage, and history can't leak from one scenario to the next
   // — that leaking is what causes most flaky, order-dependent test failures.
   this.page = await this.context.newPage();
+
+  // Register automatic dismissal of the site's blocking dialogs (cookie consent,
+  // the "new feature" popup) for this page. Done here rather than in a page object
+  // because it's a property of the page, not of any one screen: the dialog can
+  // appear at any point, and the handler is re-checked before every action for the
+  // life of the page. See overlays.ts for why the old dismiss-after-navigation
+  // approach couldn't work.
+  await dismissOverlaysAutomatically(this.page);
 
   // Control the Certifications tab's data request so we can force edge cases the
   // live API won't produce on demand (renamed item, empty, 500, dropped

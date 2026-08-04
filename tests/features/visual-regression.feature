@@ -36,7 +36,14 @@ Feature: NBS Source Visual Regression Tests
   # compares it pixel-by-pixel against that page's saved baseline to catch
   # unintended visual changes. The screenshot step waits for a page-specific
   # element first so the page is fully rendered before capture.
-  @regression @authenticated
+  # @visual marks these as the pixel-comparison scenarios so a run can exclude
+  # them by tag. CI uses that to keep visual checks on chromium only: a baseline
+  # is per engine (see BasePage.verifyVisualRegression), so covering all three
+  # would mean three sets of baselines per OS — six files per page — every one of
+  # which has to be regenerated whenever a mask changes. That's a lot of upkeep
+  # for a third-party site we don't control, and the functional, API and
+  # accessibility scenarios are where the real cross-browser signal is.
+  @regression @authenticated @visual
   Scenario Outline: The <page> homepage shows no significant visual differences compared to its baseline image
     Given I navigate to the "<page>" homepage
     Then I take a screenshot of the "<page>" homepage and compare it to its baseline

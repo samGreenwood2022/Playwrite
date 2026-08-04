@@ -8,6 +8,12 @@
 
 import { Page, Locator } from "@playwright/test";
 
+// How long to allow for Angular to render the homepage header after the initial
+// document has loaded. Generous on purpose: this covers app startup on a CI
+// runner that's running four browsers at once, and it only ever waits as long as
+// it actually takes.
+const HEADER_RENDER_TIMEOUT_MS = 30000;
+
 export class HomePage {
   readonly page: Page;
   readonly searchField: Locator;
@@ -123,25 +129,38 @@ export class HomePage {
     await this.page.waitForURL(/\/manufacturer\/dyson\//, { timeout: 30000 });
   }
 
-  // Navigates directly to the NBS Source homepage, waits for the DOM to be
-  // ready, then clears the "new feature" popup if the site shows it. Every route
-  // onto the homepage goes through here, so the popup is handled in one place.
+  // Navigates directly to the NBS Source homepage and waits until its header has
+  // rendered.
+  //
+  // Dismissing the consent banner and the "new feature" popup is deliberately
+  // *not* done here any more. It used to be — one click({ timeout: 2000 }) per
+  // overlay, immediately after navigation — and that races the site: the dialog
+  // arrives at no fixed moment, so a check made here either finds nothing because
+  // it's too early, or finds it by luck. On a loaded CI runner it was too early,
+  // the popup stayed up for the rest of the scenario, and its backdrop swallowed
+  // every subsequent click. That job now belongs to
+  // dismissOverlaysAutomatically (tests/features/support/overlays.ts), which
+  // registers a handler Playwright re-checks before every action, so the timing
+  // stops mattering.
+  //
+  // What's left here is worth keeping: waitUntil "domcontentloaded" returns
+  // before Angular has rendered anything, so without this wait the first locator
+  // in a scenario absorbs the whole app-startup delay and reports it as its own
+  // timeout.
   async navigateToNBSHomepage() {
     await this.page.goto("https://source.thenbs.com/en/gb", {
       timeout: 60000,
       waitUntil: "domcontentloaded",
     });
-    const overlayCloseButtons = [
-      this.page.getByRole("button", { name: "Accept all" }),
-      this.page.getByRole("button", { name: "Close dialog" }),
-    ];
-    for (const closeButton of overlayCloseButtons) {
-      try {
-        await closeButton.click({ timeout: 2000 });
-      } catch {
-        // Overlay wasn't shown this run — nothing to dismiss.
-      }
-    }
+    // "Sign in" when signed out, "Open user menu" when a stored session loaded —
+    // either proves the header is up. Note this stays true while a dialog is
+    // covering the page, because the dialog sets aria-modal="false" and so hides
+    // nothing from the accessibility tree; it's a render signal, not a
+    // "safe to click" signal.
+    await this.page
+      .getByRole("button", { name: "Sign in" })
+      .or(this.page.getByRole("button", { name: "Open user menu" }))
+      .waitFor({ state: "visible", timeout: HEADER_RENDER_TIMEOUT_MS });
   }
 
 }

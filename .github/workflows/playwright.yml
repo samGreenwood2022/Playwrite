@@ -8,18 +8,98 @@ jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    # Run the whole suite once per browser engine, each on its own runner.
+    # world.ts reads BROWSER to decide which engine to launch.
+    strategy:
+      # Without fail-fast: false, the first engine to fail cancels the other
+      # jobs — and since a cancelled job uploads no report, a failure in one
+      # engine would destroy the evidence for the other two. Cross-browser runs
+      # are exactly the case where you want all three results even when one is
+      # red, because "webkit only" and "all three" mean very different things.
+      fail-fast: false
+      # Three concurrent jobs at --parallel 4 means up to twelve browsers on the
+      # live site at once, and twelve sign-ins in the same few seconds. If the
+      # site starts rate-limiting (which shows up as @authenticated scenarios
+      # failing, not as an obvious infrastructure error), add max-parallel: 1
+      # here to run the engines one after another instead.
+      matrix:
+        browser: [chromium, firefox, webkit]
+    name: test (${{ matrix.browser }})
     steps:
     - uses: actions/checkout@v6
     - uses: actions/setup-node@v6
       with:
         node-version: lts/*
+        # Caches npm's own download cache (~/.npm), keyed on package-lock.json,
+        # so `npm ci` unpacks packages from disk instead of re-downloading them
+        # from the registry on every run.
+        cache: npm
     - name: Install dependencies
       run: npm ci
-    - name: Install Playwright Browsers
-      run: npx playwright install --with-deps
+    # Cache the downloaded browser binaries so a run whose dependencies haven't
+    # changed skips the download entirely. The key is a hash of
+    # package-lock.json, so any dependency change — including a Playwright
+    # upgrade, which needs a different browser build — misses the cache and
+    # re-downloads. That's the safe direction to fail in: a needless download
+    # costs a minute, whereas reusing a browser that doesn't match the installed
+    # Playwright version fails in confusing ways at run time.
+    - name: Cache Playwright browsers
+      id: playwright-cache
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/ms-playwright
+        key: playwright-${{ runner.os }}-${{ matrix.browser }}-${{ hashFiles('package-lock.json') }}
+    # Each job installs only the engine it's going to run. Installing all three
+    # everywhere would triple the download on every runner to no purpose, since a
+    # job only ever launches its own matrix browser. The cache key above includes
+    # the browser for the same reason — each engine gets its own cache entry
+    # holding just that engine.
+    #
+    # The two steps below differ only in what they install. On a cache miss we
+    # need the browser *and* the OS libraries it links against. On a cache hit the
+    # browser has been restored from the cache but the libraries have not, because
+    # those are apt packages installed system-wide rather than files under
+    # ~/.cache — so they have to be installed again either way. This matters most
+    # for webkit, which needs a long list of system libraries that aren't on the
+    # runner image by default.
+    - name: Install Playwright browser and OS dependencies
+      if: steps.playwright-cache.outputs.cache-hit != 'true'
+      run: npx playwright install --with-deps ${{ matrix.browser }}
+    - name: Install Playwright OS dependencies (browser restored from cache)
+      if: steps.playwright-cache.outputs.cache-hit == 'true'
+      run: npx playwright install-deps ${{ matrix.browser }}
+    # Sign in once, here, before cucumber starts — not from the test workers.
+    #
+    # Cucumber runs BeforeAll once per worker rather than once per run, so at
+    # --parallel 4 the workers used to perform four simultaneous sign-ins, each
+    # launching its own extra browser on top of the four scenario browsers. On a
+    # 4-vCPU runner that contention is what made the webkit job's sign-in time out
+    # on every worker, leaving no session and running the whole suite signed out.
+    # This step does it once, with the machine otherwise idle, and world.ts then
+    # picks up the saved session and skips signing in.
+    #
+    # continue-on-error so a sign-in problem shows as a red step without losing
+    # the rest of this engine's results: the suite still runs, and the
+    # @authenticated scenarios fail and say why. A screenshot and the page HTML
+    # from a failed sign-in are written to reports/auth-failure/, which the
+    # cucumber-report artifact below already picks up.
+    - name: Create signed-in session
+      continue-on-error: true
+      run: npm run setup-auth
+      env:
+        BROWSER: ${{ matrix.browser }}
+        TEST_EMAIL: ${{ secrets.TEST_EMAIL }}
+        TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
+    # BROWSER is what world.ts reads to pick the engine. The runner script also
+    # reads it, to suffix this run's report and trace directories so one engine's
+    # output can't be mistaken for another's.
+    #
+    # On firefox and webkit the runner script also appends "and not @visual" to
+    # the tag expression, so the pixel-comparison scenarios only run on chromium.
     - name: Run Cucumber feature tests
       run: npm run regression
       env:
+        BROWSER: ${{ matrix.browser }}
         TEST_EMAIL: ${{ secrets.TEST_EMAIL }}
         TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
     # Tag one scenario with @trace-this to get its trace.zip from this run,
@@ -28,25 +108,38 @@ jobs:
     - name: Run single traced scenario (tag it @trace-this)
       run: npm run trace-scenario
       env:
+        BROWSER: ${{ matrix.browser }}
         TEST_EMAIL: ${{ secrets.TEST_EMAIL }}
         TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
+    # Every artifact name below carries the browser. upload-artifact v4 and later
+    # reject a name that another job in the same run has already uploaded, so
+    # without this the three matrix jobs would collide and two of them would fail
+    # at the upload step — after the tests had already passed.
+    #
+    # The trace path is a glob because the runner script suffixes the directory
+    # on non-chromium runs (reports/traces/trace-scenario-firefox); each job only
+    # ever produces one of them.
     - uses: actions/upload-artifact@v6
       if: ${{ !cancelled() }}
       with:
-        name: trace-scenario
-        path: reports/traces/trace-scenario/
+        name: trace-scenario-${{ matrix.browser }}
+        path: reports/traces/trace-scenario*/
         retention-days: 7
         if-no-files-found: ignore
     - uses: actions/upload-artifact@v6
       if: ${{ !cancelled() }}
       with:
-        name: cucumber-report
+        name: cucumber-report-${{ matrix.browser }}
         path: reports/
         retention-days: 7
     # Uploads visual regression snapshots so the Linux baseline generated
     # on a first CI run can be downloaded and committed to the repo.
+    #
+    # chromium only, because that's the only engine the @visual scenarios run on
+    # — the other two jobs would upload nothing but the baselines already in the
+    # checkout, which is just noise on the run summary.
     - uses: actions/upload-artifact@v6
-      if: ${{ !cancelled() }}
+      if: ${{ !cancelled() && matrix.browser == 'chromium' }}
       with:
         name: visual-regression-snapshots
         path: tests/snapshots/
