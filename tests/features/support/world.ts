@@ -25,6 +25,7 @@ import { DysonHomepage } from "../../pages/dyson-homepage";
 import { AbloyHomepage } from "../../pages/abloy-homepage";
 import { BasePage } from "../../pages/base-page";
 import { LoginPage } from "../../pages/login-page";
+import { ProductPage } from "../../pages/product-page";
 import {
   stubCertifications,
   blockAnalytics,
@@ -85,6 +86,7 @@ export class CustomWorld extends World {
   abloyPage!: AbloyHomepage;
   basePage!: BasePage;
   loginPage!: LoginPage;
+  productPage!: ProductPage;
   // Remembers the page URL from just before sign-in, so a later step can check
   // the user was returned to that same page. Optional — only some scenarios set it.
   capturedUrl?: string;
@@ -262,6 +264,7 @@ Before(async function (
   this.abloyPage = new AbloyHomepage(this.page);
   this.basePage = new BasePage(this.page);
   this.loginPage = new LoginPage(this.page);
+  this.productPage = new ProductPage(this.page);
 });
 
 // Runs after every scenario. If the scenario failed it saves a screenshot,
